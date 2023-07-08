@@ -1,14 +1,26 @@
 package com.wooyeon.yeon.chat.controller;
 
-import com.wooyeon.yeon.chat.service.ChatService;
+import com.wooyeon.yeon.chat.dto.ChatDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Controller
 public class ChatController {
+    private final SimpMessageSendingOperations simpMessageSendingOperations;
 
-    private final ChatService chatService;
+    /*
+        /queue/chat/room/{matchId}    - 구독
+        /app/chat                     - 메시지 발생
+    */
+
+    @MessageMapping("/chat")
+    public void enter(ChatDto chatDto) {
+        if(ChatDto.MessageType.ENTER.equals(chatDto.getType())) {
+            chatDto.setMessage(chatDto.getSender() + "이 입장했습니다.");
+        }
+        simpMessageSendingOperations.convertAndSend("/queue/chat/room/" + chatDto.getMatchId(), chatDto);
+    }
 }

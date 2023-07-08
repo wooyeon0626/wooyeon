@@ -1,14 +1,16 @@
 package com.wooyeon.yeon.chat.dto;
 
-import lombok.Data;
+import lombok.*;
 
-import java.sql.Timestamp;
-
-@Data
+@Getter
+@Setter
 public class ChatDto {
-    private int chatId;
-    private int matchId;
-    private int sender;
+    public enum MessageType {
+        ENTER, COMM
+    }
+
+    private MessageType type;
+    private Long matchId;
+    private String sender;
     private String message;
-    private Timestamp sendTime;
 }
