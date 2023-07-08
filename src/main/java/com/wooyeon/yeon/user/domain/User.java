@@ -15,7 +15,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 11, nullable = false)
     private String phone;
 
     @Column(nullable = false)
@@ -28,7 +28,7 @@ public class User {
     @JoinColumn(name = "PROFILE_PHOTO_ID")
     private List<ProfilePhoto> profilePhoto=new ArrayList<>();
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 8, nullable = false)
     private String birthday;
 
     @Column(length = 100, nullable = false)
@@ -40,7 +40,7 @@ public class User {
     @Column(length = 100, nullable = false)
     private String gpsLocationInfo;
 
-    @Column(length = 20)
+    @Column(length = 4)
     private String mbti;
 
     @Column(length = 50)
@@ -70,5 +70,4 @@ public class User {
         this.hobby=hobby;
         this.interest=interest;
     }
-
 }
