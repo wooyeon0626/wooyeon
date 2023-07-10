@@ -1,6 +1,6 @@
 package com.wooyeon.yeon.likeManage.domain;
 
-import com.wooyeon.yeon.profileChoice.domain.Match;
+import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import com.wooyeon.yeon.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Like {
+public class UserLike {
     @Id
     @GeneratedValue
     private Long likeId;
@@ -23,14 +23,15 @@ public class Like {
     @JoinColumn(name = "like_from", nullable = false)
     private User likeFrom; // 누가
 
-    @OneToOne(mappedBy = "like", fetch = FetchType.LAZY)
-    private Match match;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "match_id")
+    private UserMatch userMatch;
 
     @Builder
-    public Like(Long likeId, User likeTo, User likeFrom, Match match) {
+    public UserLike(Long likeId, User likeTo, User likeFrom, UserMatch userMatch) {
         this.likeId = likeId;
         this.likeTo = likeTo;
         this.likeFrom = likeFrom;
-        this.match = match;
+        this.userMatch = userMatch;
     }
 }
