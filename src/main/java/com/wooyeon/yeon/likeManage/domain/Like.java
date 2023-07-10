@@ -1,5 +1,8 @@
 package com.wooyeon.yeon.likeManage.domain;
 
+import com.wooyeon.yeon.profileChoice.domain.Match;
+import com.wooyeon.yeon.user.domain.User;
+
 import javax.persistence.*;
 
 @Entity

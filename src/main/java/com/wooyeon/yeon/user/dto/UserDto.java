@@ -1,7 +1,10 @@
 package com.wooyeon.yeon.user.dto;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class UserDto {
     private Long userId;
     private String phone;
@@ -18,5 +21,4 @@ public class UserDto {
     private String intro;
     private List<String> hobby;
     private List<String> interest;
-
 }

@@ -2,6 +2,7 @@ package com.wooyeon.yeon.profileChoice.domain;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import com.wooyeon.yeon.likeManage.domain.Like;
 
 @Entity
 public class Match {
