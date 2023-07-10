@@ -10,7 +10,7 @@ public class UserDto {
     private String phone;
     private String gender;
     private String nickname;
-    private List<String> profilePhoto;
+    private List<String> profilePhotos;
     private String birthday;
     private String email;
     // 사용자가 직접 설정한 위치
@@ -19,6 +19,6 @@ public class UserDto {
     private String gpsLocationInfo;
     private String mbti;
     private String intro;
-    private List<String> hobby;
-    private List<String> interest;
+    private List<String> hobbys;
+    private List<String> interests;
 }
