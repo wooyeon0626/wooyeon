@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Controller
 public class MatchController {
     private final MatchService matchService;
 }
