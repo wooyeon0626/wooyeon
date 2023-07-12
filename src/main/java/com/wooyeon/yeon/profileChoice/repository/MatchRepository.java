@@ -1,8 +1,7 @@
 package com.wooyeon.yeon.profileChoice.repository;
 
+import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.regex.Matcher;
-
-public interface MatchRepository extends JpaRepository<Matcher, Long> {
+public interface MatchRepository extends JpaRepository<UserMatch, Long> {
 }
