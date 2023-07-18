@@ -1,10 +1,13 @@
 package com.wooyeon.yeon.likeManage.service;
 
 import com.wooyeon.yeon.likeManage.domain.UserLike;
+import com.wooyeon.yeon.likeManage.dto.LikeDto;
 import com.wooyeon.yeon.likeManage.repository.LikeRepository;
 import com.wooyeon.yeon.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +31,22 @@ public class LikeService {
 
         return like1 != null && like2 != null;
     }
+
+    // 내가 한 좋아요 조회
+    public List<LikeDto> findMyLikeList(Long likeId) {
+        //userlike의 likefrom == 본인 이름인것을 반환.
+        //List<UserLike> userLikeList = likeRepository.findBy
+    }
+
+    private LikeDto convertToLikeDto(UserLike userLike) {
+        LikeDto dto = new LikeDto();
+        dto.setLikeId(userLike.getLikeId());
+        dto.setLikeToUserId(userLike.getLikeTo().getUserId());
+        dto.setLikeFromUserId(userLike.getLikeFrom().getUserId());
+
+        return dto;
+    }
+
+    // 내가 받은 좋아요 조회
 
 }

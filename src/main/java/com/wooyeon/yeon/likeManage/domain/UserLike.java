@@ -3,12 +3,14 @@ package com.wooyeon.yeon.likeManage.domain;
 import com.wooyeon.yeon.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class UserLike {
     @Id
     @GeneratedValue
