@@ -32,11 +32,11 @@ public class LikeService {
         return like1 != null && like2 != null;
     }
 
-    // 내가 한 좋아요 조회
-    public List<LikeDto> findMyLikeList(Long likeId) {
-        //userlike의 likefrom == 본인 이름인것을 반환.
-        //List<UserLike> userLikeList = likeRepository.findBy
-    }
+//     내가 한 좋아요 조회
+//    public List<LikeDto> findMyLikeList(Long likeId) {
+//        userlike의 likefrom == 본인 이름인것을 반환.
+//        List<UserLike> userLikeList = likeRepository.findBy
+//    }
 
     private LikeDto convertToLikeDto(UserLike userLike) {
         LikeDto dto = new LikeDto();
