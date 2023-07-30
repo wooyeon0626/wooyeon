@@ -1,6 +1,6 @@
 package com.wooyeon.yeon.chat.domain;
 
-import com.wooyeon.yeon.profileChoice.domain.Match;
+import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,9 +14,9 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long chatId;
 
-    @OneToOne
-    @JoinColumn(name = "") // 외래키 이름 미정
-    private Match match;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userMatchId")
+    private UserMatch userMatch;
 
     @Column
     private String sender;
@@ -28,9 +28,9 @@ public class Chat {
     private Timestamp sendTime;
 
     @Builder
-    public Chat(Long chatId, Match match, String sender, String message, Timestamp sendTime) {
+    public Chat(Long chatId, UserMatch userMatch, String sender, String message, Timestamp sendTime) {
         this.chatId = chatId;
-        this.match = match;
+        this.userMatch = userMatch;
         this.sender = sender;
         this.message = message;
         this.sendTime = sendTime;
