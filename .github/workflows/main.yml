@@ -22,8 +22,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Initialize Google Cloud SDK
-        uses: zxyle/publish-gae-action@master
+      - name: Deploy to App Engine
+        uses: google-github-actions/deploy-appengine@v1.2.7
         with:
           service_account_email: ${{ secrets.GCP_SA_EMAIL }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
@@ -33,7 +33,10 @@ jobs:
           # This client-secret.json is converted by GCP_SA_KEY.
           gcloud auth activate-service-account ${{ secrets.GCP_SA_EMAIL }} --key-file=client-secret.json
           gcloud config set project ${{ secrets.PROJECT_ID }}
-          gcloud -q app deploy src/main/appengine/app.yaml --promote
+          gcloud app deploy
 
           # Suppose you need a cron task.
           # gcloud -q app deploy cron.yaml
+    
+      - id: 'test'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
