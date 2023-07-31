@@ -33,7 +33,7 @@ jobs:
         with:
           #working_directory: wooyeon
           #deliverables: src/main/appengine/app.yaml
-          #deliverables: build.gradle
+          deliverables: ../build.gradle
           project_id: ${{ secrets.PROJECT_ID }}
           
           # Suppose you need a cron task.
