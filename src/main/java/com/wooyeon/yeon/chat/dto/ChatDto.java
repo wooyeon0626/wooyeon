@@ -10,7 +10,7 @@ public class ChatDto {
     }
 
     private MessageType type;
-    private Long matchId;
+    private Long roomId;
     private String sender;
     private String message;
 }

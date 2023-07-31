@@ -19,7 +19,6 @@ public class LikeController {
     private final UserService userService;
 
 
-
 //    @PostMapping("/{userName}/like/{liked_user_id}") // 경로는 수정 예정. 지금은 예시, /본인이름/like/좋아요한상대아이디
 //    public CreateLikeResponse likeMember(@PathVariable("liked_user_id") Long likedUserId,
 //                                         @RequestBody @Valid UserRequest request,/* 클라쪽에서 json으로 본인의 User 정보 줌. (id만, 수정가능)*/
