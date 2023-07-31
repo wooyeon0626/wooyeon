@@ -2,6 +2,8 @@ package com.wooyeon.yeon;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 public class YeonApplication {
@@ -10,4 +12,11 @@ public class YeonApplication {
         SpringApplication.run(YeonApplication.class, args);
     }
 
+}
+@RestController
+class HelloController {
+    @GetMapping("/")
+    String hello() {
+        return "hello_haneol";
+    }
 }

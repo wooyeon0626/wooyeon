@@ -1,0 +1,11 @@
+runtime: java11
+#env: flex
+#runtime_config:
+#  operating_system: ubuntu18
+#  runtime_version: 11
+handlers:
+  - url: /.*
+    script: this field is required, but ignored
+#
+manual_scaling:
+  instances: 1
