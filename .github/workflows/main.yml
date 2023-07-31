@@ -32,6 +32,7 @@ jobs:
         uses: 'google-github-actions/deploy-appengine@v1'
         with:
           #working_directory: wooyeon
+          deliverables: src/main/appengine/app.yaml
           project_id: ${{ secrets.PROJECT_ID }}
           
           # Suppose you need a cron task.
