@@ -2,8 +2,6 @@ package com.wooyeon.yeon.user.domain;
 
 import lombok.*;
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -18,30 +16,28 @@ public class User {
     @Column(length = 100, nullable = false)
     private String email;
 
-    @Column(length = 20, nullable = false)
-    private String password;
-
     @Column(length = 11)
     private String phone;
 
+    private String accessToken;
+
     private String refreshToken;
-    private Boolean emailAuth;
 
     @Builder
-    public User(Long userId, String email, String password, String phone, String refreshToken, Boolean emailAuth) {
+    public User(Long userId, String email, String phone, String accessToken, String refreshToken) {
         this.userId=userId;
         this.email=email;
-        this.password=password;
         this.phone=phone;
+        this.accessToken=accessToken;
         this.refreshToken=refreshToken;
-        this.emailAuth=emailAuth;
     }
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken=refreshToken;
     }
-
-    public void emailVerifiedSuccess() {
-        this.emailAuth = true;
+    public void updateAccessToken(String accessToken) {
+        this.accessToken=accessToken;
     }
+
+
 }
