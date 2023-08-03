@@ -1,10 +1,15 @@
 package com.wooyeon.yeon.user.repository;
 
 import com.wooyeon.yeon.user.domain.User;
+import com.wooyeon.yeon.user.dto.UserDto;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
+@Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    boolean existsByEmail(String email);
 
-    // 필요에 따라 다른 메서드들을 추가할 수 있습니다.
+    UserDto findByUserId(Long userId);
+
 }
