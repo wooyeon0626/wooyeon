@@ -27,7 +27,7 @@ public class EmailAuthService {
     }
 
     // authToken 만료 시간 (5분)
-    private static final long EXPIRATION_TIME = 5 * 60 * 1000;
+    private static final long EXPIRATION_TIME = 10 * 60 * 1000;
 
     // authToken 발급 및 이메일 전송
     public void sendEmailVerification(User user) {
@@ -42,7 +42,8 @@ public class EmailAuthService {
         emailAuthRepository.save(emailAuth);
 
         String subject = "우연(WOOYEON) 이메일 인증 링크입니다.";
-        String link = "http://localhost:9001/api/users/verify-email?email="+user.getEmail()+"&token=" + authToken;
+        //link가 이러면 post인 이유가...?? -> 나중에 프론트엔드와 상의하여 변경
+        String link = "http://localhost:9001/auth/email/verify?email="+user.getEmail()+"&token=" + authToken;
         String text = "아래 링크를 클릭하여 이메일 인증을 완료하세요.\n" + link;
 
         SimpleMailMessage message = new SimpleMailMessage();

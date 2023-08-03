@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 //@RequiredArgsConstructor
-@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -24,16 +23,15 @@ public class UserController {
         this.emailAuthService = emailAuthService;
     }
 
-    @GetMapping("/register")
-    public ResponseEntity<MemberRegisterResponseDto> registerMember(String email, String password) {
+    @GetMapping("/auth/email"정)
+    public ResponseEntity<MemberRegisterResponseDto> registerMember(String email) {
         MemberRegisterRequestDto requestDto = new MemberRegisterRequestDto();
         requestDto.setEmail(email);
-        requestDto.setPassword(password);
         MemberRegisterResponseDto responseDto = userService.registerMember(requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/verify-email")
+    @GetMapping("/auth/email/verify")
     public ResponseEntity<String> verifyEmail(@RequestParam String email, String token) {
         emailAuthService.verifyEmail(email, token);
         return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
