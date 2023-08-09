@@ -32,7 +32,7 @@ public class UserController {
         this.smsService = smsService;
     }
 
-    @PostMapping("/auth/email")
+    @PostMapping(value = "/auth/email",produces = "application/json;charset=UTF-8")
     public ResponseEntity<EmailAuthResponseDto> registerMember(String email) {
         EmailAuthRequestDto requestDto = new EmailAuthRequestDto();
         requestDto.setEmail(email);
@@ -40,15 +40,15 @@ public class UserController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PostMapping("/auth/email/verify")
+    @PostMapping(value = "/auth/email/verify",produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> verifyEmail(@RequestParam String email, String token) {
         emailAuthService.verifyEmail(email, token);
         return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
     }
 
-    @PostMapping("/auth/phone")
-    public SmsResponseDto sendSms(@RequestBody String phoneNumber) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
-        SmsResponseDto responseDto = smsService.sendSms(phoneNumber);
+    @PostMapping(value = "/auth/phone",produces = "application/json;charset=UTF-8")
+    public SmsResponseDto sendSms(@RequestBody String phone) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+        SmsResponseDto responseDto = smsService.sendSms(phone);
         return responseDto;
     }
 
