@@ -1,6 +1,6 @@
 package com.wooyeon.yeon.user.dto;
 
-public class MemberRegisterRequestDto {
+public class EmailAuthRequestDto {
 
     private String email;
 

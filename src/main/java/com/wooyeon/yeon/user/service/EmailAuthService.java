@@ -43,7 +43,7 @@ public class EmailAuthService {
 
         String subject = "우연(WOOYEON) 이메일 인증 링크입니다.";
         //link가 이러면 post인 이유가...?? -> 나중에 프론트엔드와 상의하여 변경
-        String link = "http://localhost:9001/auth/email/verify?email="+user.getEmail()+"&token=" + authToken;
+        String link = "wooyeon://email_auth?token="+ authToken;
         String text = "아래 링크를 클릭하여 이메일 인증을 완료하세요.\n" + link;
 
         SimpleMailMessage message = new SimpleMailMessage();

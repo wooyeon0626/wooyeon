@@ -2,13 +2,13 @@ package com.wooyeon.yeon.user.dto;
 
 import lombok.Builder;
 
-public class MemberRegisterResponseDto {
+public class EmailAuthResponseDto {
 
     private String email;
     private String authToken;
 
     @Builder
-    public MemberRegisterResponseDto(String email, String authToken) {
+    public EmailAuthResponseDto(String email, String authToken) {
         this.email = email;
         this.authToken = authToken;
     }
