@@ -1,8 +1,8 @@
 package com.wooyeon.yeon.user.service;
 
 import com.wooyeon.yeon.user.domain.User;
-import com.wooyeon.yeon.user.dto.MemberRegisterRequestDto;
-import com.wooyeon.yeon.user.dto.MemberRegisterResponseDto;
+import com.wooyeon.yeon.user.dto.EmailAuthRequestDto;
+import com.wooyeon.yeon.user.dto.EmailAuthResponseDto;
 import com.wooyeon.yeon.user.dto.UserDto;
 import com.wooyeon.yeon.user.repository.EmailAuthRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
@@ -25,7 +25,7 @@ public class UserService {
     }
 
     @Transactional
-    public MemberRegisterResponseDto registerMember(MemberRegisterRequestDto requestDto) {
+    public EmailAuthResponseDto registerMember(EmailAuthRequestDto requestDto) {
         // 이메일 중복 확인 로직 추가
         validateDuplicated(requestDto.getEmail());
 
@@ -39,7 +39,7 @@ public class UserService {
         emailAuthService.sendEmailVerification(user);
 
         // 회원 가입 응답 생성
-        return MemberRegisterResponseDto.builder()
+        return EmailAuthResponseDto.builder()
                 .email(user.getEmail())
                 .authToken(null) // 여기에는 authToken이 아직 없으므로 null로 설정
                 .build();
