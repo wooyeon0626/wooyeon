@@ -48,7 +48,7 @@ public class SmsService {
     private String serviceId;
 
     @Value("${naver-cloud-sms.senderPhone}")
-    private String phone;
+    private String fromPhone;
 
     public String makeSignature(Long time) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException {
         String space = " ";
@@ -79,7 +79,7 @@ public class SmsService {
         return encodeBase64String;
     }
 
-    public SmsResponseDto sendSms(String phoneNumber) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public SmsResponseDto sendSms(String phone) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
         Long time = System.currentTimeMillis();
 
         HttpHeaders headers = new HttpHeaders();
@@ -89,13 +89,13 @@ public class SmsService {
         headers.set("x-ncp-apigw-signature-v2", makeSignature(time));
 
         List<SmsDto> messages = new ArrayList<>();
-        messages.add(new SmsDto(phoneNumber,smsConfirmNum));
+        messages.add(new SmsDto(phone,smsConfirmNum));
 
         SmsRequestDto request = SmsRequestDto.builder()
                 .type("SMS")
                 .contentType("COMM")
                 .countryCode("82")
-                .from(phone)
+                .from(fromPhone)
                 .content("[우연(Wooyeon) 인증번호]\n"+smsConfirmNum)
                 .messages(messages)
                 .build();
