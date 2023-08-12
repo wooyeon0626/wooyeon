@@ -5,10 +5,9 @@ import lombok.*;
 import java.util.List;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Builder
-public class SmsRequestDto {
+public class SmsAuthRequestDto {
     private String type;
     private String contentType;
     private String countryCode;

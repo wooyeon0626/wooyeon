@@ -7,8 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 @Builder
-public class EmailAuthRequestDto {
-
-    private String email;
-    private String authToken;
+public class PhoneAuthRequestDto {
+    private String phone;
+    private String verifyCode;
 }
