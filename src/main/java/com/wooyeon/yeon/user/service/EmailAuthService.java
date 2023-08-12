@@ -68,7 +68,8 @@ public class EmailAuthService {
 
     private String setContext(String authToken) { // 타임리프 설정하는 코드
         Context context = new Context();
-        context.setVariable("authToken", authToken); // Template에 전달할 데이터 설정
+        String link="wooyeon://email_auth?token="+authToken;
+        context.setVariable("link", link); // Template에 전달할 데이터 설정
         return templateEngine.process("email_authentication", context); // email_authentication.html
     }
 
