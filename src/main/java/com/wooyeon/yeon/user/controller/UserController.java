@@ -8,6 +8,7 @@ import com.wooyeon.yeon.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/auth/email",produces = "application/json;charset=UTF-8")
-    public ResponseEntity<EmailAuthResponseDto> sendEmailVerify(@RequestBody EmailDto emailDto) {
+    public ResponseEntity<EmailAuthResponseDto> sendEmailVerify(@RequestBody EmailDto emailDto) throws MessagingException {
         EmailAuthResponseDto responseDto = emailAuthService.sendEmail(emailDto);
         return ResponseEntity.ok(responseDto);
     }
