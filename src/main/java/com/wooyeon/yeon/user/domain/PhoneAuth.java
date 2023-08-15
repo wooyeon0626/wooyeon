@@ -35,7 +35,7 @@ public class PhoneAuth {
         this.verifyCode = verifyCode;
         this.expireDate = expireDate;
         this.expired = expired;
-        this.certification=certification;
+        this.certification = certification;
     }
 
     public void phoneVerifiedSuccess() {

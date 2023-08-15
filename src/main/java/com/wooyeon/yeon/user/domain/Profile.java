@@ -13,18 +13,24 @@ import java.util.List;
 @NoArgsConstructor
 public class Profile {
     @Id
-    @GeneratedValue
-    private Long prfileId;
+    @GeneratedValue()
+    private Long Id;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "profile")
+    private User user;
 
     @Column(nullable = false)
     private char gender;
+
+    @Column(length = 2)
+    private int age;
 
     @Column(length = 50, nullable = false)
     private String nickname;
 
     @Column
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
-    private List<ProfilePhoto> profilePhotos=new ArrayList<>();
+    @OneToMany(mappedBy = "profile")
+    private List<ProfilePhoto> profilePhotos = new ArrayList<>();
 
     @Column(length = 8, nullable = false)
     private String birthday;
@@ -42,24 +48,28 @@ public class Profile {
     private String intro;
 
     @Column
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
-    private List<Hobby> hobbys=new ArrayList<>();
+    @OneToMany(mappedBy = "profile")
+    private List<Hobby> hobbys = new ArrayList<>();
 
     @Column
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
-    private List<Interest> interests=new ArrayList<>();
+    @OneToMany(mappedBy = "profile")
+    private List<Interest> interests = new ArrayList<>();
+
+    private boolean faceVerify;
 
     @Builder
-    public Profile(char gender, String nickname, List<ProfilePhoto> profilePhotos, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, List<Hobby> hobbys, List<Interest> interests) {
-        this.gender=gender;
-        this.nickname=nickname;
-        this.profilePhotos=profilePhotos;
-        this.birthday=birthday;
-        this.locationInfo=locationInfo;
-        this.gpsLocationInfo=gpsLocationInfo;
-        this.mbti=mbti;
-        this.intro=intro;
-        this.hobbys=hobbys;
-        this.interests=interests;
+    public Profile(char gender, String nickname, int age, List<ProfilePhoto> profilePhotos, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, List<Hobby> hobbys, List<Interest> interests, boolean faceVerify) {
+        this.gender = gender;
+        this.nickname = nickname;
+        this.age=age;
+        this.profilePhotos = profilePhotos;
+        this.birthday = birthday;
+        this.locationInfo = locationInfo;
+        this.gpsLocationInfo = gpsLocationInfo;
+        this.mbti = mbti;
+        this.intro = intro;
+        this.hobbys = hobbys;
+        this.interests = interests;
+        this.faceVerify = faceVerify;
     }
 }
