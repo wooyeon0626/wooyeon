@@ -1,6 +1,9 @@
 package com.wooyeon.yeon.user.domain;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -32,7 +35,7 @@ public class EmailAuth {
         this.authToken = authToken;
         this.expireDate = expireDate;
         this.expired = expired;
-        this.certification=certification;
+        this.certification = certification;
     }
 
     public void emailVerifiedSuccess() {

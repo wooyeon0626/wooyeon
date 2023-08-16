@@ -13,6 +13,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
@@ -28,7 +29,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @PropertySource("classpath:application.properties")
 @Slf4j
@@ -36,9 +37,6 @@ import java.util.Random;
 public class SmsAuthService {
 
     private final PhoneAuthRepository phoneAuthRepository;
-
-    //휴대폰 인증 번호
-    private final String smsConfirmNum = createSmsKey();
 
     @Value("${naver-cloud-sms.accessKey}")
     private String accessKey;
@@ -53,13 +51,19 @@ public class SmsAuthService {
     private String fromPhone;
 
     // smsConfirmNum 만료 시간 (3분)
-    private static final long EXPIRATION_TIME = 10 * 30 * 1000;
+    private static final long EXPIRATION_TIME = 3 * 60 * 1000;
 
     public SmsAuthService(PhoneAuthRepository phoneAuthRepository) {
         this.phoneAuthRepository=phoneAuthRepository;
     }
 
     public SmsAuthResponseDto sendSms(SmsDto smsDto) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        // 휴대폰 번호 중복 인증 로직
+        validateDuplicated(smsDto.getTo());
+
+        //휴대폰 인증 번호 생성
+        String smsConfirmNum=createSmsKey();
+
         Long time = System.currentTimeMillis();
 
         HttpHeaders headers = new HttpHeaders();
@@ -152,14 +156,18 @@ public class SmsAuthService {
     }
 
     // 인증코드 만들기
-    public static String createSmsKey() {
-        StringBuffer key = new StringBuffer();
-        Random rnd = new Random();
-
-        for (int i = 0; i < 6; i++) { // 인증코드 6자리
-            key.append((rnd.nextInt(10)));
-        }
-        return key.toString();
+    public String createSmsKey() {
+        int key = ThreadLocalRandom.current().nextInt(999999);
+        return Integer.toString(key);
     }
+
+    // 휴대폰 번호 중복 확인 로직 구현
+    private void validateDuplicated(String phone) {
+        // 중복된 휴대폰 번호가 이미 PhoneAuth 테이블에 존재한다면 예외 처리
+        if (phoneAuthRepository.existsByPhone(phone)) {
+            throw new IllegalArgumentException("인증코드가 이미 전송되었습니다.");
+        }
+    }
+
 }
 

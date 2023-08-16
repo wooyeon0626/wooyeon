@@ -13,10 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 public class Profile {
     @Id
-    @GeneratedValue
+    @GeneratedValue()
     private Long Id;
 
-    //@Column
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "profile")
     private User user;
 
@@ -59,9 +58,10 @@ public class Profile {
     private boolean faceVerify;
 
     @Builder
-    public Profile(char gender, String nickname, List<ProfilePhoto> profilePhotos, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, List<Hobby> hobbys, List<Interest> interests, boolean faceVerify) {
+    public Profile(char gender, String nickname, int age, List<ProfilePhoto> profilePhotos, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, List<Hobby> hobbys, List<Interest> interests, boolean faceVerify) {
         this.gender = gender;
         this.nickname = nickname;
+        this.age=age;
         this.profilePhotos = profilePhotos;
         this.birthday = birthday;
         this.locationInfo = locationInfo;
