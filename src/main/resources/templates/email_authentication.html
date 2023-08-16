@@ -36,7 +36,8 @@
                 "
               >
                 <img
-                  src="cid:wooyeonLogoImage"
+                  src="logo_wooyeon_email.png"
+                  th:src="|cid:${wooyeonLogoImage}|"
                   alt="우연"
                   width="90"
                   height="40"
@@ -87,7 +88,7 @@
                   text-align: center;
                 "
               >
-                <a th:href="${link}"
+                <a th:href="@{'intent://email_auth?token=' + ${authToken} + '#Intent;scheme=wooyeon;end'}"
                   class="button"
                   style="
                     display: inline-block;
