@@ -19,15 +19,23 @@ public class User {
     @Column(length = 11)
     private String phone;
 
+    @Column(unique = true, columnDefinition = "BINARY(16)")
+    private String userCode;
+
     private String accessToken;
 
     private String refreshToken;
 
+    @OneToOne
+    @JoinColumn(name = "PROFILE_ID")
+    private Profile profile;
+
     @Builder
-    public User(Long userId, String email, String phone, String accessToken, String refreshToken) {
+    public User(Long userId, String email, String phone, String userCode, String accessToken, String refreshToken) {
         this.userId=userId;
         this.email=email;
         this.phone=phone;
+        this.userCode=userCode;
         this.accessToken=accessToken;
         this.refreshToken=refreshToken;
     }
