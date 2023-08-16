@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/auth/phone/verify",produces = "application/json;charset=UTF-8")
-    public ResponseEntity<PhoneAuthResponseDto> verifyPhone(@RequestBody PhoneAuthRequestDto phoneAuthRequestDto) {
+    public ResponseEntity<PhoneAuthResponseDto> verifyPhone(@RequestBody PhoneAuthRequestDto phoneAuthRequestDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
         PhoneAuthResponseDto responseDto=smsAuthService.verifyPhone(phoneAuthRequestDto);
         return ResponseEntity.ok().body(responseDto);
     }
