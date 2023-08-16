@@ -8,6 +8,6 @@ public class Interest {
     private Long interestId;
     private String interest;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
-    private User user;
+    @JoinColumn(name = "PROFILE_ID")
+    private Profile profile;
 }
