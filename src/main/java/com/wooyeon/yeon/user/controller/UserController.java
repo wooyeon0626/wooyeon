@@ -40,8 +40,8 @@ public class UserController {
     }
 
     @PostMapping(value = "/auth/phone",produces = "application/json;charset=UTF-8")
-    public ResponseEntity<SmsAuthResponseDto> sendSmsVerify(@RequestBody SmsDto smsDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
-        SmsAuthResponseDto responseDto = smsAuthService.sendSms(smsDto);
+    public ResponseEntity<SmsAuthResponseDto> sendSmsVerify(@RequestBody PhoneInfoRequestDto phoneInfoRequestDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+        SmsAuthResponseDto responseDto = smsAuthService.sendSms(phoneInfoRequestDto);
         return ResponseEntity.ok().body(responseDto);
     }
 
@@ -49,6 +49,11 @@ public class UserController {
     public ResponseEntity<PhoneAuthResponseDto> verifyPhone(@RequestBody PhoneAuthRequestDto phoneAuthRequestDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
         PhoneAuthResponseDto responseDto=smsAuthService.verifyPhone(phoneAuthRequestDto);
         return ResponseEntity.ok().body(responseDto);
+    }
+
+    @GetMapping("/redirect")
+    public String redirectToDeepLink() {
+        return "wooyeon://email_auth?token=";
     }
 
 }

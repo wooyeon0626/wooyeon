@@ -13,7 +13,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
@@ -31,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application-apikey.properties")
 @Slf4j
 @Service
 public class SmsAuthService {
@@ -57,9 +56,21 @@ public class SmsAuthService {
         this.phoneAuthRepository=phoneAuthRepository;
     }
 
-    public SmsAuthResponseDto sendSms(SmsDto smsDto) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public SmsAuthResponseDto sendSms(PhoneInfoRequestDto phoneInfoRequestDto) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        // smsDto 설정
+        SmsDto smsDto=new SmsDto();
+        smsDto.setTo(phoneInfoRequestDto.getTo());
+
         // 휴대폰 번호 중복 인증 로직
-        validateDuplicated(smsDto.getTo());
+        if(validateDuplicated(smsDto.getTo())){
+            SmsAuthResponseDto smsAuthResponseDto= SmsAuthResponseDto.builder()
+                    .requestId("duplication")
+                    .statusName("duplicated")
+                    .statusCode("202")
+                    .requestTime(LocalDateTime.now())
+                    .build();
+            return smsAuthResponseDto;
+        }
 
         //휴대폰 인증 번호 생성
         String smsConfirmNum=createSmsKey();
@@ -80,7 +91,7 @@ public class SmsAuthService {
                 .contentType("COMM")
                 .countryCode("82")
                 .from(fromPhone)
-                .content("[우연] 인증번호를 입력해주세요\n"+smsConfirmNum)
+                .content("[우연] 인증번호를 입력해주세요\n"+smsConfirmNum+"\n\n"+phoneInfoRequestDto.getSignature())
                 .messages(smsDtoList)
                 .build();
 
@@ -162,11 +173,12 @@ public class SmsAuthService {
     }
 
     // 휴대폰 번호 중복 확인 로직 구현
-    private void validateDuplicated(String phone) {
+    private boolean validateDuplicated(String phone) {
         // 중복된 휴대폰 번호가 이미 PhoneAuth 테이블에 존재한다면 예외 처리
         if (phoneAuthRepository.existsByPhone(phone)) {
-            throw new IllegalArgumentException("인증코드가 이미 전송되었습니다.");
+            return true;
         }
+        return false;
     }
 
 }

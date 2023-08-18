@@ -115,6 +115,7 @@ lib/generated_plugin_registrant.dart
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+application-apikey.properties
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -270,3 +271,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,android,flutter,java,intellij
+
+application.properties

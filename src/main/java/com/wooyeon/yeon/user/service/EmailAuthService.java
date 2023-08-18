@@ -7,6 +7,7 @@ import com.wooyeon.yeon.user.dto.EmailDto;
 import com.wooyeon.yeon.user.repository.EmailAuthRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@PropertySource("classpath:application-apikey.properties")
 @Slf4j
 @Service
 public class EmailAuthService {
@@ -27,7 +29,6 @@ public class EmailAuthService {
     private final EmailAuthRepository emailAuthRepository;
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
-
 
     public EmailAuthService(EmailAuthRepository emailAuthRepository, JavaMailSender mailSender, UserRepository userRepository, SpringTemplateEngine templateEngine) {
         this.emailAuthRepository = emailAuthRepository;
