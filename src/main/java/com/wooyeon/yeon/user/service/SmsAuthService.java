@@ -7,12 +7,14 @@ import com.wooyeon.yeon.user.dto.*;
 import com.wooyeon.yeon.user.repository.PhoneAuthRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.utils.*;
+import org.apache.hc.client5.http.utils.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
@@ -20,14 +22,14 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.persistence.EntityManager;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @PropertySource("classpath:application-apikey.properties")
@@ -49,8 +51,8 @@ public class SmsAuthService {
     @Value("${naver-cloud-sms.senderPhone}")
     private String fromPhone;
 
-    // smsConfirmNum 만료 시간 (3분)
-    private static final long EXPIRATION_TIME = 3 * 60 * 1000;
+    // smsConfirmNum 만료 시간 (40초)
+    private static final long EXPIRATION_TIME = 1 * 40 * 1000;
 
     public SmsAuthService(PhoneAuthRepository phoneAuthRepository) {
         this.phoneAuthRepository=phoneAuthRepository;
@@ -112,6 +114,20 @@ public class SmsAuthService {
                 .expired(false)
                 .build();
         phoneAuthRepository.save(phoneAuth);
+
+
+        Timer timer = new Timer();
+        int delay = 1 * 20 * 1000; // 20초
+        int period = 1 * 20 * 1000; // 20초
+
+        timer.schedule(new TimerTask() {
+
+            // TimerTask()는 추상 메서드 run()을 꼭 구현해둬야 함
+            public void run() {
+                // 여기에 실행하고자 하는 메서드를 호출하면 됩니다.
+                deleteExpiredStatusIfExpired();
+            }
+        }, delay, period);
 
         return response;
     }
@@ -179,6 +195,13 @@ public class SmsAuthService {
             return true;
         }
         return false;
+    }
+
+    // x분 마다 한 번씩 PhoneAuth에 있는 expiredDate가 지난 데이터 삭제
+    @Transactional
+    public void deleteExpiredStatusIfExpired() {
+        LocalDateTime currentDateTime= LocalDateTime.now();
+        phoneAuthRepository.deleteExpiredRecords(currentDateTime);
     }
 
 }

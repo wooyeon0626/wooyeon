@@ -36,7 +36,7 @@ public class InitUser {
                         .mbti("MBTI")
                         .gpsLocationInfo("3km")
                         .nickname("닉네임" + i)
-                        .hobbys(null)
+                        .hobbies(null)
                         .interests(null)
                         .locationInfo("주소" + i)
                         .gender('M')

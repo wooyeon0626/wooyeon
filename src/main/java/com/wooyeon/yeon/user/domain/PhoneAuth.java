@@ -38,7 +38,13 @@ public class PhoneAuth {
         this.certification = certification;
     }
 
+    // 휴대폰 인증 완료
     public void phoneVerifiedSuccess() {
         this.certification = true;
+    }
+
+    // 휴대폰 인증 코드 만료
+    public void ExpiredVerifyCode() {
+        this.expired = true;
     }
 }
