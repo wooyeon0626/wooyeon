@@ -28,15 +28,15 @@ public class UserController {
     }
 
     @PostMapping(value = "/auth/email",produces = "application/json;charset=UTF-8")
-    public ResponseEntity<EmailAuthResponseDto> sendEmailVerify(@RequestBody EmailDto emailDto) throws MessagingException {
-        EmailAuthResponseDto responseDto = emailAuthService.sendEmail(emailDto);
+    public ResponseEntity<EmailResponseDto> sendEmailVerify(@RequestBody EmailRequestDto emailRequestDto) throws MessagingException {
+        EmailResponseDto responseDto = emailAuthService.sendEmail(emailRequestDto);
         return ResponseEntity.ok(responseDto);
     }
 
     @PostMapping(value = "/auth/email/verify",produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> verifyEmail(@RequestBody EmailAuthRequestDto requestDto) {
-        emailAuthService.verifyEmail(requestDto);
-        return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
+    public ResponseEntity<EmailAuthResponseDto> verifyEmail(@RequestBody EmailAuthRequestDto requestDto) {
+        EmailAuthResponseDto emailAuthResponseDto=emailAuthService.verifyEmail(requestDto);
+        return ResponseEntity.ok(emailAuthResponseDto);
     }
 
     @PostMapping(value = "/auth/phone",produces = "application/json;charset=UTF-8")

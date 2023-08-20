@@ -144,9 +144,7 @@ public class SmsAuthService {
 
         PhoneAuthResponseDto phoneAuthResponseDto=PhoneAuthResponseDto.builder()
                 .phoneAuth("success")
-                .profile("none")
-                .register("none")
-                .serviceTerms("none")
+                .registerProc("none") // 나중에 프로필, 이용약관 동의까지 구현 후 변경 요망
                 .build();
 
         phoneAuth.phoneVerifiedSuccess();

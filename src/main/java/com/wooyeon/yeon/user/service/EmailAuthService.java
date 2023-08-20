@@ -3,7 +3,8 @@ package com.wooyeon.yeon.user.service;
 import com.wooyeon.yeon.user.domain.EmailAuth;
 import com.wooyeon.yeon.user.dto.EmailAuthRequestDto;
 import com.wooyeon.yeon.user.dto.EmailAuthResponseDto;
-import com.wooyeon.yeon.user.dto.EmailDto;
+import com.wooyeon.yeon.user.dto.EmailResponseDto;
+import com.wooyeon.yeon.user.dto.EmailRequestDto;
 import com.wooyeon.yeon.user.repository.EmailAuthRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -41,13 +42,13 @@ public class EmailAuthService {
     private static final long EXPIRATION_TIME = 5 * 60 * 1000;
 
     // authToken 발급 및 이메일 양식 설정, 전송
-    public void sendEmailVerification(EmailDto emailDto) throws MessagingException {
+    public String sendEmailVerification(EmailRequestDto emailRequestDto) throws MessagingException {
         MimeMessage message=mailSender.createMimeMessage();
 
         String authToken = UUID.randomUUID().toString();
         LocalDateTime expireDate = LocalDateTime.now().plusSeconds(EXPIRATION_TIME / 1000);
         EmailAuth emailAuth = EmailAuth.builder()
-                .email(emailDto.getEmail())
+                .email(emailRequestDto.getEmail())
                 .authToken(authToken)
                 .expireDate(expireDate)
                 .expired(false)
@@ -55,11 +56,12 @@ public class EmailAuthService {
         emailAuthRepository.save(emailAuth);
 
         String subject = "우연(WOOYEON) 이메일 인증 링크입니다.";
-        message.addRecipients(MimeMessage.RecipientType.TO, emailDto.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, emailRequestDto.getEmail());
         message.setSubject(subject);
         message.setText(setContext(authToken),"utf-8", "html");
 
         mailSender.send(message);
+        return authToken;
     }
 
     private String setContext(String authToken) { // 타임리프 설정하는 코드
@@ -72,31 +74,39 @@ public class EmailAuthService {
 
     // 이메일 인증 처리
     @Transactional
-    public void verifyEmail(EmailAuthRequestDto requestDto) {
+    public EmailAuthResponseDto verifyEmail(EmailAuthRequestDto requestDto) {
         EmailAuth emailAuth = emailAuthRepository.findByAuthToken(requestDto.getAuthToken())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
 
         if (emailAuth.isExpired()) {
+            EmailAuthResponseDto emailAuthResponseDto=EmailAuthResponseDto.builder()
+                    .emailAuth("fail")
+                    .build();
             throw new IllegalArgumentException("만료된 토큰입니다.");
         }
 
         emailAuth.emailVerifiedSuccess();
+        EmailAuthResponseDto emailAuthResponseDto= EmailAuthResponseDto.builder()
+                .emailAuth("success")
+                .build();
+
 //        emailAuthRepository.deleteByEmail(requestDto.getEmail());
+        return emailAuthResponseDto;
     }
 
     // 이메일 전송 전 중복 확인, 이메일 전송 메서드 호출
     @Transactional
-    public EmailAuthResponseDto sendEmail(EmailDto emailDto) throws MessagingException {
+    public EmailResponseDto sendEmail(EmailRequestDto emailRequestDto) throws MessagingException {
         // 이메일 중복 확인 로직 추가
-        validateDuplicated(emailDto.getEmail());
+        validateDuplicated(emailRequestDto.getEmail());
 
         // 이메일 인증 링크 발송
-        sendEmailVerification(emailDto);
+        String authToken=sendEmailVerification(emailRequestDto);
 
         // 회원 가입 응답 생성
-        return EmailAuthResponseDto.builder()
-                .email(emailDto.getEmail())
-                .authToken(null) // 여기에는 authToken이 아직 없으므로 null로 설정
+        return EmailResponseDto.builder()
+                .email(emailRequestDto.getEmail())
+                .authToken(authToken) // 여기에는 authToken이 아직 없으므로 null로 설정
                 .build();
     }
 
