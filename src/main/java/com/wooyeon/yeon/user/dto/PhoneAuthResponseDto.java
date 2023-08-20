@@ -12,7 +12,5 @@ import lombok.NoArgsConstructor;
 public class PhoneAuthResponseDto {
 //    private String statusCode;
     private String phoneAuth;
-    private String register;
-    private String profile;
-    private String serviceTerms;
+    private String registerProc;
 }
