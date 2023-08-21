@@ -30,11 +30,10 @@ public class EmailAuth {
     private boolean certification;
 
     @Builder
-    public EmailAuth(String email, String authToken, LocalDateTime expireDate, boolean expired, boolean certification) {
+    public EmailAuth(String email, String authToken, LocalDateTime expireDate, boolean certification) {
         this.email = email;
         this.authToken = authToken;
         this.expireDate = expireDate;
-        this.expired = expired;
         this.certification = certification;
     }
 

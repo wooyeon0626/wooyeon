@@ -18,7 +18,7 @@ public interface PhoneAuthRepository extends JpaRepository<PhoneAuth, Long> {
     // 휴대폰 중복 체크
     boolean existsByPhone(String phone);
 
-    Optional<PhoneAuth> findByVerifyCode(String verifyCode);
+    PhoneAuth findByPhoneAndVerifyCode(String phone, String verifyCode);
 
     @Modifying
     @Transactional
