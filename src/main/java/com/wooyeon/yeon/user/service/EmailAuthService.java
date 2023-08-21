@@ -41,55 +41,6 @@ public class EmailAuthService {
     // authToken 만료 시간 (10분)
     private static final long EXPIRATION_TIME = 10 * 60 * 1000;
 
-    // authToken 발급 및 이메일 양식 설정, 전송
-    public void sendEmailVerification(EmailRequestDto emailRequestDto) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-
-        String authToken = UUID.randomUUID().toString();
-        LocalDateTime expireDate = LocalDateTime.now().plusSeconds(EXPIRATION_TIME / 1000);
-        EmailAuth emailAuth = EmailAuth.builder()
-                .email(emailRequestDto.getEmail())
-                .authToken(authToken)
-                .expireDate(expireDate)
-                .build();
-        emailAuthRepository.save(emailAuth);
-
-        String subject = "우연(WOOYEON) 이메일 인증 링크입니다.";
-        message.addRecipients(MimeMessage.RecipientType.TO, emailRequestDto.getEmail());
-        message.setSubject(subject);
-        message.setText(setContext(authToken), "utf-8", "html");
-
-        mailSender.send(message);
-    }
-
-    private String setContext(String authToken) { // 타임리프 설정하는 코드
-        Context context = new Context();
-        String link = "https://our-audio-394406.du.r.appspot.com/redirect";
-        context.setVariable("link", link); // Template에 전달할 데이터 설정
-        context.setVariable("wooyeonLogoImage", new ClassPathResource("static/logo_wooyeon_email.png"));
-        return templateEngine.process("email_authentication", context); // email_authentication.html
-    }
-
-    // 이메일 인증 처리
-    @Transactional
-    public EmailAuthResponseDto verifyEmail(EmailAuthRequestDto emailAuthRequestDto) {
-        EmailAuth emailAuth = emailAuthRepository.findByEmailAndAuthToken(emailAuthRequestDto.getEmail(), emailAuthRequestDto.getAuthToken());
-        EmailAuthResponseDto emailAuthResponseDto;
-
-        if (emailAuth != null) {
-            emailAuthResponseDto = EmailAuthResponseDto.builder()
-                    .emailAuth("success")
-                    .build();
-            emailAuth.emailVerifiedSuccess();
-        } else {
-            emailAuthResponseDto = EmailAuthResponseDto.builder()
-                    .emailAuth("fail")
-                    .build();
-        }
-//        emailAuthRepository.deleteByEmail(requestDto.getEmail());
-        return emailAuthResponseDto;
-    }
-
     // 이메일 전송 전 중복 확인, 이메일 전송 메서드 호출
     @Transactional
     public EmailResponseDto sendEmail(EmailRequestDto emailRequestDto) throws MessagingException {
@@ -115,6 +66,55 @@ public class EmailAuthService {
         return emailResponseDto;
     }
 
+    // authToken 발급 및 이메일 양식 설정, 전송
+    public void sendEmailVerification(EmailRequestDto emailRequestDto) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+
+        String authToken = UUID.randomUUID().toString();
+        LocalDateTime expireDate = LocalDateTime.now().plusSeconds(EXPIRATION_TIME / 1000);
+        EmailAuth emailAuth = EmailAuth.builder()
+                .email(emailRequestDto.getEmail())
+                .authToken(authToken)
+                .expireDate(expireDate)
+                .build();
+        emailAuthRepository.save(emailAuth);
+
+        String subject = "우연(WOOYEON) 이메일 인증 링크입니다.";
+        message.addRecipients(MimeMessage.RecipientType.TO, emailRequestDto.getEmail());
+        message.setSubject(subject);
+        message.setText(setContext(emailRequestDto.getEmail()), "utf-8", "html");
+
+        mailSender.send(message);
+    }
+
+    private String setContext(String email) { // 타임리프 설정하는 코드
+        Context context = new Context();
+        String link = "https://our-audio-394406.du.r.appspot.com/redirect?auth=" + email;
+        context.setVariable("link", link); // Template에 전달할 데이터 설정
+        context.setVariable("wooyeonLogoImage", new ClassPathResource("static/logo_wooyeon_email.png"));
+        return templateEngine.process("email_authentication", context); // email_authentication.html
+    }
+
+    // 이메일 인증 처리
+    @Transactional
+    public EmailAuthResponseDto verifyEmail(EmailAuthRequestDto emailAuthRequestDto) {
+        EmailAuth emailAuth = emailAuthRepository.findByEmailAndAuthToken(emailAuthRequestDto.getEmail(), emailAuthRequestDto.getAuthToken());
+        EmailAuthResponseDto emailAuthResponseDto;
+
+        if (emailAuth != null) {
+            emailAuthResponseDto = EmailAuthResponseDto.builder()
+                    .emailAuth("success")
+                    .build();
+            emailAuth.emailVerifiedSuccess();
+        } else {
+            emailAuthResponseDto = EmailAuthResponseDto.builder()
+                    .emailAuth("fail")
+                    .build();
+        }
+//        emailAuthRepository.deleteByEmail(requestDto.getEmail());
+        return emailAuthResponseDto;
+    }
+
     // 이메일 중복 확인 로직 구현
     private boolean validateDuplicated(String email) {
         // 중복된 이메일이 이미 회원 테이블에 존재한다면 예외 처리
@@ -129,5 +129,12 @@ public class EmailAuthService {
     public void deleteExpiredStatusIfExpired() {
         LocalDateTime currentDateTime = LocalDateTime.now();
         emailAuthRepository.deleteExpiredRecords(currentDateTime);
+    }
+
+    public String findAuthTokneByEmail(String email) {
+        EmailAuth emailAuth = emailAuthRepository.findAuthTokenByEmail(email);
+        String authToken = emailAuth.getAuthToken();
+
+        return authToken;
     }
 }

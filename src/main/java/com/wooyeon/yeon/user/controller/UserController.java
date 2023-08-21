@@ -56,8 +56,10 @@ public class UserController {
     }
 
     @GetMapping("/redirect")
-    public String redirectToDeepLink() {
-        return "wooyeon://email_auth?token=";
+    public String redirectToDeepLink(@RequestParam String auth) {
+        String email = auth;
+        String token = emailAuthService.findAuthTokneByEmail(email);
+        return "wooyeon://email_auth?token=" + token;
     }
 
 }
