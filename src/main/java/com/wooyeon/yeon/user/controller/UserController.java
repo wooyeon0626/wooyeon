@@ -21,34 +21,45 @@ public class UserController {
     private final EmailAuthService emailAuthService;
     private final SmsAuthService smsAuthService;
 
+    // 사용자의 휴대폰으로 인증번호 전송
+    @PostMapping(value = "/auth/phone", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<SmsAuthResponseDto> sendSmsVerify(@RequestBody PhoneInfoRequestDto phoneInfoRequestDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+        SmsAuthResponseDto responseDto = smsAuthService.sendSms(phoneInfoRequestDto);
+        return ResponseEntity.ok().body(responseDto);
+    }
+
+    // 인증번호 확인
+    @PostMapping(value = "/auth/phone/verify", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<PhoneAuthResponseDto> verifyPhone(@RequestBody PhoneAuthRequestDto phoneAuthRequestDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+        PhoneAuthResponseDto responseDto = smsAuthService.verifyPhone(phoneAuthRequestDto);
+        return ResponseEntity.ok().body(responseDto);
+    }
+
+    // 사용자의 이메일로 인증 메일 전송
     public UserController(UserService userService, EmailAuthService emailAuthService, SmsAuthService smsAuthService) {
         this.userService = userService;
         this.emailAuthService = emailAuthService;
         this.smsAuthService = smsAuthService;
     }
 
-    @PostMapping(value = "/auth/email",produces = "application/json;charset=UTF-8")
-    public ResponseEntity<EmailAuthResponseDto> sendEmailVerify(@RequestBody EmailDto emailDto) throws MessagingException {
-        EmailAuthResponseDto responseDto = emailAuthService.sendEmail(emailDto);
+    // 사용자의 이메일에 있는 토큰 번호로 인증
+    @PostMapping(value = "/auth/email", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<EmailResponseDto> sendEmailVerify(@RequestBody EmailRequestDto emailRequestDto) throws MessagingException {
+        EmailResponseDto responseDto = emailAuthService.sendEmail(emailRequestDto);
         return ResponseEntity.ok(responseDto);
     }
 
-    @PostMapping(value = "/auth/email/verify",produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> verifyEmail(@RequestBody EmailAuthRequestDto requestDto) {
-        emailAuthService.verifyEmail(requestDto);
-        return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
+    @PostMapping(value = "/auth/email/verify", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<EmailAuthResponseDto> verifyEmail(@RequestBody EmailAuthRequestDto requestDto) {
+        EmailAuthResponseDto emailAuthResponseDto = emailAuthService.verifyEmail(requestDto);
+        return ResponseEntity.ok(emailAuthResponseDto);
     }
 
-    @PostMapping(value = "/auth/phone",produces = "application/json;charset=UTF-8")
-    public ResponseEntity<SmsAuthResponseDto> sendSmsVerify(@RequestBody SmsDto smsDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
-        SmsAuthResponseDto responseDto = smsAuthService.sendSms(smsDto);
-        return ResponseEntity.ok().body(responseDto);
-    }
-
-    @PostMapping(value = "/auth/phone/verify",produces = "application/json;charset=UTF-8")
-    public ResponseEntity<PhoneAuthResponseDto> verifyPhone(@RequestBody PhoneAuthRequestDto phoneAuthRequestDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
-        PhoneAuthResponseDto responseDto=smsAuthService.verifyPhone(phoneAuthRequestDto);
-        return ResponseEntity.ok().body(responseDto);
+    @GetMapping("/redirect")
+    public String redirectToDeepLink(@RequestParam String auth) {
+        String email = auth;
+        String token = emailAuthService.findAuthTokneByEmail(email);
+        return "wooyeon://email_auth?token=" + token;
     }
 
 }
