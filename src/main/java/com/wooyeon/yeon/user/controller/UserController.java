@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -56,10 +57,12 @@ public class UserController {
     }
 
     @GetMapping("/redirect")
-    public String redirectToDeepLink(@RequestParam String auth) {
+    public void redirectToDeepLink(@RequestParam String auth, HttpServletResponse response) {
         String email = auth;
         String token = emailAuthService.findAuthTokneByEmail(email);
-        return "redirect:wooyeon://email_auth?token=" + token;
+        String redirectUrl = "wooyeon://email_auth?token=" + token;
+        response.setHeader("Location", redirectUrl);
+        response.setStatus(302);
     }
 
 }
