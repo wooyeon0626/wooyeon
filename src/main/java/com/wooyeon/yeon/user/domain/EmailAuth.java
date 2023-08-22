@@ -26,7 +26,6 @@ public class EmailAuth {
     @Column(nullable = false)
     private LocalDateTime expireDate;
 
-    private boolean expired;
     private boolean certification;
 
     @Builder
