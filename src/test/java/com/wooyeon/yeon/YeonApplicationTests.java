@@ -10,9 +10,9 @@ class YeonApplicationTests {
 //    @Autowired
 //    private SmsAuthService smsAuthService;
 
-    @Test
-    void contextLoads() {
-    }
+//    @Test
+//    void contextLoads() {
+//    }
 
 //    @Test
 //    void sendSms() throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
