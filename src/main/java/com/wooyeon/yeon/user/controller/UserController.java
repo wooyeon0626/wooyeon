@@ -59,7 +59,7 @@ public class UserController {
     public String redirectToDeepLink(@RequestParam String auth) {
         String email = auth;
         String token = emailAuthService.findAuthTokneByEmail(email);
-        return "wooyeon://email_auth?token=" + token;
+        return "redirect:wooyeon://email_auth?token=" + token;
     }
 
 }
