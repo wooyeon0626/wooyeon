@@ -5,6 +5,7 @@ import javax.persistence.*;
 @Entity
 public class Hobby {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long hobbyId;
 
     private String hobby;
