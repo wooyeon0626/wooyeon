@@ -1,32 +1,18 @@
 package com.wooyeon.yeon.user.dto;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@Getter
 public class EmailAuthResponseDto {
-
-    private String email;
-    private String authToken;
+//    private String statusCode;
+    private String emailAuth;
 
     @Builder
-    public EmailAuthResponseDto(String email, String authToken) {
-        this.email = email;
-        this.authToken = authToken;
+    public EmailAuthResponseDto(String emailAuth) {
+        this.emailAuth=emailAuth;
     }
 
-    // 게터, 세터 생략 (Lombok을 사용하면 자동으로 생성)
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getAuthToken() {
-        return authToken;
-    }
-
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
 }

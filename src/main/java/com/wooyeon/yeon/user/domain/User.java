@@ -26,8 +26,9 @@ public class User {
 
     private String refreshToken;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROFILE_ID")
+//    @Column(unique = true)
     private Profile profile;
 
     @Builder

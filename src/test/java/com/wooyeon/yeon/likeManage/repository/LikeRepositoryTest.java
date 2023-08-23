@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @Rollback(false)//테스트 끝나고 다 날리는거 방지
 class LikeRepositoryTest {
-    @Autowired LikeRepository likeRepository;
-
-    @Test
-    public void testLike() {
-
-    }
+//    @Autowired LikeRepository likeRepository;
+//
+//    @Test
+//    public void testLike() {
+//
+//    }
 }
