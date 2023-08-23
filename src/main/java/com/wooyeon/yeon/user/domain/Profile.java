@@ -47,27 +47,27 @@ public class Profile {
     @Column(length = 50)
     private String intro;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    private List<Hobby> hobbies = new ArrayList<>();
+    @Column(length = 100)
+    private String hobby;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    private List<Interest> interests = new ArrayList<>();
+    @Column(length = 100)
+    private String interest;
 
     private boolean faceVerify;
 
     @Builder
-    public Profile(char gender, String nickname, int age, List<ProfilePhoto> profilePhotos, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, List<Hobby> hobbies, List<Interest> interests, boolean faceVerify) {
+    public Profile(char gender, String nickname, int age, List<ProfilePhoto> profilePhotos, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, String hobby, String interest, boolean faceVerify) {
         this.gender = gender;
         this.nickname = nickname;
-        this.age=age;
+        this.age = age;
         this.profilePhotos = profilePhotos;
         this.birthday = birthday;
         this.locationInfo = locationInfo;
         this.gpsLocationInfo = gpsLocationInfo;
         this.mbti = mbti;
         this.intro = intro;
-        this.hobbies = hobbies;
-        this.interests = interests;
+        this.hobby = hobby;
+        this.interest = interest;
         this.faceVerify = faceVerify;
     }
 }
