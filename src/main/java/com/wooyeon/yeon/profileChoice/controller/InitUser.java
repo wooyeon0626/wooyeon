@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InitUser {
     private final InitMemberService initMemberService;
-
+//
     @PostConstruct
     public void init() {
         initMemberService.init();
