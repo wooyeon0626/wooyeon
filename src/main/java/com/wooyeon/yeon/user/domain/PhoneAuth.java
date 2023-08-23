@@ -26,19 +26,19 @@ public class PhoneAuth {
     @Column(nullable = false)
     private LocalDateTime expireDate;
 
-    private boolean expired;
     private boolean certification;
 
     @Builder
-    public PhoneAuth(String phone, String verifyCode, LocalDateTime expireDate, boolean expired, boolean certification) {
+    public PhoneAuth(String phone, String verifyCode, LocalDateTime expireDate, boolean certification) {
         this.phone = phone;
         this.verifyCode = verifyCode;
         this.expireDate = expireDate;
-        this.expired = expired;
         this.certification = certification;
     }
 
+    // 휴대폰 인증 완료
     public void phoneVerifiedSuccess() {
         this.certification = true;
     }
+
 }

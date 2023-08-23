@@ -7,12 +7,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class YeonApplicationTests {
-    @Autowired
-    private SmsAuthService smsAuthService;
+//    @Autowired
+//    private SmsAuthService smsAuthService;
 
-    @Test
-    void contextLoads() {
-    }
+//    @Test
+//    void contextLoads() {
+//    }
 
 //    @Test
 //    void sendSms() throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {

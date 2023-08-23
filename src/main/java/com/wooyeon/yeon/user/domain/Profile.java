@@ -13,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Profile {
     @Id
-    @GeneratedValue()
-    private Long Id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "profile")
     private User user;
@@ -47,18 +47,16 @@ public class Profile {
     @Column(length = 50)
     private String intro;
 
-    @Column
-    @OneToMany(mappedBy = "profile")
-    private List<Hobby> hobbys = new ArrayList<>();
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    private List<Hobby> hobbies = new ArrayList<>();
 
-    @Column
-    @OneToMany(mappedBy = "profile")
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<Interest> interests = new ArrayList<>();
 
     private boolean faceVerify;
 
     @Builder
-    public Profile(char gender, String nickname, int age, List<ProfilePhoto> profilePhotos, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, List<Hobby> hobbys, List<Interest> interests, boolean faceVerify) {
+    public Profile(char gender, String nickname, int age, List<ProfilePhoto> profilePhotos, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, List<Hobby> hobbies, List<Interest> interests, boolean faceVerify) {
         this.gender = gender;
         this.nickname = nickname;
         this.age=age;
@@ -68,7 +66,7 @@ public class Profile {
         this.gpsLocationInfo = gpsLocationInfo;
         this.mbti = mbti;
         this.intro = intro;
-        this.hobbys = hobbys;
+        this.hobbies = hobbies;
         this.interests = interests;
         this.faceVerify = faceVerify;
     }
