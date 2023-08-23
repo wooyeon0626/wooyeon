@@ -28,19 +28,28 @@ public class InitUser {
 
         @Transactional
         public void init() {
-            for (int i = 0; i < 100; i++) {
-                em.persist(Profile.builder()
+            for (Long i = 1L; i <= 10L; i++) {
+                User user = User.builder()
+                        .email("sss@naver.com")
+                        .phone("01012341234")
+                        .userCode("generated"+i.toString())
+                        .build();
+                System.out.println(user.getUserCode());
+                Profile profile = Profile.builder()
                         .profilePhotos(null)
                         .birthday("0101")
                         .intro("자기소개샘플")
                         .mbti("MBTI")
                         .gpsLocationInfo("3km")
                         .nickname("닉네임" + i)
-                        .hobbies(null)
-                        .interests(null)
+//                        .hobbies(null)
+//                        .interests(null)
                         .locationInfo("주소" + i)
                         .gender('M')
-                        .build());
+                        .build();
+                user.setProfile(profile);
+                em.persist(user);
+                em.persist(profile);
             }
         }
     }

@@ -48,5 +48,9 @@ public class User {
         this.accessToken=accessToken;
     }
 
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
 
 }
