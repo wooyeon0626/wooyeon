@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
@@ -69,6 +70,8 @@ public class EmailAuthService {
     // authToken 발급 및 이메일 양식 설정, 전송
     public void sendEmailVerification(EmailRequestDto emailRequestDto) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
+        // Multipart Message가 필요하므로 true 설정
+        MimeMessageHelper helper=new MimeMessageHelper(message,true);
 
         String authToken = UUID.randomUUID().toString();
         LocalDateTime expireDate = LocalDateTime.now().plusSeconds(EXPIRATION_TIME / 1000);
@@ -80,9 +83,12 @@ public class EmailAuthService {
         emailAuthRepository.save(emailAuth);
 
         String subject = "우연(WOOYEON) 이메일 인증 링크입니다.";
-        message.addRecipients(MimeMessage.RecipientType.TO, emailRequestDto.getEmail());
         message.setSubject(subject);
-        message.setText(setContext(emailRequestDto.getEmail()), "utf-8", "html");
+        helper.setTo(emailRequestDto.getEmail());
+        // addInline 보다 먼저 실행 되어야 함
+        helper.setText(setContext(emailRequestDto.getEmail()),true);
+        // addInline을 통해 local에 있는 이미지 삽입 해주기 & html에서 img src='cid:{contentId}'로 설정 해주기
+        helper.addInline("wooyeonLogoImage",new ClassPathResource("static/logo_wooyeon_email.png"));
 
         mailSender.send(message);
     }
@@ -91,7 +97,6 @@ public class EmailAuthService {
         Context context = new Context();
         String link = "https://our-audio-394406.du.r.appspot.com/redirect?auth=" + email;
         context.setVariable("link", link); // Template에 전달할 데이터 설정
-        context.setVariable("wooyeonLogoImage", new ClassPathResource("static/logo_wooyeon_email.png"));
         return templateEngine.process("email_authentication", context); // email_authentication.html
     }
 
