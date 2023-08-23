@@ -7,6 +7,7 @@ import com.wooyeon.yeon.profileChoice.dto.RecommandUserCondition;
 import com.wooyeon.yeon.profileChoice.dto.RecommandUserDto;
 import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.QProfile;
+import com.wooyeon.yeon.user.domain.QUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 import static com.wooyeon.yeon.user.domain.QProfile.*;
+import static com.wooyeon.yeon.user.domain.QUser.user;
 
 public class MatchRepositoryImpl implements MatchRepositoryRecommandUserList {
 
@@ -35,7 +37,8 @@ public class MatchRepositoryImpl implements MatchRepositoryRecommandUserList {
                         profile.locationInfo,
                         profile.gpsLocationInfo,
                         profile.mbti,
-                        profile.intro
+                        profile.intro,
+                        profile.user.userCode
 //                        profile.hobbys,
 //                        profile.interests,
 //                        profile.profilePhotos

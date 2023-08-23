@@ -20,11 +20,12 @@ public class RecommandUserDto {
     private String gpsLocationInfo;
     private String mbti;
     private String intro;
+    private String userCode;
 //    private List<Hobby> hobbys = new ArrayList<>();
 //    private List<Interest> interests = new ArrayList<>();
 //    private List<ProfilePhoto> profilePhotos = new ArrayList<>();
 
-    public RecommandUserDto(Long profileId, char gender, String nickname, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro) {
+    public RecommandUserDto(Long profileId, char gender, String nickname, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, String userCode) {
         this.profileId = profileId;
         this.gender = gender;
         this.nickname = nickname;
@@ -33,5 +34,6 @@ public class RecommandUserDto {
         this.gpsLocationInfo = gpsLocationInfo;
         this.mbti = mbti;
         this.intro = intro;
+        this.userCode = userCode;
     }
 }
