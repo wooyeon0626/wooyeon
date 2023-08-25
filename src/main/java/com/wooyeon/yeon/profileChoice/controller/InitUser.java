@@ -1,6 +1,7 @@
 package com.wooyeon.yeon.profileChoice.controller;
 
-import com.wooyeon.yeon.user.domain.*;
+import com.wooyeon.yeon.user.domain.Profile;
+import com.wooyeon.yeon.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,14 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class InitUser {
     private final InitMemberService initMemberService;
 
+    //
     @PostConstruct
     public void init() {
         initMemberService.init();
@@ -28,19 +29,29 @@ public class InitUser {
 
         @Transactional
         public void init() {
-            for (int i = 0; i < 100; i++) {
-                em.persist(Profile.builder()
+            for (Long i = 1L; i <= 10L; i++) {
+                UUID uuid = UUID.randomUUID();
+                User user = User.builder()
+                        .email("sss@naver.com")
+                        .phone("01012341234")
+                        .userCode(uuid)
+                        .build();
+                System.out.println(user.getUserCode());
+                Profile profile = Profile.builder()
                         .profilePhotos(null)
                         .birthday("0101")
                         .intro("자기소개샘플")
                         .mbti("MBTI")
                         .gpsLocationInfo("3km")
                         .nickname("닉네임" + i)
-                        .hobbies(null)
-                        .interests(null)
+//                        .hobbies(null)
+//                        .interests(null)
                         .locationInfo("주소" + i)
                         .gender('M')
-                        .build());
+                        .build();
+                user.setProfile(profile);
+                em.persist(user);
+                em.persist(profile);
             }
         }
     }

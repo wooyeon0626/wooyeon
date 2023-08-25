@@ -6,6 +6,7 @@ import com.wooyeon.yeon.likeManage.repository.LikeRepository;
 import com.wooyeon.yeon.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,12 +16,12 @@ public class LikeService {
     private final LikeRepository likeRepository;
 
     //like 생성
-    public UserLike createLike(User likeFrom, User likeTo) {
+    @Transactional
+    public UserLike saveUserLike(User likeFromUser, User likeToUser) {
         UserLike userLike = UserLike.builder()
-                .likeFrom(likeFrom)
-                .likeTo(likeTo)
+                .likeTo(likeToUser)
+                .likeFrom(likeFromUser)
                 .build();
-
         return likeRepository.save(userLike);
     }
 
@@ -38,14 +39,14 @@ public class LikeService {
 //        List<UserLike> userLikeList = likeRepository.findBy
 //    }
 
-    private LikeDto convertToLikeDto(UserLike userLike) {
-        LikeDto dto = new LikeDto();
-        dto.setLikeId(userLike.getLikeId());
-        dto.setLikeToUserId(userLike.getLikeTo().getUserId());
-        dto.setLikeFromUserId(userLike.getLikeFrom().getUserId());
-
-        return dto;
-    }
+//    private LikeDto convertToLikeDto(UserLike userLike) {
+//        LikeDto dto = new LikeDto();
+//        dto.setLikeId(userLike.getLikeId());
+//        dto.setLikeToUserId(userLike.getLikeTo().getUserId());
+//        dto.setLikeFromUserId(userLike.getLikeFrom().getUserId());
+//
+//        return dto;
+//    }
 
     // 내가 받은 좋아요 조회
 
