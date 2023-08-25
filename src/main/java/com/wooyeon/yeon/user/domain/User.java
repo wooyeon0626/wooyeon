@@ -2,6 +2,7 @@ package com.wooyeon.yeon.user.domain;
 
 import lombok.*;
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -20,7 +21,7 @@ public class User {
     private String phone;
 
     @Column(unique = true, columnDefinition = "BINARY(16)")
-    private String userCode;
+    private UUID userCode;
 
     private String accessToken;
 
@@ -32,7 +33,7 @@ public class User {
     private Profile profile;
 
     @Builder
-    public User(Long userId, String email, String phone, String userCode, String accessToken, String refreshToken) {
+    public User(Long userId, String email, String phone, UUID userCode, String accessToken, String refreshToken) {
         this.userId=userId;
         this.email=email;
         this.phone=phone;

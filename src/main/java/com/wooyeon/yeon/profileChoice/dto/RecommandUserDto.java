@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -20,12 +21,12 @@ public class RecommandUserDto {
     private String gpsLocationInfo;
     private String mbti;
     private String intro;
-    private String userCode;
+    private UUID userCode;
 //    private List<Hobby> hobbys = new ArrayList<>();
 //    private List<Interest> interests = new ArrayList<>();
 //    private List<ProfilePhoto> profilePhotos = new ArrayList<>();
 
-    public RecommandUserDto(Long profileId, char gender, String nickname, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, String userCode) {
+    public RecommandUserDto(Long profileId, char gender, String nickname, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, UUID userCode) {
         this.profileId = profileId;
         this.gender = gender;
         this.nickname = nickname;
