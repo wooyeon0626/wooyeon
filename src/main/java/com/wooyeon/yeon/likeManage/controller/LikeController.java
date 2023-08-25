@@ -1,8 +1,11 @@
 package com.wooyeon.yeon.likeManage.controller;
 
 import com.wooyeon.yeon.likeManage.domain.UserLike;
+import com.wooyeon.yeon.likeManage.dto.LikeDto;
+import com.wooyeon.yeon.likeManage.dto.RequestLikeRequestDto;
 import com.wooyeon.yeon.likeManage.service.LikeService;
 import com.wooyeon.yeon.user.domain.User;
+import com.wooyeon.yeon.user.dto.UserDto;
 import com.wooyeon.yeon.user.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,29 +21,25 @@ public class LikeController {
     private final LikeService likeService;
     private final UserService userService;
 
-
-//    @PostMapping("/{userName}/like/{liked_user_id}") // 경로는 수정 예정. 지금은 예시, /본인이름/like/좋아요한상대아이디
-//    public CreateLikeResponse likeMember(@PathVariable("liked_user_id") Long likedUserId,
-//                                         @RequestBody @Valid UserRequest request,/* 클라쪽에서 json으로 본인의 User 정보 줌. (id만, 수정가능)*/
-//                                         @PathVariable String userName /*본인 이름, 일단 사용 안함.*/) {
-//
-//        Long userId = request.getUserId();
-//        User likeFromUser = userService.findUserById(userId);
-//        User likeToUser = userService.findUserById(likedUserId);
-//        UserLike like = likeService.createLike(likeFromUser, likeToUser);
-//
-//        return new CreateLikeResponse(like.getLikeId(), likeFromUser.getNickname(), likeToUser.getNickname());
-//    }
-
-    // 클라로 부터 전달 받을 유저 dto
-    @Data
-    @AllArgsConstructor
-    static class UserRequest {
-        @NotNull
-        private Long userId;
+    //userId로 좋아요
+    @PostMapping("/like/user/fromUserid")
+    public boolean doLike(@RequestBody LikeDto dto) {
+        User likeFromUser = userService.findByUserId(dto.getLikeFromUserId());
+        User likeToUser = userService.findByUserId(dto.getLikeToUserId());
+        likeService.saveUserLike(likeFromUser, likeToUser);
+        return true;
     }
 
-    // 클라에게 응답할 정보 dto
+    //userCode(UUID)로 좋아요
+    @PostMapping("/like/user")
+    public boolean doLike(@RequestBody RequestLikeRequestDto dto) {
+        User likeFromUser = userService.findByUserUUID(dto.getLikeFromUserUUID());
+        User likeToUser = userService.findByUserUUID(dto.getLikeToUserUUID());
+        likeService.saveUserLike(likeFromUser, likeToUser);
+        return true;
+    }
+
+    // 좋아요 이후 응답할 정보
     @Data
     @AllArgsConstructor
     static class CreateLikeResponse {
