@@ -8,6 +8,7 @@ import com.wooyeon.yeon.user.dto.EmailResponseDto;
 import com.wooyeon.yeon.user.repository.EmailAuthRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,6 +20,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.net.http.HttpHeaders;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -52,7 +54,9 @@ public class EmailAuthService {
 
         // 이메일 중복 확인 로직 추가
         if (validateDuplicated(emailRequestDto.getEmail())) {
+
             emailResponseDto = EmailResponseDto.builder()
+                    .statusCode(HttpStatus.SC_OK) // 오류코드 대신 200 부탁함
                     .statusName("duplicated")
                     .email(emailRequestDto.getEmail())
                     .build();
@@ -60,6 +64,7 @@ public class EmailAuthService {
             // 이메일 인증 링크 발송
             sendEmailVerification(emailRequestDto);
             emailResponseDto = EmailResponseDto.builder()
+                    .statusCode(HttpStatus.SC_ACCEPTED)
                     .email(emailRequestDto.getEmail())
                     .statusName("success")
                     .build();
