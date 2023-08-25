@@ -13,7 +13,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class RecommandUserDto {
-    private Long profileId;
+//    private Long profileId;
     private char gender;
     private String nickname;
     private String birthday;
@@ -26,8 +26,8 @@ public class RecommandUserDto {
 //    private List<Interest> interests = new ArrayList<>();
 //    private List<ProfilePhoto> profilePhotos = new ArrayList<>();
 
-    public RecommandUserDto(Long profileId, char gender, String nickname, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, UUID userCode) {
-        this.profileId = profileId;
+    public RecommandUserDto(char gender, String nickname, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, UUID userCode) {
+//        this.profileId = profileId;
         this.gender = gender;
         this.nickname = nickname;
         this.birthday = birthday;

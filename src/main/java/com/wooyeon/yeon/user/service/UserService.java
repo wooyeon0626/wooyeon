@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 public class UserService {
@@ -27,5 +29,10 @@ public class UserService {
     @Transactional
     public User findByUserId(Long userId) {
         return userRepository.findByUserId(userId);
+    }
+
+    @Transactional
+    public User findByUserUUID(UUID userCode) {
+        return userRepository.findByUserCode(userCode);
     }
 }
