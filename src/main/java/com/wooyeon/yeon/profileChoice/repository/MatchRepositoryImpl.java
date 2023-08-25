@@ -26,7 +26,7 @@ public class MatchRepositoryImpl implements MatchRepositoryRecommandUserList {
     public Page<RecommandUserDto> searchUserProfileSimple(RecommandUserCondition condition, Pageable pageable) {
         QueryResults<RecommandUserDto> results = queryFactory
                 .select(Projections.bean(RecommandUserDto.class,
-                        profile.id.as("profileId"),
+//                        profile.id.as("profileId"),
                         profile.gender,
                         profile.nickname,
                         profile.birthday,
