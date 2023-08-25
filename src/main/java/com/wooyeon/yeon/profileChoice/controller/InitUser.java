@@ -1,6 +1,7 @@
 package com.wooyeon.yeon.profileChoice.controller;
 
-import com.wooyeon.yeon.user.domain.*;
+import com.wooyeon.yeon.user.domain.Profile;
+import com.wooyeon.yeon.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,14 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class InitUser {
     private final InitMemberService initMemberService;
-//
+
+    //
     @PostConstruct
     public void init() {
         initMemberService.init();
@@ -29,10 +30,11 @@ public class InitUser {
         @Transactional
         public void init() {
             for (Long i = 1L; i <= 10L; i++) {
+                UUID uuid = UUID.randomUUID();
                 User user = User.builder()
                         .email("sss@naver.com")
                         .phone("01012341234")
-                        .userCode("generated"+i.toString())
+                        .userCode(uuid)
                         .build();
                 System.out.println(user.getUserCode());
                 Profile profile = Profile.builder()

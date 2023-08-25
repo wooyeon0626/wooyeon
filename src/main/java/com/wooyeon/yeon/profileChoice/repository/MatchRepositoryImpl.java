@@ -5,9 +5,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wooyeon.yeon.profileChoice.dto.RecommandUserCondition;
 import com.wooyeon.yeon.profileChoice.dto.RecommandUserDto;
-import com.wooyeon.yeon.user.domain.Profile;
-import com.wooyeon.yeon.user.domain.QProfile;
-import com.wooyeon.yeon.user.domain.QUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +12,7 @@ import org.springframework.data.domain.Pageable;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static com.wooyeon.yeon.user.domain.QProfile.*;
-import static com.wooyeon.yeon.user.domain.QUser.user;
+import static com.wooyeon.yeon.user.domain.QProfile.profile;
 
 public class MatchRepositoryImpl implements MatchRepositoryRecommandUserList {
 
