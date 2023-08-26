@@ -1,6 +1,7 @@
 package com.wooyeon.yeon.likeManage.service;
 
 import com.wooyeon.yeon.likeManage.domain.UserLike;
+import com.wooyeon.yeon.likeManage.dto.CreateLikeResponse;
 import com.wooyeon.yeon.likeManage.dto.LikeDto;
 import com.wooyeon.yeon.likeManage.repository.LikeRepository;
 import com.wooyeon.yeon.user.domain.User;
@@ -17,12 +18,28 @@ public class LikeService {
 
     //like 생성
     @Transactional
-    public UserLike saveUserLike(User likeFromUser, User likeToUser) {
+    public CreateLikeResponse saveUserLike(User likeFromUser, User likeToUser) {
         UserLike userLike = UserLike.builder()
                 .likeTo(likeToUser)
                 .likeFrom(likeFromUser)
                 .build();
-        return likeRepository.save(userLike);
+        likeRepository.save(userLike);
+        CreateLikeResponse response;
+        boolean isMatch1 = checkMatch(likeFromUser.getUserId(), likeToUser.getUserId());
+        boolean isMatch2 = checkMatch(likeToUser.getUserId(), likeFromUser.getUserId());
+
+        if (isMatch1 && isMatch2) {
+            response = new CreateLikeResponse("매치됨");
+        } else {
+            response = new CreateLikeResponse("매치안됨.");
+        }
+        return response;
+    }
+
+    //매치 되었는지 확인 하는 메서드
+    public boolean checkMatch(Long userId1, Long userId2) {
+        long matchCount = likeRepository.countMatch(userId1, userId2);
+        return matchCount > 0;
     }
 
     //매치되었는지 확인 하는 메서드
