@@ -9,6 +9,11 @@ import com.wooyeon.yeon.likeManage.domain.UserLike;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
+/**
+ * 유저의 매치됨을 확인하는 엔티티
+ *
+ * @author heesoo
+ */
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserMatch {

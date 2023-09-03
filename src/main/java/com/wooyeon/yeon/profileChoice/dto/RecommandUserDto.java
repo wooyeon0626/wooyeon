@@ -1,13 +1,8 @@
 package com.wooyeon.yeon.profileChoice.dto;
 
-import com.wooyeon.yeon.user.domain.Hobby;
-import com.wooyeon.yeon.user.domain.Interest;
-import com.wooyeon.yeon.user.domain.ProfilePhoto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Data

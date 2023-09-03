@@ -12,30 +12,38 @@ import javax.persistence.PersistenceContext;
 import java.util.Random;
 import java.util.UUID;
 
+/**
+ * @author heesoo
+ */
 @Component
 @RequiredArgsConstructor
 public class InitUser {
     private final InitMemberService initMemberService;
 
-    //
+    /**
+     * 서비스 실행전에 수행되는 메서드입니다.
+     */
     @PostConstruct
     public void init() {
         initMemberService.init();
     }
+
 
     @Component
     static class InitMemberService {
         @PersistenceContext
         private EntityManager em;
 
+        /**
+         * 테스트용으로 유저를 생성합니다.
+         */
         @Transactional
         public void init() {
             for (Long i = 1L; i <= 10L; i++) {
-                UUID uuid = UUID.randomUUID();
                 User user = User.builder()
                         .email("sss@naver.com")
                         .phone("01012341234")
-                        .userCode(uuid)
+                        .userCode(UUID.randomUUID())
                         .build();
                 System.out.println(user.getUserCode());
                 Profile profile = Profile.builder()
@@ -55,6 +63,12 @@ public class InitUser {
                 em.persist(profile);
             }
         }
+
+        /**
+         * 무작위 생일 문자열을 생성합니다.
+         *
+         * @return randomBirthday
+         */
         public static String generateRandomBirthday() {
             Random random = new Random();
 

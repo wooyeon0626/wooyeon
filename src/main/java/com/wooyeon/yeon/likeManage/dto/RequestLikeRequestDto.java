@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.UUID;
 
+/**
+ * @author heesoo
+ */
 @Data
 public class RequestLikeRequestDto {
     private UUID likeToUserUUID;

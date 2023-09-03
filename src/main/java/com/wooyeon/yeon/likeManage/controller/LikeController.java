@@ -16,13 +16,22 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+/**
+ * @author heesoo
+ */
 @RestController
 @RequiredArgsConstructor
 public class LikeController {
     private final LikeService likeService;
     private final UserService userService;
 
-    //userId로 좋아요
+    /**
+     * 본인과 좋아요 한 userId를 입력받아서 like합니다.
+     *
+     * @param dto
+     * @return 성공시 true
+     * @deprecated
+     */
     @PostMapping("/like/user/fromUserid")
     public boolean doLike(@RequestBody LikeDto dto) {
         User likeFromUser = userService.findByUserId(dto.getLikeFromUserId());
@@ -32,6 +41,13 @@ public class LikeController {
     }
 
     //userCode(UUID)로 좋아요
+
+    /**
+     * 본인과 좋아요 한 유저들의 userCode(UUID)를 입력받아서 like합니다.
+     *
+     * @param dto
+     * @return response : responseMessage 포함된 객체
+     */
     @PostMapping("/like/user")
     public CreateLikeResponse doLike(@RequestBody RequestLikeRequestDto dto) {
         User likeFromUser = userService.findByUserUUID(dto.getLikeFromUserUUID());
