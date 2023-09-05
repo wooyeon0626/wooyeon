@@ -22,9 +22,6 @@ public class Profile {
     @Column(nullable = false)
     private char gender;
 
-    @Column(length = 2)
-    private int age;
-
     @Column(length = 50, nullable = false)
     private String nickname;
 
@@ -34,9 +31,6 @@ public class Profile {
 
     @Column(length = 8, nullable = false)
     private String birthday;
-
-    @Column(length = 100, nullable = false)
-    private String locationInfo;
 
     @Column(length = 100, nullable = false)
     private String gpsLocationInfo;
@@ -56,13 +50,11 @@ public class Profile {
     private boolean faceVerify;
 
     @Builder
-    public Profile(char gender, String nickname, int age, List<ProfilePhoto> profilePhotos, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, String hobby, String interest, boolean faceVerify) {
+    public Profile(char gender, String nickname, List<ProfilePhoto> profilePhotos, String birthday, String gpsLocationInfo, String mbti, String intro, String hobby, String interest, boolean faceVerify) {
         this.gender = gender;
         this.nickname = nickname;
-        this.age = age;
         this.profilePhotos = profilePhotos;
         this.birthday = birthday;
-        this.locationInfo = locationInfo;
         this.gpsLocationInfo = gpsLocationInfo;
         this.mbti = mbti;
         this.intro = intro;
