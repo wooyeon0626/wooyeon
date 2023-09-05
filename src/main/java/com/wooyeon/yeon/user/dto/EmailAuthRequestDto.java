@@ -11,4 +11,5 @@ public class EmailAuthRequestDto {
 
     private String email;
     private String authToken;
+    private String phone;
 }

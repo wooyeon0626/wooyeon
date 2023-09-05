@@ -1,6 +1,7 @@
 package com.wooyeon.yeon.user.service;
 
 import com.wooyeon.yeon.user.domain.EmailAuth;
+import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.EmailAuthRequestDto;
 import com.wooyeon.yeon.user.dto.EmailAuthResponseDto;
 import com.wooyeon.yeon.user.dto.EmailRequestDto;
@@ -116,6 +117,11 @@ public class EmailAuthService {
                     .emailAuth("success")
                     .build();
             emailAuth.emailVerifiedSuccess();
+
+            User user = userRepository.findByPhone(emailAuthRequestDto.getPhone());
+            user.updateEmail(emailAuthRequestDto.getEmail());
+            userRepository.save(user);
+
         } else {
             emailAuthResponseDto = EmailAuthResponseDto.builder()
                     .emailAuth("fail")

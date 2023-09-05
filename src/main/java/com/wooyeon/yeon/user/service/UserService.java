@@ -1,6 +1,6 @@
 package com.wooyeon.yeon.user.service;
 
-import com.wooyeon.yeon.user.dto.UserDto;
+import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.repository.EmailAuthRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto findByUserId(Long userId) {
+    public User findByUserId(Long userId) {
         return userRepository.findByUserId(userId);
     }
 }
