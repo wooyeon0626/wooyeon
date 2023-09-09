@@ -16,17 +16,17 @@ import java.util.List;
 public class InitUser {
     private final InitMemberService initMemberService;
 
-    @PostConstruct
+/*    @PostConstruct
     public void init() {
         initMemberService.init();
-    }
+    }*/
 
     @Component
     static class InitMemberService {
         @PersistenceContext
         private EntityManager em;
 
-        @Transactional
+        /*@Transactional
         public void init() {
             for (int i = 0; i < 100; i++) {
                 em.persist(Profile.builder()
@@ -42,6 +42,6 @@ public class InitUser {
                         .gender('M')
                         .build());
             }
-        }
+        }*/
     }
 }
