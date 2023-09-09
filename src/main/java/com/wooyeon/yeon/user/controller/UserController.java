@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -73,9 +74,9 @@ public class UserController {
     }
 
     // 프로필 등록
-    @PostMapping(value = "/users/register/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/users/register/profile")
     public ResponseEntity<ProfileResponseDto> insertProfile(@RequestPart(value = "profileInfo") ProfileRequestDto profileRequestDto,
-                                                            @RequestPart(value = "profilePhoto", required = false) List<MultipartFile> profilePhotoUpload) {
+                                                            @RequestPart(value = "profilePhoto", required = false) List<MultipartFile> profilePhotoUpload) throws IOException {
         ProfileResponseDto profileResponseDto = profileService.insertProfile(profileRequestDto, profilePhotoUpload);
         return ResponseEntity.ok(profileResponseDto);
     }

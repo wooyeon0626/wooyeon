@@ -274,3 +274,6 @@ $RECYCLE.BIN/
 
 # Mac
 .DS_Store
+
+# gcs key
+gcs-secret.json
