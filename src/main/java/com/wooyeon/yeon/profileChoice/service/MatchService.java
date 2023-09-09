@@ -5,6 +5,7 @@ import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 
@@ -14,14 +15,16 @@ import java.sql.Timestamp;
 public class MatchService {
     private final MatchRepository matchRepository;
 
-    //userMatch 생성 후 저장.
-    public UserMatch createMatch(UserLike userLike1, UserLike userLike2) {
+    @Transactional
+    public String createMatch(UserLike userLike1, UserLike userLike2) {
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         UserMatch userMatch = UserMatch.builder()
                 .userLike1(userLike1)
                 .userLike2(userLike2)
-                .generateTime(new Timestamp(System.currentTimeMillis()))
+                .generateTime(currentTimestamp)
                 .build();
 
-        return matchRepository.save(userMatch);
+        matchRepository.save(userMatch);
+        return "매치테이블 생성";
     }
 }
