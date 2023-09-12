@@ -1,15 +1,13 @@
-package com.wooyeon.yeon.profileChoice.dto;
+package com.wooyeon.yeon.likeManage.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-//RecommandProfileDto로 수정
 @Data
 @NoArgsConstructor
-public class RecommandUserDto {
-//    private Long profileId;
+public class ProfileDto {
     private char gender;
     private String nickname;
     private String birthday;
@@ -18,12 +16,9 @@ public class RecommandUserDto {
     private String mbti;
     private String intro;
     private UUID userCode;
-//    private List<Hobby> hobbys = new ArrayList<>();
-//    private List<Interest> interests = new ArrayList<>();
-//    private List<ProfilePhoto> profilePhotos = new ArrayList<>();
 
-    public RecommandUserDto(char gender, String nickname, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, UUID userCode) {
-//        this.profileId = profileId;
+
+    public ProfileDto(char gender, String nickname, String birthday, String locationInfo, String gpsLocationInfo, String mbti, String intro, UUID userCode) {
         this.gender = gender;
         this.nickname = nickname;
         this.birthday = birthday;

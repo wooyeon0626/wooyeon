@@ -6,6 +6,7 @@ import com.wooyeon.yeon.likeManage.dto.LikeDto;
 import com.wooyeon.yeon.likeManage.repository.LikeRepository;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.profileChoice.service.MatchService;
+import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -60,6 +61,12 @@ public class LikeService {
     public boolean checkMatch(Long userId1, Long userId2) {
         long matchCount = likeRepository.countMatch(userId1, userId2);
         return matchCount > 0;
+    }
+
+    @Transactional
+    public List<Profile> findLikeForMeProfileList(Long userCode) {
+        likeRepository.findProfilesWhoLikedMe()
+        return null;
     }
 
 //     내가 한 좋아요 조회

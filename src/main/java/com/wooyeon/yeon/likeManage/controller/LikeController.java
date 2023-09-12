@@ -1,10 +1,9 @@
 package com.wooyeon.yeon.likeManage.controller;
 
 import com.wooyeon.yeon.likeManage.domain.UserLike;
-import com.wooyeon.yeon.likeManage.dto.CreateLikeResponse;
-import com.wooyeon.yeon.likeManage.dto.LikeDto;
-import com.wooyeon.yeon.likeManage.dto.RequestLikeRequestDto;
+import com.wooyeon.yeon.likeManage.dto.*;
 import com.wooyeon.yeon.likeManage.service.LikeService;
+import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.UserDto;
 import com.wooyeon.yeon.user.service.UserService;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author heesoo
@@ -56,6 +56,12 @@ public class LikeController {
         //매치 되었는지 확인
         boolean isMatch = likeService.checkMatch(likeFromUser.getUserId(), likeToUser.getUserId());
         return response;
+    }
+
+    @GetMapping("/like/from")
+    public ResponseLikeMe findLikeMe(@RequestBody RequestLikeMeDto dto) {
+        List<Profile> profileList = likeService.findLikeForMeProfileList(dto.getMyUserCode());
+        return null;
     }
 
 //    // 좋아요 이후 응답할 정보

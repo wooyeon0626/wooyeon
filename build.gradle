@@ -65,6 +65,9 @@ dependencies {
     //querydsl
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+    //cloud storage
+    implementation platform('com.google.cloud:libraries-bom:26.22.0')
+    implementation 'com.google.cloud:google-cloud-storage'
 }
 
 tasks.named('test') {
