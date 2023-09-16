@@ -155,7 +155,7 @@ public class SmsAuthService {
             phoneAuth.phoneVerifiedSuccess(); // 해당 데이터의 certification(인증완료) 값을 true로 설정
 
 
-            if(userRepository.findByPhone(phoneAuthRequestDto.getPhone())==null) {
+            if(userRepository.findUserByPhone(phoneAuthRequestDto.getPhone())==null) {
                 // user 정보에 저장
                 User user = User.builder()
                         .phone(phoneAuthRequestDto.getPhone())

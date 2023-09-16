@@ -109,7 +109,7 @@ public class EmailAuthService {
     // 이메일 인증 처리
     @Transactional
     public EmailAuthResponseDto verifyEmail(EmailAuthRequestDto emailAuthRequestDto) {
-        EmailAuth emailAuth = emailAuthRepository.findByEmailAndAuthToken(emailAuthRequestDto.getEmail(), emailAuthRequestDto.getAuthToken());
+        EmailAuth emailAuth = emailAuthRepository.findEmailAuthByEmailAndAuthToken(emailAuthRequestDto.getEmail(), emailAuthRequestDto.getAuthToken());
         EmailAuthResponseDto emailAuthResponseDto;
 
         if (emailAuth != null) {
@@ -118,7 +118,7 @@ public class EmailAuthService {
                     .build();
             emailAuth.emailVerifiedSuccess();
 
-            User user = userRepository.findByPhone(emailAuthRequestDto.getPhone());
+            User user = userRepository.findUserByPhone(emailAuthRequestDto.getPhone());
             user.updateEmail(emailAuthRequestDto.getEmail());
             userRepository.save(user);
 
@@ -147,8 +147,8 @@ public class EmailAuthService {
         emailAuthRepository.deleteExpiredRecords(currentDateTime);
     }
 
-    public String findAuthTokneByEmail(String email) {
-        EmailAuth emailAuth = emailAuthRepository.findAuthTokenByEmail(email);
+    public String findAuthTokenByEmail(String email) {
+        EmailAuth emailAuth = emailAuthRepository.findEmailAuthByEmail(email);
         String authToken = emailAuth.getAuthToken();
 
         return authToken;
