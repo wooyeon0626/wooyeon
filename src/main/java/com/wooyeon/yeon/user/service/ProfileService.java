@@ -29,14 +29,15 @@ public class ProfileService {
     private Storage storage;
 
     public ProfileService(ProfileRepository profileRepository, ProfilePhotoRepository profilePhotoRepository, Storage storage) {
-        this.profileRepository=profileRepository;
-        this.profilePhotoRepository=profilePhotoRepository;
-        this.storage=storage;
+        this.profileRepository = profileRepository;
+        this.profilePhotoRepository = profilePhotoRepository;
+        this.storage = storage;
     }
 
     public ProfileResponseDto insertProfile(ProfileRequestDto profileRequestDto, List<MultipartFile> profilePhotoUpload) throws IOException {
 
-        Profile profile=Profile.builder()
+        // Profile 테이블에 정보 저장
+        Profile profile = Profile.builder()
                 .gender(profileRequestDto.getGender())
                 .nickname(profileRequestDto.getNickname())
                 .birthday(profileRequestDto.getBirthday())
@@ -48,28 +49,30 @@ public class ProfileService {
                 .build();
         profileRepository.save(profile);
 
-        String ext="";
-        String uuid="";
+        // GCS에 이미지 업로드
+        String ext = ""; // 파일의 contentType
+        String uuid = ""; // 저장할 때 쓸 파일 이름(uuid)
 
-        for(int i=0; i<profilePhotoUpload.size(); i++) {
-            ext=profilePhotoUpload.get(i).getContentType();
-            uuid=UUID.randomUUID().toString();
+        for (int i = 0; i < profilePhotoUpload.size(); i++) {
+            ext = profilePhotoUpload.get(i).getContentType();
+            uuid = UUID.randomUUID().toString();
 
             BlobInfo blobInfo = storage.create(
-                    BlobInfo.newBuilder(bucketName,uuid)
+                    BlobInfo.newBuilder(bucketName, uuid)
                             .setContentType(ext)
                             .build(),
                     profilePhotoUpload.get(i).getInputStream()
             );
 
-            ProfilePhoto profilePhoto=ProfilePhoto.builder()
-                    .photoUrl("https://storage.googleapis.com/our-audio-394406.appspot.com/"+uuid)
+            // profilePhoto 테이블에 해당 사진 url 저장
+            ProfilePhoto profilePhoto = ProfilePhoto.builder()
+                    .photoUrl("https://storage.googleapis.com/our-audio-394406.appspot.com/" + uuid)
                     .profile(profile)
                     .build();
             profilePhotoRepository.save(profilePhoto);
         }
 
-        ProfileResponseDto profileResponseDto=ProfileResponseDto.builder()
+        ProfileResponseDto profileResponseDto = ProfileResponseDto.builder()
                 .statusName("success")
                 .build();
         return profileResponseDto;
