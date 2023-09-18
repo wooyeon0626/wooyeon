@@ -53,15 +53,15 @@ public class ProfileService {
         String ext = ""; // 파일의 contentType
         String uuid = ""; // 저장할 때 쓸 파일 이름(uuid)
 
-        for (int i = 0; i < profilePhotoUpload.size(); i++) {
-            ext = profilePhotoUpload.get(i).getContentType();
+        for (MultipartFile multipartFile : profilePhotoUpload) {
+            ext = multipartFile.getContentType();
             uuid = UUID.randomUUID().toString();
 
             BlobInfo blobInfo = storage.create(
                     BlobInfo.newBuilder(bucketName, uuid)
                             .setContentType(ext)
                             .build(),
-                    profilePhotoUpload.get(i).getInputStream()
+                    multipartFile.getInputStream()
             );
 
             // profilePhoto 테이블에 해당 사진 url 저장

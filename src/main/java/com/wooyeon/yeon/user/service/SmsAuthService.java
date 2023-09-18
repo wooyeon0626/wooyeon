@@ -202,7 +202,7 @@ public class SmsAuthService {
 
     // 인증코드 생성
     public String createSmsKey() {
-        int key = ThreadLocalRandom.current().nextInt(999999);
+        int key = ThreadLocalRandom.current().nextInt(100000,999999);
         return Integer.toString(key);
     }
 
