@@ -66,7 +66,7 @@ public class ProfileService {
 
             // profilePhoto 테이블에 해당 사진 url 저장
             ProfilePhoto profilePhoto = ProfilePhoto.builder()
-                    .photoUrl("https://storage.googleapis.com/our-audio-394406.appspot.com/" + uuid)
+                    .photoUrl("https://storage.googleapis.com/"+ bucketName +"/" + uuid)
                     .profile(profile)
                     .build();
             profilePhotoRepository.save(profilePhoto);
