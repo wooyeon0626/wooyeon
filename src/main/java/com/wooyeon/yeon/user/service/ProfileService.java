@@ -26,7 +26,7 @@ public class ProfileService {
     @Value("${spring.cloud.gcp.storage.bucket}") // application.yml에 써둔 bucket 이름
     private String bucketName;
 
-    private Storage storage;
+    private final Storage storage;
 
     public ProfileService(ProfileRepository profileRepository, ProfilePhotoRepository profilePhotoRepository, Storage storage) {
         this.profileRepository = profileRepository;
@@ -50,8 +50,8 @@ public class ProfileService {
         profileRepository.save(profile);
 
         // GCS에 이미지 업로드
-        String ext = ""; // 파일의 contentType
-        String uuid = ""; // 저장할 때 쓸 파일 이름(uuid)
+        String ext; // 파일의 contentType
+        String uuid; // 저장할 때 쓸 파일 이름(uuid)
 
         for (MultipartFile multipartFile : profilePhotoUpload) {
             ext = multipartFile.getContentType();
@@ -73,6 +73,7 @@ public class ProfileService {
         }
 
         ProfileResponseDto profileResponseDto = ProfileResponseDto.builder()
+                .statusCode(202)
                 .statusName("success")
                 .build();
         return profileResponseDto;
