@@ -18,6 +18,7 @@ public class MatchController {
 
     @GetMapping("/recommand/profilelist")
     public Page<RecommandUserDto> responseProfileList(RecommandUserCondition condition, Pageable pageable) {
+        //지금은 랜덤이지만 내가 좋아요 안한 사람들만 보내줘야함/ 내가 좋아요 했으면 프로필 리스트에 뜨면 안됨.
         return matchRepository.searchUserProfileSimple(condition, pageable);
     }
 }

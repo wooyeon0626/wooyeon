@@ -5,8 +5,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.wooyeon.yeon.profileChoice.dto.RecommandUserCondition;
 import com.wooyeon.yeon.profileChoice.dto.RecommandUserDto;
-import com.wooyeon.yeon.user.domain.Profile;
-import com.wooyeon.yeon.user.domain.QProfile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static com.wooyeon.yeon.user.domain.QProfile.*;
+import static com.wooyeon.yeon.user.domain.QProfile.profile;
 
 public class MatchRepositoryImpl implements MatchRepositoryRecommandUserList {
 
@@ -28,14 +26,15 @@ public class MatchRepositoryImpl implements MatchRepositoryRecommandUserList {
     public Page<RecommandUserDto> searchUserProfileSimple(RecommandUserCondition condition, Pageable pageable) {
         QueryResults<RecommandUserDto> results = queryFactory
                 .select(Projections.bean(RecommandUserDto.class,
-                        profile.id.as("profileId"),
+//                        profile.id.as("profileId"),
                         profile.gender,
                         profile.nickname,
                         profile.birthday,
-                        profile.locationInfo,
+//                        profile.locationInfo,
                         profile.gpsLocationInfo,
                         profile.mbti,
-                        profile.intro
+                        profile.intro,
+                        profile.user.userCode
 //                        profile.hobbys,
 //                        profile.interests,
 //                        profile.profilePhotos

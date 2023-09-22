@@ -55,5 +55,9 @@ public class User {
         this.email=email;
     }
 
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
 
 }
