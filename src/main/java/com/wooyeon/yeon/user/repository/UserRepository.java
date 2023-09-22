@@ -10,6 +10,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     User findByUserId(Long userId);
     User findByUserCode(UUID userCode);
-    User findByPhone(String phone);
+    User findUserByPhone(String phone);
 
 }
