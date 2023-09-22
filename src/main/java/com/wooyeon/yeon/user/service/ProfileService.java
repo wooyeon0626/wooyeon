@@ -50,23 +50,22 @@ public class ProfileService {
         profileRepository.save(profile);
 
         // GCS에 이미지 업로드
-        String ext; // 파일의 contentType
-        String uuid; // 저장할 때 쓸 파일 이름(uuid)
-
+        StringBuilder ext = new StringBuilder(); // 파일의 contentType
+        StringBuilder uuid = new StringBuilder(); // 저장할 때 쓸 파일 이름(uuid)
         for (MultipartFile multipartFile : profilePhotoUpload) {
-            ext = multipartFile.getContentType();
-            uuid = UUID.randomUUID().toString();
+            ext.append(multipartFile.getContentType());
+            uuid.append(UUID.randomUUID());
 
             BlobInfo blobInfo = storage.create(
-                    BlobInfo.newBuilder(bucketName, uuid)
-                            .setContentType(ext)
+                    BlobInfo.newBuilder(bucketName, uuid.toString())
+                            .setContentType(ext.toString())
                             .build(),
                     multipartFile.getInputStream()
             );
 
             // profilePhoto 테이블에 해당 사진 url 저장
             ProfilePhoto profilePhoto = ProfilePhoto.builder()
-                    .photoUrl("https://storage.googleapis.com/"+ bucketName +"/" + uuid)
+                    .photoUrl("https://storage.googleapis.com/" + bucketName + "/" + uuid)
                     .profile(profile)
                     .build();
             profilePhotoRepository.save(profilePhoto);
