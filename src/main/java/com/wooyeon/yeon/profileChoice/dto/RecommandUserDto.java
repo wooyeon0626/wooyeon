@@ -1,8 +1,8 @@
 package com.wooyeon.yeon.profileChoice.dto;
 
-import com.wooyeon.yeon.user.domain.Hobby;
-import com.wooyeon.yeon.user.domain.Interest;
-import com.wooyeon.yeon.user.domain.ProfilePhoto;
+//import com.wooyeon.yeon.user.domain.Hobby;
+//import com.wooyeon.yeon.user.domain.Interest;
+//import com.wooyeon.yeon.user.domain.ProfilePhoto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

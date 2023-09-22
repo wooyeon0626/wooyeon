@@ -1,6 +1,9 @@
 package com.wooyeon.yeon.user.domain;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.UUID;
 
@@ -14,7 +17,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100)
     private String email;
 
     @Column(length = 11)
@@ -33,20 +36,23 @@ public class User {
     private Profile profile;
 
     @Builder
-    public User(Long userId, String email, String phone, UUID userCode, String accessToken, String refreshToken) {
-        this.userId=userId;
-        this.email=email;
-        this.phone=phone;
-        this.userCode=userCode;
-        this.accessToken=accessToken;
-        this.refreshToken=refreshToken;
+    public User(String email, String phone, UUID userCode, String accessToken, String refreshToken) {
+        this.email = email;
+        this.phone = phone;
+        this.userCode = userCode;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
     public void updateRefreshToken(String refreshToken) {
-        this.refreshToken=refreshToken;
+        this.refreshToken = refreshToken;
     }
+
     public void updateAccessToken(String accessToken) {
-        this.accessToken=accessToken;
+        this.accessToken = accessToken;
+    }
+    public void updateEmail(String email) {
+        this.email=email;
     }
 
     public void setProfile(Profile profile) {

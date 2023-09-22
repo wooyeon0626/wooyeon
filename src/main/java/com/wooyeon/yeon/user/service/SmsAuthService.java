@@ -3,8 +3,10 @@ package com.wooyeon.yeon.user.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wooyeon.yeon.user.domain.PhoneAuth;
+import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.*;
 import com.wooyeon.yeon.user.repository.PhoneAuthRepository;
+import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.utils.Base64;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,11 +25,13 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @PropertySource("classpath:application-apikey.properties")
@@ -36,6 +40,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SmsAuthService {
 
     private final PhoneAuthRepository phoneAuthRepository;
+    private final UserRepository userRepository;
 
     @Value("${naver-cloud-sms.accessKey}")
     private String accessKey;
@@ -52,8 +57,9 @@ public class SmsAuthService {
     // smsConfirmNum 만료 시간 (3분)
     private static final long EXPIRATION_TIME = 3 * 60 * 1000;
 
-    public SmsAuthService(PhoneAuthRepository phoneAuthRepository) {
+    public SmsAuthService(PhoneAuthRepository phoneAuthRepository, UserRepository userRepository) {
         this.phoneAuthRepository = phoneAuthRepository;
+        this.userRepository = userRepository;
     }
 
     public SmsAuthResponseDto sendSms(PhoneInfoRequestDto phoneInfoRequestDto) {
@@ -147,6 +153,16 @@ public class SmsAuthService {
                     .registerProc("none") // 나중에 프로필, 이용약관 동의까지 구현 후 변경 요망
                     .build();
             phoneAuth.phoneVerifiedSuccess(); // 해당 데이터의 certification(인증완료) 값을 true로 설정
+
+
+            if(userRepository.findByPhone(phoneAuthRequestDto.getPhone())==null) {
+                // user 정보에 저장
+                User user = User.builder()
+                        .phone(phoneAuthRequestDto.getPhone())
+                        .userCode(UUID.randomUUID())
+                        .build();
+                userRepository.save(user);
+            }
         } else { // 일치하지 않으면 fail 값을 반환
             phoneAuthResponseDto = PhoneAuthResponseDto.builder()
                     .phoneAuth("fail")
@@ -166,21 +182,19 @@ public class SmsAuthService {
         String accessKey = this.accessKey;
         String secretKey = this.secretKey;
 
-        String message = new StringBuilder()
-                .append(method)
-                .append(space)
-                .append(url)
-                .append(newLine)
-                .append(timestamp)
-                .append(newLine)
-                .append(accessKey)
-                .toString();
+        String message = method +
+                space +
+                url +
+                newLine +
+                timestamp +
+                newLine +
+                accessKey;
 
-        SecretKeySpec signingKey = new SecretKeySpec(secretKey.getBytes("UTF-8"), "HmacSHA256");
+        SecretKeySpec signingKey = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         Mac mac = Mac.getInstance("HmacSHA256");
         mac.init(signingKey);
 
-        byte[] rawHmac = mac.doFinal(message.getBytes("UTF-8"));
+        byte[] rawHmac = mac.doFinal(message.getBytes(StandardCharsets.UTF_8));
         String encodeBase64String = Base64.encodeBase64String(rawHmac);
 
         return encodeBase64String;
@@ -195,10 +209,7 @@ public class SmsAuthService {
     // 휴대폰 번호 중복 확인 로직 구현
     private boolean validateDuplicated(String phone) {
         // 중복된 휴대폰 번호가 이미 PhoneAuth 테이블에 존재한다면 예외 처리
-        if (phoneAuthRepository.existsByPhone(phone)) {
-            return true;
-        }
-        return false;
+        return phoneAuthRepository.existsByPhone(phone);
     }
 
     // PhoneAuth에 있는 expiredDate가 지난 데이터 삭제

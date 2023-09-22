@@ -30,7 +30,7 @@ public class MatchRepositoryImpl implements MatchRepositoryRecommandUserList {
                         profile.gender,
                         profile.nickname,
                         profile.birthday,
-                        profile.locationInfo,
+//                        profile.locationInfo,
                         profile.gpsLocationInfo,
                         profile.mbti,
                         profile.intro,
