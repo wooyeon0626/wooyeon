@@ -6,7 +6,6 @@ import com.wooyeon.yeon.likeManage.dto.LikeDto;
 import com.wooyeon.yeon.likeManage.dto.RequestLikeRequestDto;
 import com.wooyeon.yeon.likeManage.service.LikeService;
 import com.wooyeon.yeon.user.domain.User;
-import com.wooyeon.yeon.user.dto.UserDto;
 import com.wooyeon.yeon.user.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -7,13 +7,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class EmailResponseDto {
-    //  private String statusCode;
     private String email;
+    private int statusCode;
     private String statusName;
 
     @Builder
-    public EmailResponseDto(String email, String statusName) {
+    public EmailResponseDto(String email, int statusCode, String statusName) {
         this.email = email;
+        this.statusCode = statusCode;
         this.statusName = statusName;
     }
 
