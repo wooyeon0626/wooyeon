@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 public interface EmailAuthRepository extends JpaRepository<EmailAuth, Long> {
     boolean existsByEmail(String email);
 
-    EmailAuth findAuthTokenByEmail(String email);
+    EmailAuth findEmailAuthByEmail(String email);
 
-    EmailAuth findByEmailAndAuthToken(String email, String authToken);
+    EmailAuth findEmailAuthByEmailAndAuthToken(String email, String authToken);
 
     @Modifying
     @Transactional

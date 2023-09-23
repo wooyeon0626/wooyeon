@@ -142,33 +142,51 @@ public class SmsAuthService {
     // 휴대폰 번호 인증 처리
     @Transactional
     public PhoneAuthResponseDto verifyPhone(PhoneAuthRequestDto phoneAuthRequestDto) {
+        PhoneAuthResponseDto phoneAuthResponseDto = null;
+
         // 휴대폰 번호와 인증 코드가 일치하는 지 확인
         PhoneAuth phoneAuth = phoneAuthRepository.findByPhoneAndVerifyCode(phoneAuthRequestDto.getPhone(), phoneAuthRequestDto.getVerifyCode());
-
-        PhoneAuthResponseDto phoneAuthResponseDto;
-        // 만약 일치 한다면 PhoneAuth(휴대폰 인증여부)를 success로 반환
-        if (phoneAuth != null) {
-            phoneAuthResponseDto = PhoneAuthResponseDto.builder()
-                    .phoneAuth("success")
-                    .registerProc("none") // 나중에 프로필, 이용약관 동의까지 구현 후 변경 요망
-                    .build();
-            phoneAuth.phoneVerifiedSuccess(); // 해당 데이터의 certification(인증완료) 값을 true로 설정
-
-
-            if(userRepository.findByPhone(phoneAuthRequestDto.getPhone())==null) {
-                // user 정보에 저장
-                User user = User.builder()
-                        .phone(phoneAuthRequestDto.getPhone())
-                        .userCode(UUID.randomUUID())
-                        .build();
-                userRepository.save(user);
-            }
-        } else { // 일치하지 않으면 fail 값을 반환
+        // 일치하지 않으면 fail 값을 반환
+        if(phoneAuth==null) {
             phoneAuthResponseDto = PhoneAuthResponseDto.builder()
                     .phoneAuth("fail")
                     .registerProc(null) // registerProc은 null로 설정
                     .build();
         }
+
+        phoneAuth.phoneVerifiedSuccess(); // 해당 데이터의 certification(인증완료) 값을 true로 설정
+        User findUser = userRepository.findUserByPhone(phoneAuthRequestDto.getPhone());
+
+        if(findUser!=null) {
+            if(findUser.getAccessToken()!=null) {
+                phoneAuthResponseDto = PhoneAuthResponseDto.builder()
+                        .phoneAuth("success")
+                        .registerProc("register")
+                        .build();
+            } else if(findUser.getEmail()!=null) {
+                phoneAuthResponseDto = PhoneAuthResponseDto.builder()
+                        .phoneAuth("success")
+                        .registerProc("profile")
+                        .build();
+            } else if(findUser.getPhone()!=null){
+                phoneAuthResponseDto = PhoneAuthResponseDto.builder()
+                        .phoneAuth("success")
+                        .registerProc("email")
+                        .build();
+            }
+        } else {
+            // user 정보에 저장
+            User user = User.builder()
+                    .phone(phoneAuthRequestDto.getPhone())
+                    .userCode(UUID.randomUUID())
+                    .build();
+            userRepository.save(user);
+
+            phoneAuthResponseDto = PhoneAuthResponseDto.builder()
+                    .phoneAuth("success")
+                    .build();
+        }
+
         return phoneAuthResponseDto;
     }
 
@@ -202,7 +220,7 @@ public class SmsAuthService {
 
     // 인증코드 생성
     public String createSmsKey() {
-        int key = ThreadLocalRandom.current().nextInt(999999);
+        int key = ThreadLocalRandom.current().nextInt(100000,999999);
         return Integer.toString(key);
     }
 

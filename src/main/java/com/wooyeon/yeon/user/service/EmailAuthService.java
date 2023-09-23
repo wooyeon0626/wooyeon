@@ -21,7 +21,6 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.net.http.HttpHeaders;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -77,7 +76,7 @@ public class EmailAuthService {
     public void sendEmailVerification(EmailRequestDto emailRequestDto) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         // Multipart Message가 필요하므로 true 설정
-        MimeMessageHelper helper=new MimeMessageHelper(message,true);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
         String authToken = UUID.randomUUID().toString();
         LocalDateTime expireDate = LocalDateTime.now().plusSeconds(EXPIRATION_TIME / 1000);
@@ -92,9 +91,9 @@ public class EmailAuthService {
         message.setSubject(subject);
         helper.setTo(emailRequestDto.getEmail());
         // addInline 보다 먼저 실행 되어야 함
-        helper.setText(setContext(emailRequestDto.getEmail()),true);
+        helper.setText(setContext(emailRequestDto.getEmail()), true);
         // addInline을 통해 local에 있는 이미지 삽입 해주기 & html에서 img src='cid:{contentId}'로 설정 해주기
-        helper.addInline("wooyeonLogoImage",new ClassPathResource("static/logo_wooyeon_email.png"));
+        helper.addInline("wooyeonLogoImage", new ClassPathResource("static/logo_wooyeon_email.png"));
 
         mailSender.send(message);
     }
@@ -109,7 +108,7 @@ public class EmailAuthService {
     // 이메일 인증 처리
     @Transactional
     public EmailAuthResponseDto verifyEmail(EmailAuthRequestDto emailAuthRequestDto) {
-        EmailAuth emailAuth = emailAuthRepository.findByEmailAndAuthToken(emailAuthRequestDto.getEmail(), emailAuthRequestDto.getAuthToken());
+        EmailAuth emailAuth = emailAuthRepository.findEmailAuthByEmailAndAuthToken(emailAuthRequestDto.getEmail(), emailAuthRequestDto.getAuthToken());
         EmailAuthResponseDto emailAuthResponseDto;
 
         if (emailAuth != null) {
@@ -118,7 +117,7 @@ public class EmailAuthService {
                     .build();
             emailAuth.emailVerifiedSuccess();
 
-            User user = userRepository.findByPhone(emailAuthRequestDto.getPhone());
+            User user = userRepository.findUserByPhone(emailAuthRequestDto.getPhone());
             user.updateEmail(emailAuthRequestDto.getEmail());
             userRepository.save(user);
 
@@ -147,8 +146,8 @@ public class EmailAuthService {
         emailAuthRepository.deleteExpiredRecords(currentDateTime);
     }
 
-    public String findAuthTokneByEmail(String email) {
-        EmailAuth emailAuth = emailAuthRepository.findAuthTokenByEmail(email);
+    public String findAuthTokenByEmail(String email) {
+        EmailAuth emailAuth = emailAuthRepository.findEmailAuthByEmail(email);
         String authToken = emailAuth.getAuthToken();
 
         return authToken;
