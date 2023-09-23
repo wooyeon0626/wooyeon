@@ -67,7 +67,7 @@ public class UserController {
     @GetMapping("/redirect")
     public void redirectToDeepLink(@RequestParam String auth, HttpServletResponse response) {
         String email = auth;
-        String token = emailAuthService.findAuthTokneByEmail(email);
+        String token = emailAuthService.findAuthTokenByEmail(email);
         String redirectUrl = "wooyeon://email_auth?token=" + token;
         response.setHeader("Location", redirectUrl);
         response.setStatus(302);
