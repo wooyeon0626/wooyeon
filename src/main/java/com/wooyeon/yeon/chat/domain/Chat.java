@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -25,14 +26,5 @@ public class Chat {
     private String message;
 
     @Column
-    private Timestamp sendTime;
-
-    @Builder
-    public Chat(Long chatId, UserMatch userMatch, String sender, String message, Timestamp sendTime) {
-        this.chatId = chatId;
-        this.userMatch = userMatch;
-        this.sender = sender;
-        this.message = message;
-        this.sendTime = sendTime;
-    }
+    private LocalDateTime sendTime;
 }

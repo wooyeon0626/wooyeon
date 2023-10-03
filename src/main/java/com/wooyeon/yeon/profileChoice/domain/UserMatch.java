@@ -1,15 +1,14 @@
 package com.wooyeon.yeon.profileChoice.domain;
 
 import com.wooyeon.yeon.likeManage.domain.UserLike;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import com.wooyeon.yeon.likeManage.domain.UserLike;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserMatch {
     @Id

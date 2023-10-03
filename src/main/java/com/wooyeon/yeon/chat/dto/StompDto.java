@@ -4,7 +4,7 @@ import lombok.*;
 
 @Getter
 @Setter
-public class ChatDto {
+public class StompDto {
     public enum MessageType {
         ENTER, COMM
     }
