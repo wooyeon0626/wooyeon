@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -37,19 +39,18 @@ public class RoomService {
                 .orElseThrow(() -> new IllegalArgumentException());
 
         for (UserMatch userMatch : userMatches) {
-            Long matchId = userMatch.getMatchId();
 
-            Profile profile = profileRepository.findById(userId)
+            // 상대방 프로필 정보 조회
+            Profile profile = profileRepository.findById(userMatch.getUserLike2().getLikeTo().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException());
 
-            ProfilePhoto profilePhoto = profilePhotoRepository.findAllByProfileId(profile.getId())
-                    .orElseThrow(() -> new IllegalArgumentException());
+            Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.getId());
 
-            Chat lastChatInfo = chatRepository.findFirstByUserMatchIdDOrderBySendTimeDesc(matchId);
+            Chat lastChatInfo = chatRepository.findFirstByUserMatchOrderBySendTimeDesc(userMatch);
 
             RoomDto.RoomResponse response = RoomDto.RoomResponse.builder()
-                    .matchId(matchId)
-                    .profilePhoto(profilePhoto.getProfilePhotoId())
+                    .matchId(userMatch.getMatchId())
+                    .profilePhoto(profilePhoto.get().getProfilePhotoId())
                     .name(profile.getNickname())
                     .lastTime(lastChatInfo.getSendTime())
                     .lastMessage(lastChatInfo.getMessage())
@@ -58,5 +59,52 @@ public class RoomService {
             roomList.add(response);
         }
         return roomList;
+    }
+
+    public Set<RoomDto.SearchRoomResponse> searchMatchRoomList(String searchWord) {
+        Set<RoomDto.SearchRoomResponse> searchRoomList = null;
+
+        Long userId = 1l;
+        User user = userRepository.findByUserId(userId);
+
+        // 채팅방 내 검색 단어 포함 항목 조회 후 추가
+        List<Chat> chatList = chatRepository.findAllByMessageContains(searchWord);
+        for (Chat chat : chatList) {
+            UserMatch userMatch = chat.getUserMatch();
+
+            Optional<Profile> profile = profileRepository.findById(userMatch.getUserLike2().getLikeTo().getUserId());
+            Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.get().getId());
+
+            RoomDto.SearchRoomResponse response = RoomDto.SearchRoomResponse.builder()
+                    .matchId(userMatch.getMatchId())
+                    .profilePhoto(profilePhoto.get().getProfilePhotoId())
+                    .name(profile.get().getNickname())
+                    .build();
+
+            searchRoomList.add(response);
+        }
+
+        // 이름이 같은 사람 조회 후 추가
+        List<UserMatch> userMatches = matchRepository.findAllByUserLike1(user)
+                .orElseThrow(() -> new IllegalArgumentException());
+
+        for (UserMatch userMatch : userMatches) {
+            Long matchId = userMatch.getMatchId();
+
+            Optional<Profile> profile = profileRepository.findByNicknameContains(searchWord);
+            Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.get().getId());
+
+            if(profile.isPresent()) {
+                RoomDto.SearchRoomResponse response = RoomDto.SearchRoomResponse.builder()
+                        .matchId(matchId)
+                        .profilePhoto(profilePhoto.get().getProfilePhotoId())
+                        .name(profile.get().getNickname())
+                        .build();
+
+                searchRoomList.add(response);
+            }
+        }
+
+        return searchRoomList;
     }
 }

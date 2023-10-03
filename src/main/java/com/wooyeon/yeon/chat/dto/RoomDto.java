@@ -13,11 +13,19 @@ public class RoomDto {
 
     @Getter
     @Builder
-    public class RoomResponse {
+    public static class RoomResponse {
         private Long matchId;
         private Long profilePhoto;
         private String name;
         private LocalDateTime lastTime;
         private String lastMessage;
+    }
+
+    @Getter
+    @Builder
+    public static class SearchRoomResponse {
+        private Long matchId;
+        private Long profilePhoto;
+        private String name;
     }
 }
