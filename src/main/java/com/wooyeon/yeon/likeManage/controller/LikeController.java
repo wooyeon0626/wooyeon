@@ -69,7 +69,7 @@ public class LikeController {
     public Page<ResponseLikeMe> findLikeMe(ProfileThatLikesMeCondition condition, Pageable pageable) {
         //List<Profile> profileList = likeService.findLikeForMeProfileList(dto.getMyUserCode());
 
-        return likeRepository.findLikeForMeProfileList(condition, pageable);
+        return likeRepository.findProfilesWhoLikedMe(condition, pageable);
     }
 
 //    // 좋아요 이후 응답할 정보
