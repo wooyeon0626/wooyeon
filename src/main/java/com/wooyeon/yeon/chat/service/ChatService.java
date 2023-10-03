@@ -3,26 +3,32 @@ package com.wooyeon.yeon.chat.service;
 import com.wooyeon.yeon.chat.domain.Chat;
 import com.wooyeon.yeon.chat.dto.StompDto;
 import com.wooyeon.yeon.chat.repository.ChatRepository;
+import com.wooyeon.yeon.profileChoice.domain.UserMatch;
+import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
     private final ChatRepository chatRepository;
+    private final MatchRepository matchRepository;
 
-    // 클라이언트에서 전달받은 chatDto(메시지 정보) DB에 저장
-//    public void insertChat(StompDto stompDto) {
-////        Long matchId = chatDto.getMatchId();
-////        Match match = new Match(); matchId로 Match 객체 조회 해야 함.
-//        String sender = stompDto.getSender();
-//        String message = stompDto.getMessage();
-//
-//        chatRepository.save(Chat.builder()
-//                .message(message)
-//                .sender(sender)
-////                .match(match)
-//                .build());
-//    }
+    public void saveChat(StompDto stompDto) {
+        UserMatch userMatch = matchRepository.findById(stompDto.getRoomId())
+                .orElseThrow(() -> new IllegalArgumentException());
+
+        Chat chat = Chat.builder()
+                .message(stompDto.getMessage())
+                .sender(stompDto.getSender())
+                .sendTime(LocalDateTime.now())
+                .userMatch(userMatch)
+                .build();
+
+        chatRepository.save(chat);
+    }
 }

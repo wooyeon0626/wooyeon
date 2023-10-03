@@ -5,11 +5,6 @@ import lombok.*;
 @Getter
 @Setter
 public class StompDto {
-    public enum MessageType {
-        ENTER, COMM
-    }
-
-    private MessageType type;
     private Long roomId;
     private String sender;
     private String message;
