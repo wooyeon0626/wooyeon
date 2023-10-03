@@ -25,9 +25,8 @@ public class InitUser {
      */
     @PostConstruct
     public void init() {
-        initMemberService.init();
+        //initMemberService.init();
     }
-
 
     @Component
     static class InitMemberService {
@@ -55,7 +54,7 @@ public class InitUser {
                         .nickname("닉네임" + i)
 //                        .hobbies(null)
 //                        .interests(null)
-                        .locationInfo("주소" + i)
+//                        .locationInfo("주소" + i)
                         .gender('M')
                         .build();
                 user.setProfile(profile);

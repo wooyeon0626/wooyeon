@@ -1,19 +1,19 @@
 package com.wooyeon.yeon.likeManage.controller;
 
-import com.wooyeon.yeon.likeManage.domain.UserLike;
 import com.wooyeon.yeon.likeManage.dto.*;
+import com.wooyeon.yeon.likeManage.repository.LikeRepository;
 import com.wooyeon.yeon.likeManage.service.LikeService;
 import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.User;
-import com.wooyeon.yeon.user.dto.UserDto;
 import com.wooyeon.yeon.user.service.UserService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -22,6 +22,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class LikeController {
+
+    private final LikeRepository likeRepository;
     private final LikeService likeService;
     private final UserService userService;
 
@@ -40,8 +42,6 @@ public class LikeController {
         return true;
     }
 
-    //userCode(UUID)로 좋아요
-
     /**
      * 본인과 좋아요 한 유저들의 userCode(UUID)를 입력받아서 like합니다.
      *
@@ -58,10 +58,18 @@ public class LikeController {
         return response;
     }
 
+    /**
+     * 나를 좋아하는 사람 리스트
+     * 나의 userCode받아서 나를 좋아하사는 사람 리스트를 Page형태로 반환
+     *
+     * @param condition pageable
+     * @return
+     */
     @GetMapping("/like/from")
-    public ResponseLikeMe findLikeMe(@RequestBody RequestLikeMeDto dto) {
-        List<Profile> profileList = likeService.findLikeForMeProfileList(dto.getMyUserCode());
-        return null;
+    public Page<ResponseLikeMe> findLikeMe(ProfileThatLikesMeCondition condition, Pageable pageable) {
+        //List<Profile> profileList = likeService.findLikeForMeProfileList(dto.getMyUserCode());
+
+        return likeRepository.findLikeForMeProfileList(condition, pageable);
     }
 
 //    // 좋아요 이후 응답할 정보

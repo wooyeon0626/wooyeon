@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class RecommandUserDto {
-//    private Long profileId;
+    //    private Long profileId;
     private char gender;
     private String nickname;
     private String birthday;

@@ -22,7 +22,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       
       - uses: actions/checkout@v3
-      
+
+      - name: Decode Secret Files
+        run: |
+          echo "${{ secrets.PROPERTIES }}" | base64 --decode > application-apikey.properties
+          mv application-apikey.properties ./src/main/resources/
+          echo "${{ secrets.GCS_SECRET }}" | base64 --decode > gcs-secret.json
+          mv gcs-secret.json ./src/main/resources/
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       

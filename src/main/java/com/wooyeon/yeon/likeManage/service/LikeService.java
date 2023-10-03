@@ -2,7 +2,8 @@ package com.wooyeon.yeon.likeManage.service;
 
 import com.wooyeon.yeon.likeManage.domain.UserLike;
 import com.wooyeon.yeon.likeManage.dto.CreateLikeResponse;
-import com.wooyeon.yeon.likeManage.dto.LikeDto;
+import com.wooyeon.yeon.likeManage.dto.ProfileDto;
+import com.wooyeon.yeon.likeManage.dto.ProfileThatLikesMeCondition;
 import com.wooyeon.yeon.likeManage.repository.LikeRepository;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.profileChoice.service.MatchService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author heesoo
@@ -49,7 +51,6 @@ public class LikeService {
             response = new CreateLikeResponse("매치됨");
             UserLike userLike1 = likeRepository.findByLikeFromAndLikeTo(likeFromUser, likeToUser);
             UserLike userLike2 = likeRepository.findByLikeFromAndLikeTo(likeToUser, likeFromUser);
-
             matchService.createMatch(userLike1, userLike2);
         } else {
             response = new CreateLikeResponse("매치안됨.");
@@ -63,11 +64,15 @@ public class LikeService {
         return matchCount > 0;
     }
 
-    @Transactional
-    public List<Profile> findLikeForMeProfileList(Long userCode) {
-        likeRepository.findProfilesWhoLikedMe()
-        return null;
-    }
+    //나를 좋아요 한사람들 리스트 반환.
+//    @Transactional
+//    public List<Profile> findLikeForMeProfileList(UUID userCode) {
+//        Long userId = likeRepository.findUserIdByUserCode(userCode);
+//        ProfileThatLikesMeCondition pCondition = new ProfileThatLikesMeCondition();
+//        pCondition.setMyUserid(userId);
+//        List<Profile> profilesListWhoLikedMe = likeRepository.findProfilesWhoLikedMe(pCondition);
+//        return profilesListWhoLikedMe;
+//    }
 
 //     내가 한 좋아요 조회
 //    public List<LikeDto> findMyLikeList(Long likeId) {

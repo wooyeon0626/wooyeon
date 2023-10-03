@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ProfileThatLikesMeCondition {
-    private Long myUserCode;
-    private Long likedMeUserCode;
+    private Long myUserid;
+    //private Long likedMeUserCode;
 }
