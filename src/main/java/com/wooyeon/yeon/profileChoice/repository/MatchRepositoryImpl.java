@@ -14,6 +14,11 @@ import java.util.List;
 
 import static com.wooyeon.yeon.user.domain.QProfile.profile;
 
+/**
+ * 모든 유저들의 Profile을 조회합니다.
+ *
+ * @author heesoo
+ */
 public class MatchRepositoryImpl implements MatchRepositoryRecommandUserList {
 
     private final JPAQueryFactory queryFactory;
@@ -22,6 +27,13 @@ public class MatchRepositoryImpl implements MatchRepositoryRecommandUserList {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
+    /**
+     * Profile 리스트를 조회합니다. 프로퍼티 접근 - setter 방식입니다.
+     *
+     * @param condition
+     * @param pageable
+     * @return Page(RecommandUserDto)
+     */
     @Override
     public Page<RecommandUserDto> searchUserProfileSimple(RecommandUserCondition condition, Pageable pageable) {
         QueryResults<RecommandUserDto> results = queryFactory
