@@ -20,7 +20,7 @@ import java.util.UUID;
  * @author heesoo
  */
 public interface LikeRepository extends JpaRepository<UserLike, Long>, LikeRepositoryFindProfileList {
-    @Query("select count(*) from UserLike userLike " +
+    @Query("select count(userLike) from UserLike userLike " +
             "where (userLike.likeFrom.userId = :fromId and userLike.likeTo.userId = :toId) ")
     long countMatch(@Param("fromId") Long fromId, @Param("toId") Long toId);
 

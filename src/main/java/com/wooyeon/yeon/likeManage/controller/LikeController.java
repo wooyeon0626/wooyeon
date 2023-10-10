@@ -68,7 +68,7 @@ public class LikeController {
     @GetMapping("/like/from")
     public Page<ResponseLikeMe> findLikeMe(ProfileThatLikesMeCondition condition, Pageable pageable) {
         //List<Profile> profileList = likeService.findLikeForMeProfileList(dto.getMyUserCode());
-
+        condition.setMyUserid(likeRepository.findUserIdByUserCode(condition.getUserCode()));
         return likeRepository.findProfilesWhoLikedMe(condition, pageable);
     }
 

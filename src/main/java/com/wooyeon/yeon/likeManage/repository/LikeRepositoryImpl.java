@@ -32,7 +32,6 @@ public class LikeRepositoryImpl implements LikeRepositoryFindProfileList {
 
         QUserLike userLike = QUserLike.userLike;
         QProfile profile = QProfile.profile;
-
         // QueryDSL을 사용하여 "나를 좋아요" 한 프로필 리스트 조회
         QueryResults<ResponseLikeMe> results = queryFactory
                 .select(Projections.bean(ResponseLikeMe.class,
