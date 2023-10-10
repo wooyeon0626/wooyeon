@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 
-
+/**
+ * @author heesoo
+ */
 @Service
 @RequiredArgsConstructor
 public class MatchService {

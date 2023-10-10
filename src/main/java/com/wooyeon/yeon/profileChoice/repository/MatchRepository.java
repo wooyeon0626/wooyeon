@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 사용자 정의 Repository 상속받아 활용
+ */
 public interface MatchRepository extends JpaRepository<UserMatch, Long>, MatchRepositoryRecommandUserList {
 
     Optional<List<UserMatch>> findAllByUserLike1(User UserLikeId1);
