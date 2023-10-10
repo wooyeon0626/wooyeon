@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ChatRepository extends JpaRepository<Chat, Integer> {
+public interface ChatRepository extends JpaRepository<Chat, Long> {
     Chat findFirstByUserMatchOrderBySendTimeDesc(UserMatch userMatch);
     List<Chat> findAllByMessageContains(String searchWord);
 }
