@@ -2,8 +2,10 @@ package com.wooyeon.yeon.chat.service;
 
 import com.google.api.gax.rpc.NotFoundException;
 import com.wooyeon.yeon.chat.domain.Block;
+import com.wooyeon.yeon.chat.domain.Report;
 import com.wooyeon.yeon.chat.dto.ChatUserDto;
 import com.wooyeon.yeon.chat.repository.BlockRepository;
+import com.wooyeon.yeon.chat.repository.ReportRepository;
 import com.wooyeon.yeon.likeManage.domain.UserLike;
 import com.wooyeon.yeon.likeManage.repository.LikeRepository;
 import com.wooyeon.yeon.profileChoice.domain.UserMatch;
@@ -25,6 +27,7 @@ public class ChatUserService {
     private final BlockRepository blockRepository;
     private final MatchRepository matchRepository;
     private final LikeRepository likeRepository;
+    private final ReportRepository reportRepository;
 
     @Transactional(readOnly = true)
     public void blockUser(ChatUserDto.ChatUserRequest chatUserRequest) {
@@ -58,5 +61,24 @@ public class ChatUserService {
         likeRepository.deleteAll(deleteUserLikeList);
 
         blockRepository.save(block);
+    }
+
+    @Transactional(readOnly = true)
+    public void reportUser(ChatUserDto.ChatUserRequest chatUserDto) {
+        Report optionalReport = reportRepository.findByReportUser(chatUserDto.getMatchUserId());
+
+        if (null == optionalReport) {
+            Report report = Report.builder()
+                    .reportUser(chatUserDto.getMatchUserId())
+                    .count(1)
+                    .updateTime(LocalDateTime.now())
+                    .build();
+            reportRepository.save(report);
+        } else {
+            int upCount = optionalReport.getCount() + 1;
+            optionalReport.setCount(upCount);
+            optionalReport.setUpdateTime(LocalDateTime.now());
+            reportRepository.save(optionalReport);
+        }
     }
 }

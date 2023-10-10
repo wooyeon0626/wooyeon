@@ -18,4 +18,9 @@ public class ChatUserController {
     public void blockUser(ChatUserDto.ChatUserRequest chatUserRequest) {
         chatUserService.blockUser(chatUserRequest);
     }
+
+    @PostMapping("/report")
+    public void reportUser(ChatUserDto.ChatUserRequest chatUserRequest) {
+        chatUserService.reportUser(chatUserRequest);
+    }
 }
