@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class ProfileThatLikesMeCondition {
+public class MyUniqueInfoDto {
     private Long myUserid;
     private UUID userCode;
     //private Long likedMeUserCode;

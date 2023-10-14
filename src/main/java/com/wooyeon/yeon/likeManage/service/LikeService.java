@@ -2,19 +2,13 @@ package com.wooyeon.yeon.likeManage.service;
 
 import com.wooyeon.yeon.likeManage.domain.UserLike;
 import com.wooyeon.yeon.likeManage.dto.CreateLikeResponse;
-import com.wooyeon.yeon.likeManage.dto.ProfileDto;
-import com.wooyeon.yeon.likeManage.dto.ProfileThatLikesMeCondition;
 import com.wooyeon.yeon.likeManage.repository.LikeRepository;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.profileChoice.service.MatchService;
-import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * @author heesoo

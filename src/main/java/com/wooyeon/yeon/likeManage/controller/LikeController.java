@@ -3,18 +3,14 @@ package com.wooyeon.yeon.likeManage.controller;
 import com.wooyeon.yeon.likeManage.dto.*;
 import com.wooyeon.yeon.likeManage.repository.LikeRepository;
 import com.wooyeon.yeon.likeManage.service.LikeService;
-import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * @author heesoo
@@ -43,6 +39,19 @@ public class LikeController {
     }
 
     /**
+     * 내가 좋아하는 사람 리스트
+     * 나의 userCode 받아서 내가 좋아하는 사람 리스트를 Page 형태로 반환
+     * @param myInfo
+     * @param pageable
+     * @return
+     */
+    @PostMapping("/like/to")
+    public Page<ResponseProfileDto> findMyLike(MyUniqueInfoDto myInfo, Pageable pageable) {
+        myInfo.setMyUserid(likeRepository.findUserIdByUserCode(myInfo.getUserCode()));
+        return likeRepository.findProfilesILiked(myInfo, pageable);
+    }
+
+    /**
      * 본인과 좋아요 한 유저들의 userCode(UUID)를 입력받아서 like합니다.
      *
      * @param dto
@@ -62,14 +71,21 @@ public class LikeController {
      * 나를 좋아하는 사람 리스트
      * 나의 userCode받아서 나를 좋아하사는 사람 리스트를 Page형태로 반환
      *
-     * @param condition pageable
+     * @param myInfo pageable
      * @return
      */
-    @GetMapping("/like/from")
-    public Page<ResponseLikeMe> findLikeMe(ProfileThatLikesMeCondition condition, Pageable pageable) {
+    @PostMapping("/like/from")
+    public Page<ResponseProfileDto> findLikeMe(MyUniqueInfoDto myInfo, Pageable pageable) {
         //List<Profile> profileList = likeService.findLikeForMeProfileList(dto.getMyUserCode());
-        condition.setMyUserid(likeRepository.findUserIdByUserCode(condition.getUserCode()));
-        return likeRepository.findProfilesWhoLikedMe(condition, pageable);
+        myInfo.setMyUserid(likeRepository.findUserIdByUserCode(myInfo.getUserCode()));
+        return likeRepository.findProfilesWhoLikedMe(myInfo, pageable);
+    }
+
+    @PostMapping("/like/matched")
+    public Page<ResponseProfileDto> findMatchProfileList(MyUniqueInfoDto myInfo, Pageable pageable) {
+        //List<Profile> profileList = likeService.findLikeForMeProfileList(dto.getMyUserCode());
+        myInfo.setMyUserid(likeRepository.findUserIdByUserCode(myInfo.getUserCode()));
+        return likeRepository.findProfilesMachedMe(myInfo, pageable);
     }
 
 //    // 좋아요 이후 응답할 정보

@@ -1,13 +1,7 @@
 package com.wooyeon.yeon.likeManage.repository;
 
 import com.wooyeon.yeon.likeManage.domain.UserLike;
-import com.wooyeon.yeon.likeManage.dto.ProfileThatLikesMeCondition;
-import com.wooyeon.yeon.likeManage.dto.ResponseLikeMe;
-import com.wooyeon.yeon.profileChoice.dto.RecommandUserCondition;
-import com.wooyeon.yeon.profileChoice.dto.RecommandUserDto;
 import com.wooyeon.yeon.user.domain.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
