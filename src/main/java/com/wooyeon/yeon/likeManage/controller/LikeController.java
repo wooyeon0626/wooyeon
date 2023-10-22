@@ -41,12 +41,13 @@ public class LikeController {
     /**
      * 내가 좋아하는 사람 리스트
      * 나의 userCode 받아서 내가 좋아하는 사람 리스트를 Page 형태로 반환
+     *
      * @param myInfo
      * @param pageable
      * @return
      */
     @PostMapping("/like/to")
-    public Page<ResponseProfileDto> findMyLike(MyUniqueInfoDto myInfo, Pageable pageable) {
+    public Page<ResponseProfileDto> findMyLike(@RequestBody MyUniqueInfoDto myInfo, Pageable pageable) {
         myInfo.setMyUserid(likeRepository.findUserIdByUserCode(myInfo.getUserCode()));
         return likeRepository.findProfilesILiked(myInfo, pageable);
     }
@@ -75,25 +76,20 @@ public class LikeController {
      * @return
      */
     @PostMapping("/like/from")
-    public Page<ResponseProfileDto> findLikeMe(MyUniqueInfoDto myInfo, Pageable pageable) {
-        //List<Profile> profileList = likeService.findLikeForMeProfileList(dto.getMyUserCode());
+    public Page<ResponseProfileDto> findLikeMe(@RequestBody MyUniqueInfoDto myInfo, Pageable pageable) {
         myInfo.setMyUserid(likeRepository.findUserIdByUserCode(myInfo.getUserCode()));
+        if (myInfo.getMyUserid() == null) {
+            System.out.println("usercode : " + myInfo.getUserCode());
+            System.out.println("에러임?");
+            return null;
+        }
+        System.out.println("userid : " + myInfo.getMyUserid());
         return likeRepository.findProfilesWhoLikedMe(myInfo, pageable);
     }
 
     @PostMapping("/like/matched")
-    public Page<ResponseProfileDto> findMatchProfileList(MyUniqueInfoDto myInfo, Pageable pageable) {
-        //List<Profile> profileList = likeService.findLikeForMeProfileList(dto.getMyUserCode());
+    public Page<ResponseProfileDto> findMatchProfileList(@RequestBody MyUniqueInfoDto myInfo, Pageable pageable) {
         myInfo.setMyUserid(likeRepository.findUserIdByUserCode(myInfo.getUserCode()));
         return likeRepository.findProfilesMachedMe(myInfo, pageable);
     }
-
-//    // 좋아요 이후 응답할 정보
-//    @Data
-//    @AllArgsConstructor
-//    static class CreateLikeResponse {
-//        private Long likeId;
-//        private String likedFromUserName; // 좋아요 누른 본인 이름
-//        private String likedToUserName;// 좋아요 받은 상대 이름
-//    }
 }

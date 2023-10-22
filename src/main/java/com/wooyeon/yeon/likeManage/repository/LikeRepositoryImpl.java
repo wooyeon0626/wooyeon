@@ -8,12 +8,15 @@ import com.wooyeon.yeon.likeManage.dto.MyUniqueInfoDto;
 import com.wooyeon.yeon.likeManage.dto.ResponseProfileDto;
 import com.wooyeon.yeon.profileChoice.domain.QUserMatch;
 import com.wooyeon.yeon.user.domain.QProfile;
+import com.wooyeon.yeon.user.domain.QUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+
+import static com.wooyeon.yeon.user.domain.QProfile.profile;
 
 public class LikeRepositoryImpl implements LikeRepositoryFindProfileList {
 
@@ -25,9 +28,18 @@ public class LikeRepositoryImpl implements LikeRepositoryFindProfileList {
 
     @Override
     public Page<ResponseProfileDto> findProfilesWhoLikedMe(MyUniqueInfoDto condition, Pageable pageable) {
-
+        QUser user = QUser.user;
         QUserLike userLike = QUserLike.userLike;
-        QProfile profile = QProfile.profile;
+        //QProfile profile = QProfile.profile;
+
+        // "나를 좋아요"한 사용자의 ID를 찾습니다.
+        List<Long> likedUserIds = queryFactory
+                .select(user.profile.id) // userLike.likeFrom.userId 대신 프로필 ID를 선택합니다.
+                .from(userLike)
+                .join(userLike.likeFrom, user) // "likeFrom"에 해당하는 사용자 정보를 가져오기 위한 조인.
+                .where(userLike.likeTo.userId.eq(condition.getMyUserid()))
+                .fetch();
+
         // QueryDSL을 사용하여 "나를 좋아요" 한 프로필 리스트 조회
         QueryResults<ResponseProfileDto> results = queryFactory
                 .select(Projections.bean(ResponseProfileDto.class,
@@ -36,25 +48,32 @@ public class LikeRepositoryImpl implements LikeRepositoryFindProfileList {
                         profile.birthday,
                         profile.gpsLocationInfo,
                         profile.mbti,
-                        profile.intro,
-                        profile.user.userCode
+                        profile.intro
                 ))
-                .from(userLike)
-                .where(userLike.likeTo.userId.eq(condition.getMyUserid()))
+                .from(profile)
+                .where(profile.user.userId.in(likedUserIds))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetchResults();
 
         List<ResponseProfileDto> content = results.getResults();
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
-
-        //return query.fetch();
-        //return null;
     }
 
     @Override
     public Page<ResponseProfileDto> findProfilesILiked(MyUniqueInfoDto condition, Pageable pageable) {
-        QUserLike userLike = QUserLike.userLike;
         QProfile profile = QProfile.profile;
+        QUser user = QUser.user;
+        QUserLike userLike = QUserLike.userLike;
+
+        // "내가 좋아요"한 사용자의 ID를 찾습니다.
+        List<Long> likedUserIds = queryFactory
+                .select(user.profile.id) // 프로필 ID를 선택합니다.
+                .from(userLike)
+                .join(userLike.likeTo, user) // "likeFrom"에 해당하는 사용자 정보를 가져오기 위한 조인.
+                .where(userLike.likeFrom.userId.eq(condition.getMyUserid()))
+                .fetch();
         // QueryDSL을 사용하여 "내가 좋아요" 한 프로필 리스트 조회
         QueryResults<ResponseProfileDto> results = queryFactory
                 .select(Projections.bean(ResponseProfileDto.class,
@@ -63,11 +82,12 @@ public class LikeRepositoryImpl implements LikeRepositoryFindProfileList {
                         profile.birthday,
                         profile.gpsLocationInfo,
                         profile.mbti,
-                        profile.intro,
-                        profile.user.userCode
+                        profile.intro
                 ))
-                .from(userLike)
-                .where(userLike.likeFrom.userId.eq(condition.getMyUserid()))
+                .from(profile)
+                .where(profile.user.userId.in(likedUserIds))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetchResults();
 
         List<ResponseProfileDto> content = results.getResults();
@@ -80,6 +100,7 @@ public class LikeRepositoryImpl implements LikeRepositoryFindProfileList {
         QUserLike userLike = QUserLike.userLike;
         QUserMatch userMatch = QUserMatch.userMatch;
         QProfile profile = QProfile.profile;
+        QUser user = QUser.user;
         // QueryDSL을 사용하여 매치된 프로필 리스트 조회
 
         QueryResults<ResponseProfileDto> results = queryFactory
@@ -93,6 +114,7 @@ public class LikeRepositoryImpl implements LikeRepositoryFindProfileList {
                         profile.user.userCode
                 ))
                 .from(userMatch)
+                .join(profile.user, user)
                 .where(
                         userMatch.userLike1.likeFrom.userId.eq(condition.getMyUserid()).and(
                                 userMatch.userLike1.likeFrom.userId.eq(userMatch.userLike2.likeTo.userId)

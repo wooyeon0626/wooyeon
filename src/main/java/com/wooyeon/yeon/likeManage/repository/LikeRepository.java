@@ -21,8 +21,6 @@ public interface LikeRepository extends JpaRepository<UserLike, Long>, LikeRepos
     UserLike findByLikeFromAndLikeTo(User likeFromUser, User likeToUser);
 
     // 유저 코드로 유저 아이디 가져옴.
-    @Query("select user.userId from User user join Profile profile on user.userId = profile.id where user.userCode = :myUserCode")
+    @Query("select user.userId from User user where user.userCode = :myUserCode")
     Long findUserIdByUserCode(@Param("myUserCode") UUID myUserCode);
-
-    //Page<ResponseLikeMe> findLikeForMeProfileList(ProfileThatLikesMeCondition condition, Pageable pageable);
 }
