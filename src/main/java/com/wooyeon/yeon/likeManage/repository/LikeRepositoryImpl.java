@@ -97,13 +97,12 @@ public class LikeRepositoryImpl implements LikeRepositoryFindProfileList {
 
     @Override
     public Page<ResponseProfileDto> findProfilesMachedMe(MyUniqueInfoDto condition, Pageable pageable) {
-        QUserLike userLike = QUserLike.userLike;
         QUserMatch userMatch = QUserMatch.userMatch;
         QProfile profile = QProfile.profile;
         QUser user = QUser.user;
-        // QueryDSL을 사용하여 매치된 프로필 리스트 조회
 
-        QueryResults<ResponseProfileDto> results = queryFactory
+        // QueryDSL을 사용하여 매치된 프로필 리스트 조회
+       /* QueryResults<ResponseProfileDto> results = queryFactory
                 .select(Projections.bean(ResponseProfileDto.class,
                         profile.gender,
                         profile.nickname,
@@ -131,10 +130,48 @@ public class LikeRepositoryImpl implements LikeRepositoryFindProfileList {
                                         userMatch.userLike2.likeTo.userId.eq(userMatch.userLike1.likeFrom.userId)
                                 )
                         )
+                ).fetchResults();*/
+
+        // 나와 매치된 사용자의 ID를 찾습니다.
+        /*List<Long> likedUserIds = queryFactory
+                .select(user.profile.id) // userLike.likeFrom.userId 대신 프로필 ID를 선택합니다.
+                .from(userMatch)
+                .join(userMatch.userLike1.likeFrom, user) // "likeTo"에 해당하는 사용자 정보를 가져오기 위한 조인.
+                .where(userLike.likeTo.userId.eq(condition.getMyUserid()))
+                .fetch();
+        QueryResults<ResponseProfileDto> results = queryFactory
+                .select(Projections.bean(ResponseProfileDto.class,
+                        profile.gender,
+                        profile.nickname,
+                        profile.birthday,
+                        profile.gpsLocationInfo,
+                        profile.mbti,
+                        profile.intro,
+                        profile.user.userCode
+                ))
+                .from(profile)
+                .join(profile.user, user)
+                .where(
+                        userMatch.userLike1.likeFrom.userId.eq(condition.getMyUserid()).and(
+                                userMatch.userLike1.likeFrom.userId.eq(userMatch.userLike2.likeTo.userId)
+                        ).or(
+                                userMatch.userLike1.likeFrom.userId.eq(condition.getMyUserid()).and(
+                                        userMatch.userLike1.likeTo.userId.eq(userMatch.userLike2.likeFrom.userId)
+                                )
+                        ).or(
+                                userMatch.userLike2.likeFrom.userId.eq(condition.getMyUserid()).and(
+                                        userMatch.userLike2.likeFrom.userId.eq(userMatch.userLike1.likeTo.userId)
+                                )
+                        ).or(
+                                userMatch.userLike2.likeFrom.userId.eq(condition.getMyUserid()).and(
+                                        userMatch.userLike2.likeTo.userId.eq(userMatch.userLike1.likeFrom.userId)
+                                )
+                        )
                 ).fetchResults();
 
         List<ResponseProfileDto> content = results.getResults();
         long total = results.getTotal();
-        return new PageImpl<>(content, pageable, total);
+        return new PageImpl<>(content, pageable, total);*/
+        return null;
     }
 }

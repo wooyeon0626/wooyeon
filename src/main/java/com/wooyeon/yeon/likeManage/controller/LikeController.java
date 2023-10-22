@@ -63,8 +63,13 @@ public class LikeController {
         User likeFromUser = userService.findByUserUUID(dto.getLikeFromUserUUID());
         User likeToUser = userService.findByUserUUID(dto.getLikeToUserUUID());
         CreateLikeResponse response = likeService.saveUserLike(likeFromUser, likeToUser);
-        //매치 되었는지 확인
+
+        // 매치되었으면 기존의 like table에서 서로의 like 삭제.
         boolean isMatch = likeService.checkMatch(likeFromUser.getUserId(), likeToUser.getUserId());
+        if (isMatch) {
+            likeService.deleteUserLikeRow(likeFromUser.getUserId(), likeToUser.getUserId());
+            response.setUserLikeDeleteMessage("서로의 like 삭제");
+        }
         return response;
     }
 
@@ -83,7 +88,6 @@ public class LikeController {
             System.out.println("에러임?");
             return null;
         }
-        System.out.println("userid : " + myInfo.getMyUserid());
         return likeRepository.findProfilesWhoLikedMe(myInfo, pageable);
     }
 

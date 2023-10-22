@@ -38,18 +38,13 @@ public class MatchRepositoryImpl implements MatchRepositoryRecommandUserList {
     public Page<RecommandUserDto> searchUserProfileSimple(RecommandUserCondition condition, Pageable pageable) {
         QueryResults<RecommandUserDto> results = queryFactory
                 .select(Projections.bean(RecommandUserDto.class,
-//                        profile.id.as("profileId"),
                         profile.gender,
                         profile.nickname,
                         profile.birthday,
-//                        profile.locationInfo,
                         profile.gpsLocationInfo,
                         profile.mbti,
                         profile.intro,
                         profile.user.userCode
-//                        profile.hobbys,
-//                        profile.interests,
-//                        profile.profilePhotos
                 ))
                 .from(profile)
                 .offset(pageable.getOffset())

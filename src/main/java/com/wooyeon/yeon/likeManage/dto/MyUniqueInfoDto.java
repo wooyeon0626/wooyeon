@@ -8,5 +8,4 @@ import java.util.UUID;
 public class MyUniqueInfoDto {
     private Long myUserid;
     private UUID userCode;
-    //private Long likedMeUserCode;
 }

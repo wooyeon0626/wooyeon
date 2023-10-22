@@ -18,9 +18,19 @@ public interface LikeRepository extends JpaRepository<UserLike, Long>, LikeRepos
             "where (userLike.likeFrom.userId = :fromId and userLike.likeTo.userId = :toId) ")
     long countMatch(@Param("fromId") Long fromId, @Param("toId") Long toId);
 
+    /**
+     * 해당하는 user_like를 찾아줌.
+     * @param likeFromUser
+     * @param likeToUser
+     * @return UserLike
+     */
     UserLike findByLikeFromAndLikeTo(User likeFromUser, User likeToUser);
 
     // 유저 코드로 유저 아이디 가져옴.
     @Query("select user.userId from User user where user.userCode = :myUserCode")
     Long findUserIdByUserCode(@Param("myUserCode") UUID myUserCode);
+
+    // 유저 id로 유저 가져옴.
+    @Query("select user from User user where user.userId = :myUserId")
+    User findUserByUserId(@Param("myUserId") Long myUserId);
 }
