@@ -65,8 +65,8 @@ public class LikeController {
         CreateLikeResponse response = likeService.saveUserLike(likeFromUser, likeToUser);
 
         // 매치되었으면 기존의 like table에서 서로의 like 삭제.
-        boolean isMatch = likeService.checkMatch(likeFromUser.getUserId(), likeToUser.getUserId());
-        if (isMatch) {
+        //boolean isMatch = likeService.checkMatch(likeFromUser.getUserId(), likeToUser.getUserId());
+        if (response.getResponseMessage().equals("매치됨")) {
             likeService.deleteUserLikeRow(likeFromUser.getUserId(), likeToUser.getUserId());
             response.setUserLikeDeleteMessage("서로의 like 삭제");
         }

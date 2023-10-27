@@ -3,14 +3,11 @@ package com.wooyeon.yeon.likeManage.service;
 import com.wooyeon.yeon.likeManage.domain.UserLike;
 import com.wooyeon.yeon.likeManage.dto.CreateLikeResponse;
 import com.wooyeon.yeon.likeManage.repository.LikeRepository;
-import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.profileChoice.service.MatchService;
 import com.wooyeon.yeon.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * @author heesoo
@@ -63,7 +60,7 @@ public class LikeService {
      * @return
      */
     public boolean checkMatch(Long userId1, Long userId2) {
-        long matchCount = likeRepository.countMatch(userId1, userId2);
+        int matchCount = likeRepository.countMatch(userId2, userId1);
         return matchCount > 0;
     }
 
@@ -81,7 +78,6 @@ public class LikeService {
         // 2.해당 user_like id 삭제 연산 실행
         User user1 = likeRepository.findUserByUserId(userId1);
         User user2 = likeRepository.findUserByUserId(userId2);
-
         UserLike targetDeleteUserLike1 = likeRepository.findByLikeFromAndLikeTo(user1, user2);
         UserLike targetDeleteUserLike2 = likeRepository.findByLikeFromAndLikeTo(user2, user1);
 
