@@ -3,12 +3,14 @@ package com.wooyeon.yeon.user.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 //(access = AccessLevel.PROTECTED)
 public class User {
@@ -19,6 +21,9 @@ public class User {
 
     @Column(length = 100)
     private String email;
+
+    @Column
+    private String password;
 
     @Column(length = 11)
     private String phone;
@@ -36,12 +41,13 @@ public class User {
     private Profile profile;
 
     @Builder
-    public User(String email, String phone, UUID userCode, String accessToken, String refreshToken) {
+    public User(String email, String phone, UUID userCode, String accessToken, String refreshToken, String password) {
         this.email = email;
         this.phone = phone;
         this.userCode = userCode;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+        this.password = password;
     }
 
     public void updateRefreshToken(String refreshToken) {
