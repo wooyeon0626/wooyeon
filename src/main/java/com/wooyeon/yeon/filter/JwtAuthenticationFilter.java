@@ -1,4 +1,4 @@
-package com.wooyeon.yeon.config.security;
+package com.wooyeon.yeon.filter;
 
 import com.wooyeon.yeon.user.service.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,8 @@
-package com.wooyeon.yeon.user.service.auth;
+package com.wooyeon.yeon.user.service;
 
 import com.wooyeon.yeon.user.dto.auth.LoginDto;
 import com.wooyeon.yeon.user.dto.auth.TokenDto;
+import com.wooyeon.yeon.user.service.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
