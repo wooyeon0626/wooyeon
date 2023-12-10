@@ -1,7 +1,9 @@
 package com.wooyeon.yeon.user.service;
 
+import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.auth.LoginDto;
 import com.wooyeon.yeon.user.dto.auth.TokenDto;
+import com.wooyeon.yeon.user.repository.UserRepository;
 import com.wooyeon.yeon.user.service.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +18,7 @@ public class LoginService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
     @Transactional
     public TokenDto login(LoginDto.LoginRequest loginReq) {
@@ -26,6 +29,11 @@ public class LoginService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         TokenDto tokenDto = jwtTokenProvider.generateToken(authentication);
+
+        User user = userRepository.findByEmail(authentication.getName()).get();
+
+        user.setAccessToken(tokenDto.getAccessToken());
+        user.setRefreshToken(tokenDto.getRefreshToken());
 
         return tokenDto;
     }
