@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
-  AWS_LIGHTSAIL_SERVICE_NAME: Wooyeon
+  AWS_LIGHTSAIL_SERVICE_NAME: wooyeon
 
 jobs:
   deploy:
