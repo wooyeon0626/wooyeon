@@ -84,8 +84,6 @@ public class LikeController {
     public Page<ResponseProfileDto> findLikeMe(@RequestBody MyUniqueInfoDto myInfo, Pageable pageable) {
         myInfo.setMyUserid(likeRepository.findUserIdByUserCode(myInfo.getUserCode()));
         if (myInfo.getMyUserid() == null) {
-            System.out.println("usercode : " + myInfo.getUserCode());
-            System.out.println("에러임?");
             return null;
         }
         return likeRepository.findProfilesWhoLikedMe(myInfo, pageable);
