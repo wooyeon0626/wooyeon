@@ -1,7 +1,7 @@
 package com.wooyeon.yeon.user.controller;
 
-import com.wooyeon.yeon.user.dto.auth.ReissueRequestDto;
-import com.wooyeon.yeon.user.dto.auth.ReissueResponseDto;
+import com.wooyeon.yeon.user.dto.ReissueRequestDto;
+import com.wooyeon.yeon.user.dto.ReissueResponseDto;
 import com.wooyeon.yeon.user.service.auth.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

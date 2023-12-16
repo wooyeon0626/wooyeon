@@ -1,6 +1,7 @@
 package com.wooyeon.yeon.user.controller;
 
-import com.wooyeon.yeon.user.dto.auth.LoginDto;
+import com.wooyeon.yeon.user.dto.LoginDto;
+import com.wooyeon.yeon.user.dto.LogoutDto;
 import com.wooyeon.yeon.user.dto.auth.TokenDto;
 import com.wooyeon.yeon.user.service.LoginService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,12 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginDto.LoginRequest loginRequest) throws Exception {
+    public ResponseEntity<TokenDto> login(@RequestBody LoginDto.LoginRequest loginRequest) {
         return ResponseEntity.ok(loginService.login(loginRequest));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<LogoutDto.LogoutResponse> logout(@RequestBody LogoutDto.LogoutRequest logoutRequest) {
+        return ResponseEntity.ok(loginService.logout(logoutRequest));
     }
 }

@@ -1,4 +1,4 @@
-package com.wooyeon.yeon.user.dto.auth;
+package com.wooyeon.yeon.user.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
