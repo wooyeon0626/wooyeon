@@ -3,6 +3,7 @@ package com.wooyeon.yeon.profileChoice.service;
 import com.wooyeon.yeon.likeManage.domain.UserLike;
 import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
+import com.wooyeon.yeon.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,15 +19,18 @@ public class MatchService {
     private final MatchRepository matchRepository;
 
     @Transactional
-    public String createMatch(UserLike userLike1, UserLike userLike2) {
+    public String createMatch(User user1, User user2) {
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         UserMatch userMatch = UserMatch.builder()
-                .userLike1(userLike1)
-                .userLike2(userLike2)
+                .user1(user1)
+                .user2(user2)
+//                .userLike1(userLike1)
+//                .userLike2(userLike2)
                 .generateTime(currentTimestamp)
                 .build();
 
         matchRepository.save(userMatch);
+        // String이 아니라 의미있는 vo로 return 변경 필요
         return "매치테이블 생성";
     }
 }
