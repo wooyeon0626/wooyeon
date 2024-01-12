@@ -5,6 +5,8 @@ import com.wooyeon.yeon.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.*;
+import com.wooyeon.yeon.likeManage.domain.UserLike;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -15,6 +17,7 @@ import java.sql.Timestamp;
  * @author heesoo
  */
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserMatch {
     @Id

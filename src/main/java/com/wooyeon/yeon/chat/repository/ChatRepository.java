@@ -1,8 +1,14 @@
 package com.wooyeon.yeon.chat.repository;
 
 import com.wooyeon.yeon.chat.domain.Chat;
+import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ChatRepository extends JpaRepository<Chat, Integer> {
+import java.util.List;
 
+@Repository
+public interface ChatRepository extends JpaRepository<Chat, Long> {
+    Chat findFirstByUserMatchOrderBySendTimeDesc(UserMatch userMatch);
+    List<Chat> findAllByMessageContains(String searchWord);
 }

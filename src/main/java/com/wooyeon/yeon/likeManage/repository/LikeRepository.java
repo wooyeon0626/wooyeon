@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -25,6 +27,8 @@ public interface LikeRepository extends JpaRepository<UserLike, Long>, LikeRepos
      * @return UserLike
      */
     UserLike findByLikeFromAndLikeTo(User likeFromUser, User likeToUser);
+
+    Optional<List<UserLike>> findAllByLikeFrom(Long userId);
 
     // 유저 코드로 유저 아이디 가져옴.
     @Query("select user.userId from User user where user.userCode = :myUserCode")
