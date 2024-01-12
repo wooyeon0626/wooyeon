@@ -5,9 +5,12 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Chat {
     @Id
@@ -15,7 +18,7 @@ public class Chat {
     private Long chatId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userMatchId")
+    @JoinColumn(name = "user_match_id")
     private UserMatch userMatch;
 
     @Column
@@ -25,14 +28,5 @@ public class Chat {
     private String message;
 
     @Column
-    private Timestamp sendTime;
-
-    @Builder
-    public Chat(Long chatId, UserMatch userMatch, String sender, String message, Timestamp sendTime) {
-        this.chatId = chatId;
-        this.userMatch = userMatch;
-        this.sender = sender;
-        this.message = message;
-        this.sendTime = sendTime;
-    }
+    private LocalDateTime sendTime;
 }
