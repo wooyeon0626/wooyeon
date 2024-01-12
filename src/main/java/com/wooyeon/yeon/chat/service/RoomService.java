@@ -29,19 +29,18 @@ public class RoomService {
     private final ProfileRepository profileRepository;
     private final ChatRepository chatRepository;
 
-    public List<RoomDto.RoomResponse> matchRoomList() {
+    public List<RoomDto.RoomResponse> matchRoomList(RoomDto.RoomRequest request) {
         List<RoomDto.RoomResponse> roomList = new ArrayList();
 
-        Long userId = 1l;
-        User user = userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(request.getUserId());
 
-        List<UserMatch> userMatches = matchRepository.findAllByUserLike1(user)
+        List<UserMatch> userMatches = matchRepository.findAllByUser1(user)
                 .orElseThrow(() -> new IllegalArgumentException());
 
         for (UserMatch userMatch : userMatches) {
 
             // 상대방 프로필 정보 조회
-            Profile profile = profileRepository.findById(userMatch.getUserLike2().getLikeTo().getUserId())
+            Profile profile = profileRepository.findById(userMatch.getUser2().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException());
 
             Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.getId());
@@ -61,18 +60,17 @@ public class RoomService {
         return roomList;
     }
 
-    public Set<RoomDto.SearchRoomResponse> searchMatchRoomList(String searchWord) {
+    public Set<RoomDto.SearchRoomResponse> searchMatchRoomList(RoomDto.SearchRoomRequest request) {
         Set<RoomDto.SearchRoomResponse> searchRoomList = null;
 
-        Long userId = 1l;
-        User user = userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(request.getUserId());
 
         // 채팅방 내 검색 단어 포함 항목 조회 후 추가
-        List<Chat> chatList = chatRepository.findAllByMessageContains(searchWord);
+        List<Chat> chatList = chatRepository.findAllByMessageContains(request.getSearchWord());
         for (Chat chat : chatList) {
             UserMatch userMatch = chat.getUserMatch();
 
-            Optional<Profile> profile = profileRepository.findById(userMatch.getUserLike2().getLikeTo().getUserId());
+            Optional<Profile> profile = profileRepository.findById(userMatch.getUser2().getUserId());
             Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.get().getId());
 
             RoomDto.SearchRoomResponse response = RoomDto.SearchRoomResponse.builder()
@@ -85,13 +83,13 @@ public class RoomService {
         }
 
         // 이름이 같은 사람 조회 후 추가
-        List<UserMatch> userMatches = matchRepository.findAllByUserLike1(user)
+        List<UserMatch> userMatches = matchRepository.findAllByUser1(user)
                 .orElseThrow(() -> new IllegalArgumentException());
 
         for (UserMatch userMatch : userMatches) {
             Long matchId = userMatch.getMatchId();
 
-            Optional<Profile> profile = profileRepository.findByNicknameContains(searchWord);
+            Optional<Profile> profile = profileRepository.findByNicknameContains(request.getSearchWord());
             Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.get().getId());
 
             if(profile.isPresent()) {

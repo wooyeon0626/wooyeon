@@ -1,6 +1,5 @@
 package com.wooyeon.yeon.chat.service;
 
-import com.google.api.gax.rpc.NotFoundException;
 import com.wooyeon.yeon.chat.domain.Block;
 import com.wooyeon.yeon.chat.domain.Report;
 import com.wooyeon.yeon.chat.dto.ChatUserDto;
@@ -15,24 +14,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ChatUserService {
-
     private final BlockRepository blockRepository;
     private final MatchRepository matchRepository;
     private final LikeRepository likeRepository;
     private final ReportRepository reportRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void blockUser(ChatUserDto.ChatUserRequest chatUserRequest) {
-        // 임시 유저 아이디
-        Long userId = 1l;
+        Long userId = chatUserRequest.getUserId();
         Long matchUserId = chatUserRequest.getMatchUserId();
 
         Block block = Block.builder()
@@ -41,29 +35,23 @@ public class ChatUserService {
                 .BlockTime(LocalDateTime.now())
                 .build();
 
+        blockRepository.save(block);
+
         //차단된 유저 매치 목록에서 삭제
-        UserMatch userMatch = matchRepository.findAllByUserLike1OOrUserLike2(userId)
+        List<UserMatch> userMatchList = matchRepository.findAllByUser1(userId)
                 .orElseThrow(() -> new IllegalArgumentException("not found user"));
 
-        matchRepository.delete(userMatch);
-
-        List deleteUserLikeList = new ArrayList<UserLike>();
+        matchRepository.deleteAll(userMatchList);
 
         //차단된 유저 좋아요 목록에서 삭제
-        UserLike userLike1 = likeRepository.findByLikeFromAndLikeTo(userId, matchUserId)
+        List<UserLike> userLikeList = likeRepository.findAllByLikeFrom(userId)
                 .orElseThrow(() -> new IllegalArgumentException("not found user or matching user"));
-        deleteUserLikeList.add(userLike1);
 
-        UserLike userLike2 = likeRepository.findByLikeFromAndLikeTo(userId, matchUserId)
-                .orElseThrow(() -> new IllegalArgumentException("not found user or matching user"));
-        deleteUserLikeList.add(userLike2);
+        likeRepository.deleteAll(userLikeList);
 
-        likeRepository.deleteAll(deleteUserLikeList);
-
-        blockRepository.save(block);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void reportUser(ChatUserDto.ChatUserRequest chatUserDto) {
         Report optionalReport = reportRepository.findByReportUser(chatUserDto.getMatchUserId());
 
@@ -75,8 +63,7 @@ public class ChatUserService {
                     .build();
             reportRepository.save(report);
         } else {
-            int upCount = optionalReport.getCount() + 1;
-            optionalReport.setCount(upCount);
+            optionalReport.setCount(optionalReport.getCount() + 1);
             optionalReport.setUpdateTime(LocalDateTime.now());
             reportRepository.save(optionalReport);
         }

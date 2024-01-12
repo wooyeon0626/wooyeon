@@ -8,7 +8,9 @@ import java.time.LocalDateTime;
 
 public class RoomDto {
 
-    public class RoomRequest {
+    @Getter
+    public static class RoomRequest {
+        private Long userId;
     }
 
     @Getter
@@ -19,6 +21,12 @@ public class RoomDto {
         private String name;
         private LocalDateTime lastTime;
         private String lastMessage;
+    }
+
+    @Getter
+    public static class SearchRoomRequest {
+        private Long userId;
+        private String SearchWord;
     }
 
     @Getter

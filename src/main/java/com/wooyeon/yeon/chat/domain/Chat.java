@@ -18,7 +18,7 @@ public class Chat {
     private Long chatId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userMatchId")
+    @JoinColumn(name = "user_match_id")
     private UserMatch userMatch;
 
     @Column
