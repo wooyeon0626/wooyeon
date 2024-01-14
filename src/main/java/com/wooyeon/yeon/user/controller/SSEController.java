@@ -18,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class SSEController {
     private final UserService userService;
+
+    /*
     private final Map<String, SseEmitter> userEmitters = new ConcurrentHashMap<>();
 
     @PostMapping("/connect")
@@ -38,7 +40,7 @@ public class SSEController {
         return emitter;
     }
 
-    /*
+
     // Method to send string updates to clients
     @PostMapping("/connect/new")
     public void sendStringUpdateToClients(String data) {
