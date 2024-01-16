@@ -7,12 +7,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class EmailAuthResponseDto {
-//    private String statusCode;
+    //    private String statusCode;
     private String emailAuth;
+    private String email;
 
     @Builder
-    public EmailAuthResponseDto(String emailAuth) {
-        this.emailAuth=emailAuth;
+    public EmailAuthResponseDto(String emailAuth, String email) {
+        this.emailAuth = emailAuth;
+        this.email = email;
     }
 
 }

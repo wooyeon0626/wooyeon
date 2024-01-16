@@ -1,8 +1,6 @@
 package com.wooyeon.yeon.user.repository;
 
 import com.wooyeon.yeon.user.domain.User;
-
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,7 +10,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     User findByUserId(Long userId);
     User findByUserCode(UUID userCode);
-    User findUserByPhone(String phone);
-    Optional<User> findByEmail(String userEmail);
+    User findByEmail(String email);
 
 }

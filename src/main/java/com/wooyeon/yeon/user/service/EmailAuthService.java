@@ -14,6 +14,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
@@ -22,6 +23,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.UUID;
 
 @PropertySource("classpath:application-apikey.properties")
@@ -46,6 +48,7 @@ public class EmailAuthService {
 
     // 이메일 전송 전 중복 확인, 이메일 전송 메서드 호출
     @Transactional
+    @Async
     public EmailResponseDto sendEmail(EmailRequestDto emailRequestDto) throws MessagingException {
         // 인증 코드 만료 시간이 지난 데이터 삭제
         deleteExpiredStatusIfExpired();
@@ -91,39 +94,59 @@ public class EmailAuthService {
         message.setSubject(subject);
         helper.setTo(emailRequestDto.getEmail());
         // addInline 보다 먼저 실행 되어야 함
-        helper.setText(setContext(emailRequestDto.getEmail()), true);
+        helper.setText(setContext(emailRequestDto.getEmail()+"&"+authToken), true);
         // addInline을 통해 local에 있는 이미지 삽입 해주기 & html에서 img src='cid:{contentId}'로 설정 해주기
         helper.addInline("wooyeonLogoImage", new ClassPathResource("static/logo_wooyeon_email.png"));
 
         mailSender.send(message);
     }
 
-    private String setContext(String email) { // 타임리프 설정하는 코드
+    private String setContext(String auth) { // 타임리프 설정하는 코드
+        // 이메일+인증토큰 base64로 인코딩
+        String url = base64UrlEncode(auth);
         Context context = new Context();
-        String link = "https://our-audio-394406.du.r.appspot.com/redirect?auth=" + email;
+        String link = "http://localhost:8010/auth/email/verify?auth=" + url;
         context.setVariable("link", link); // Template에 전달할 데이터 설정
+
+        log.info("보낸 URL : "+url);
+
         return templateEngine.process("email_authentication", context); // email_authentication.html
     }
 
     // 이메일 인증 처리
     @Transactional
     public EmailAuthResponseDto verifyEmail(EmailAuthRequestDto emailAuthRequestDto) {
-        EmailAuth emailAuth = emailAuthRepository.findEmailAuthByEmailAndAuthToken(emailAuthRequestDto.getEmail(), emailAuthRequestDto.getAuthToken());
+        String decodeUrl = base64UrlDecode(emailAuthRequestDto.getAuth());
+
+        // &를 기준으로 문자열 나누기
+        String[] parts = decodeUrl.split("&");
+
+        // 나뉜 부분 출력
+        String email = parts[0].trim(); // A
+        String authToken = parts[1].trim(); // B
+
+        // 결과 출력
+        log.info("email= "+email);
+        log.info("authToken= "+authToken);
+
+        EmailAuth emailAuth = emailAuthRepository.findEmailAuthByEmailAndAuthToken(email, authToken);
         EmailAuthResponseDto emailAuthResponseDto;
 
         if (emailAuth != null) {
             emailAuthResponseDto = EmailAuthResponseDto.builder()
                     .emailAuth("success")
+                    .email(email)
                     .build();
             emailAuth.emailVerifiedSuccess();
 
-            User user = userRepository.findUserByPhone(emailAuthRequestDto.getPhone());
-            user.updateEmail(emailAuthRequestDto.getEmail());
+            User user = userRepository.findByEmail(email);
+            user.updateEmailAuth(true);
             userRepository.save(user);
 
         } else {
             emailAuthResponseDto = EmailAuthResponseDto.builder()
                     .emailAuth("fail")
+                    .email(email)
                     .build();
         }
 //        emailAuthRepository.deleteByEmail(requestDto.getEmail());
@@ -152,4 +175,25 @@ public class EmailAuthService {
 
         return authToken;
     }
+
+    // BASE64 인코딩
+    public String base64UrlEncode(String url) {
+        String encodedUrl = Base64.getUrlEncoder().encodeToString(url.getBytes());
+
+        log.info("base64 Encode: "+encodedUrl);
+
+        return encodedUrl;
+    }
+
+    // BASE64 디코딩
+    public String base64UrlDecode(String auth) {
+        byte[] decodedBytes = Base64.getUrlDecoder().decode(auth);
+        String decodedUrl = new String(decodedBytes);
+
+        log.info("base64 Decode: "+decodedUrl);
+
+        return decodedUrl;
+    }
+
+    // 문자 나누기
 }

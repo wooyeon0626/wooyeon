@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 public class EmailAuthRequestDto {
 
-    private String email;
-    private String authToken;
-    private String phone;
+//    private String email;
+//    private String authToken;
+    private String auth;
 }

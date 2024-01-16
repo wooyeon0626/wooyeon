@@ -1,24 +1,17 @@
 package com.wooyeon.yeon.user.domain;
 
-import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
-@Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails {
+//(access = AccessLevel.PROTECTED)
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,62 +33,39 @@ public class User implements UserDetails {
 
     private String refreshToken;
 
+    @Column()
+    private boolean emailAuth = false;
+    private boolean phoneAuth = false;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROFILE_ID")
+//    @Column(unique = true)
     private Profile profile;
 
-    @Column
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<String> roles = new ArrayList<>();
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    }
-
     @Builder
-    public User(String email, String phone, UUID userCode, String accessToken, String refreshToken, String password) {
+    public User(String email, String phone, UUID userCode, String accessToken, String refreshToken, boolean emailAuth, boolean phoneAuth) {
         this.email = email;
         this.phone = phone;
         this.userCode = userCode;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        this.password = password;
+        this.emailAuth = emailAuth;
+        this.phoneAuth = phoneAuth;
     }
 
-    public void updateEmail(String email) {
-        this.email=email;
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public void updateAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     public void setProfile(Profile profile) {
         this.profile = profile;
     }
 
-    @Override
-    public String getUsername() {
-        return email;
-    }
+    public void updateEmailAuth(boolean emailAuth) { this.emailAuth = emailAuth; }
+    public void updatePhoneAuth(boolean phoneAuth) { this.phoneAuth = phoneAuth; }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
 }
