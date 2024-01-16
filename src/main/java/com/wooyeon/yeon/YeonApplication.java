@@ -17,6 +17,6 @@ public class YeonApplication {
 class HelloController {
     @GetMapping("/")
     String hello() {
-        return "sooooo easy";
+        return "soooooooooooo easy";
     }
 }
