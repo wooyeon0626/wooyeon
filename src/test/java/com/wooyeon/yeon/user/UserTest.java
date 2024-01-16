@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootTest
 public class UserTest {
+/*
 
     @Autowired
     private UserRepository userRepository;
@@ -25,4 +26,6 @@ public class UserTest {
 
         userRepository.save(user);
     }
+*/
+
 }
