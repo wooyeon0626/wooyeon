@@ -16,12 +16,12 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @PostMapping("/list")
-    public List<RoomDto.RoomResponse> findMatchRoomList(@Valid @RequestBody RoomDto.RoomRequest request) {
-        return roomService.matchRoomList(request);
+    @GetMapping("/list")
+    public List<RoomDto.RoomResponse> findMatchRoomList() {
+        return roomService.matchRoomList();
     }
 
-    @PostMapping("/search/list")
+    @GetMapping("/search/list")
     public Set<RoomDto.SearchRoomResponse> searchMatchRoomList(@Valid @RequestBody RoomDto.SearchRoomRequest request) {
         return roomService.searchMatchRoomList(request);
     }

@@ -1,17 +1,23 @@
 package com.wooyeon.yeon.user.domain;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
-@Getter
-@NoArgsConstructor
-//(access = AccessLevel.PROTECTED)
-public class User {
+@AllArgsConstructor
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,6 +48,18 @@ public class User {
 //    @Column(unique = true)
     private Profile profile;
 
+    @Column
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+
     @Builder
     public User(String email, String phone, UUID userCode, String accessToken, String refreshToken, boolean emailAuth, boolean phoneAuth) {
         this.email = email;
@@ -67,5 +85,37 @@ public class User {
 
     public void updateEmailAuth(boolean emailAuth) { this.emailAuth = emailAuth; }
     public void updatePhoneAuth(boolean phoneAuth) { this.phoneAuth = phoneAuth; }
+    public Long getUserId() {return this.userId;}
+    public UUID getUserCode() {return this.userCode;}
+    public String getRefreshToken() {return this.refreshToken;}
 
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }
