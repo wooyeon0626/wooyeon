@@ -23,7 +23,6 @@ public class ChatService {
 
         Chat chat = Chat.builder()
                 .message(stompDto.getMessage())
-                .sender(stompDto.getSender())
                 .sendTime(LocalDateTime.now())
                 .userMatch(userMatch)
                 .build();
