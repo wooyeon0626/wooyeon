@@ -1,8 +1,6 @@
 package com.wooyeon.yeon.user.service;
 
 import com.wooyeon.yeon.user.domain.EmailAuth;
-import com.wooyeon.yeon.user.domain.User;
-import com.wooyeon.yeon.user.dto.EmailAuthRequestDto;
 import com.wooyeon.yeon.user.dto.EmailAuthResponseDto;
 import com.wooyeon.yeon.user.dto.EmailRequestDto;
 import com.wooyeon.yeon.user.dto.EmailResponseDto;
@@ -47,7 +45,6 @@ public class EmailAuthService {
     private static final long EXPIRATION_TIME = 10 * 60 * 1000;
 
     // 이메일 전송 전 중복 확인, 이메일 전송 메서드 호출
-    @Transactional
     @Async
     public EmailResponseDto sendEmail(EmailRequestDto emailRequestDto) throws MessagingException {
         // 인증 코드 만료 시간이 지난 데이터 삭제
@@ -58,11 +55,20 @@ public class EmailAuthService {
         // 이메일 중복 확인 로직 추가
         if (validateDuplicated(emailRequestDto.getEmail())) {
 
+            log.info("certification: " + emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail()).isCertification());
+
             emailResponseDto = EmailResponseDto.builder()
                     .statusCode(HttpStatus.SC_OK) // 오류코드 대신 200 부탁함
-                    .statusName("duplicated")
                     .email(emailRequestDto.getEmail())
                     .build();
+
+
+            if (emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail()).isCertification()) {
+                emailResponseDto.updateStatusName("completed");
+            } else {
+                emailResponseDto.updateStatusName("duplicated");
+            }
+
         } else {
             // 이메일 인증 링크 발송
             sendEmailVerification(emailRequestDto);
@@ -94,7 +100,7 @@ public class EmailAuthService {
         message.setSubject(subject);
         helper.setTo(emailRequestDto.getEmail());
         // addInline 보다 먼저 실행 되어야 함
-        helper.setText(setContext(emailRequestDto.getEmail()+"&"+authToken), true);
+        helper.setText(setContext(emailRequestDto.getEmail() + "&" + authToken), true);
         // addInline을 통해 local에 있는 이미지 삽입 해주기 & html에서 img src='cid:{contentId}'로 설정 해주기
         helper.addInline("wooyeonLogoImage", new ClassPathResource("static/logo_wooyeon_email.png"));
 
@@ -105,18 +111,20 @@ public class EmailAuthService {
         // 이메일+인증토큰 base64로 인코딩
         String url = base64UrlEncode(auth);
         Context context = new Context();
-        String link = "http://localhost:8010/auth/email/verify?auth=" + url;
+        String link = "http://www.wooyeon-1201.n-e.kr/auth/email/verify?auth=" + url;
+//        String link = "http://localhost:8010/auth/email/verify?auth=" + url;
         context.setVariable("link", link); // Template에 전달할 데이터 설정
 
-        log.info("보낸 URL : "+url);
+        log.info("보낸 URL : " + link);
+        log.info("보낸 auth : " + url);
 
         return templateEngine.process("email_authentication", context); // email_authentication.html
     }
 
     // 이메일 인증 처리
     @Transactional
-    public EmailAuthResponseDto verifyEmail(EmailAuthRequestDto emailAuthRequestDto) {
-        String decodeUrl = base64UrlDecode(emailAuthRequestDto.getAuth());
+    public EmailAuthResponseDto verifyEmail(String auth) {
+        String decodeUrl = base64UrlDecode(auth);
 
         // &를 기준으로 문자열 나누기
         String[] parts = decodeUrl.split("&");
@@ -126,8 +134,8 @@ public class EmailAuthService {
         String authToken = parts[1].trim(); // B
 
         // 결과 출력
-        log.info("email= "+email);
-        log.info("authToken= "+authToken);
+        log.info("email:" + email);
+        log.info("authToken:" + authToken);
 
         EmailAuth emailAuth = emailAuthRepository.findEmailAuthByEmailAndAuthToken(email, authToken);
         EmailAuthResponseDto emailAuthResponseDto;
@@ -138,10 +146,6 @@ public class EmailAuthService {
                     .email(email)
                     .build();
             emailAuth.emailVerifiedSuccess();
-
-            User user = userRepository.findByEmail(email);
-            user.updateEmailAuth(true);
-            userRepository.save(user);
 
         } else {
             emailAuthResponseDto = EmailAuthResponseDto.builder()
@@ -163,24 +167,16 @@ public class EmailAuthService {
     }
 
     // EmailAuth 있는 expiredDate가 지난 데이터 삭제
-    @Transactional
     public void deleteExpiredStatusIfExpired() {
         LocalDateTime currentDateTime = LocalDateTime.now();
         emailAuthRepository.deleteExpiredRecords(currentDateTime);
-    }
-
-    public String findAuthTokenByEmail(String email) {
-        EmailAuth emailAuth = emailAuthRepository.findEmailAuthByEmail(email);
-        String authToken = emailAuth.getAuthToken();
-
-        return authToken;
     }
 
     // BASE64 인코딩
     public String base64UrlEncode(String url) {
         String encodedUrl = Base64.getUrlEncoder().encodeToString(url.getBytes());
 
-        log.info("base64 Encode: "+encodedUrl);
+        log.info("base64 Encode: " + encodedUrl);
 
         return encodedUrl;
     }
@@ -190,10 +186,8 @@ public class EmailAuthService {
         byte[] decodedBytes = Base64.getUrlDecoder().decode(auth);
         String decodedUrl = new String(decodedBytes);
 
-        log.info("base64 Decode: "+decodedUrl);
+        log.info("base64 Decode: " + decodedUrl);
 
         return decodedUrl;
     }
-
-    // 문자 나누기
 }

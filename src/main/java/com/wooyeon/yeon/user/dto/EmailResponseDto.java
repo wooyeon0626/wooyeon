@@ -18,4 +18,8 @@ public class EmailResponseDto {
         this.statusName = statusName;
     }
 
+    public void updateStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
 }
