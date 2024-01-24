@@ -20,8 +20,9 @@ public interface EmailAuthRepository extends JpaRepository<EmailAuth, Long> {
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM EmailAuth e WHERE e.expireDate < :currentDateTime")
+    @Query("DELETE FROM EmailAuth e WHERE e.expireDate < :currentDateTime AND e.certification = false")
     void deleteExpiredRecords(@Param("currentDateTime") LocalDateTime currentDateTime);
+
 
 }
 

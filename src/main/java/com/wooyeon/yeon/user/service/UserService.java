@@ -3,8 +3,8 @@ package com.wooyeon.yeon.user.service;
 import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.repository.EmailAuthRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,18 +12,12 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final EmailAuthRepository emailAuthRepository;
     private final EmailAuthService emailAuthService;
-
-    @Autowired
-    public UserService(UserRepository userRepository, EmailAuthRepository emailAuthRepository, EmailAuthService emailAuthService) {
-        this.userRepository = userRepository;
-        this.emailAuthRepository = emailAuthRepository;
-        this.emailAuthService = emailAuthService;
-    }
 
     @Transactional
     public User findByUserId(Long userId) {
@@ -33,5 +27,9 @@ public class UserService {
     @Transactional
     public User findByUserUUID(UUID userCode) {
         return userRepository.findByUserCode(userCode);
+    }
+
+    public void newRsaEncrypt() {
+
     }
 }

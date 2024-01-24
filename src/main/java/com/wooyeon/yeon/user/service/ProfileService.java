@@ -8,6 +8,7 @@ import com.wooyeon.yeon.user.dto.ProfileRequestDto;
 import com.wooyeon.yeon.user.dto.ProfileResponseDto;
 import com.wooyeon.yeon.user.repository.ProfilePhotoRepository;
 import com.wooyeon.yeon.user.repository.ProfileRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ProfileService {
     private final ProfileRepository profileRepository;
     private final ProfilePhotoRepository profilePhotoRepository;
@@ -27,12 +29,6 @@ public class ProfileService {
     private String bucketName;
 
     private final Storage storage;
-
-    public ProfileService(ProfileRepository profileRepository, ProfilePhotoRepository profilePhotoRepository, Storage storage) {
-        this.profileRepository = profileRepository;
-        this.profilePhotoRepository = profilePhotoRepository;
-        this.storage = storage;
-    }
 
     public ProfileResponseDto insertProfile(ProfileRequestDto profileRequestDto, List<MultipartFile> profilePhotoUpload) throws IOException {
 
