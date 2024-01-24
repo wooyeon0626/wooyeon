@@ -30,11 +30,14 @@ public class LoginService {
 
         TokenDto tokenDto = jwtTokenProvider.generateToken(authentication);
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("user is not found"));
+        User user = userRepository.findByEmail(authentication.getName());
 
-        user.setAccessToken(tokenDto.getAccessToken());
-        user.setRefreshToken(tokenDto.getRefreshToken());
+        if (null == user) {
+            throw new IllegalArgumentException("user is not found");
+        }
+
+        user.updateAccessToken(tokenDto.getAccessToken());
+        user.updateRefreshToken(tokenDto.getRefreshToken());
 
         return tokenDto;
     }
@@ -43,11 +46,13 @@ public class LoginService {
     public LogoutDto.LogoutResponse logout(LogoutDto.LogoutRequest logoutRequest) {
         Authentication authentication = jwtTokenProvider.getAuthentication(logoutRequest.getAccessToken());
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("user is not found"));
+        User user = userRepository.findByEmail(authentication.getName());
 
-        user.setAccessToken(null);
-        user.setRefreshToken(null);
+        if (null == user) {
+            throw new IllegalArgumentException("user is not found");
+        }
+        user.updateAccessToken(null);
+        user.updateRefreshToken(null);
 
         return LogoutDto.LogoutResponse.builder()
                 .status("OK")

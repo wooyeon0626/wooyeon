@@ -29,12 +29,10 @@ public class RoomService {
     private final ProfileRepository profileRepository;
     private final ChatRepository chatRepository;
 
-    public List<RoomDto.RoomResponse> matchRoomList(RoomDto.RoomRequest request) {
+    public List<RoomDto.RoomResponse> matchRoomList() {
         List<RoomDto.RoomResponse> roomList = new ArrayList();
 
-        User user = userRepository.findByUserId(request.getUserId());
-
-        List<UserMatch> userMatches = matchRepository.findAllByUser1(user)
+        List<UserMatch> userMatches = matchRepository.findAllByUser1(userRepository.findByUserId(1l))
                 .orElseThrow(() -> new IllegalArgumentException());
 
         for (UserMatch userMatch : userMatches) {
@@ -63,8 +61,6 @@ public class RoomService {
     public Set<RoomDto.SearchRoomResponse> searchMatchRoomList(RoomDto.SearchRoomRequest request) {
         Set<RoomDto.SearchRoomResponse> searchRoomList = null;
 
-        User user = userRepository.findByUserId(request.getUserId());
-
         // 채팅방 내 검색 단어 포함 항목 조회 후 추가
         List<Chat> chatList = chatRepository.findAllByMessageContains(request.getSearchWord());
         for (Chat chat : chatList) {
@@ -83,7 +79,7 @@ public class RoomService {
         }
 
         // 이름이 같은 사람 조회 후 추가
-        List<UserMatch> userMatches = matchRepository.findAllByUser1(user)
+        List<UserMatch> userMatches = matchRepository.findAllByUser1(userRepository.findByUserId(1l))
                 .orElseThrow(() -> new IllegalArgumentException());
 
         for (UserMatch userMatch : userMatches) {

@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.mail.MessagingException;
@@ -28,8 +29,8 @@ public class UserController {
     private final Map<String, SseEmitter> userEmitters = new ConcurrentHashMap<>();
 
 
-    // 사용자의 이메일에 있는 토큰 번호로 인증
-    @PostMapping(value = "/auth/email")
+    // 사용자에게 인증메일 전송 및 프론트엔드와 SSE 연결
+    @PostMapping(value = "/auth/email", produces = "application/json;charset=UTF-8")
     public SseEmitter sendEmailVerify(@RequestBody EmailRequestDto emailRequestDto) throws MessagingException {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         userEmitters.put(emailRequestDto.getEmail(), emitter);
@@ -47,31 +48,22 @@ public class UserController {
         }
         log.info("SSE MSG : "+emitter);
 
-        emitter.onCompletion(() -> userEmitters.remove(emitter));
-        emitter.onTimeout(() -> userEmitters.remove(emitter));
-
         return emitter;
     }
 
+    // 사용자의 이메일 인증 (ModelAndView로 인증완료 페이지 html 보여주기)
+    @GetMapping(value = "/auth/email/verify")
+    public ModelAndView verifyEmail(@RequestParam String auth) {
 
-    @PostMapping(value = "/auth/email/verify")
-    public SseEmitter verifyEmail(@RequestBody EmailAuthRequestDto emailAuthRequestDto) {
+        EmailAuthResponseDto emailAuthResponseDto = emailAuthService.verifyEmail(auth);
+        sendSseEmitter(emailAuthResponseDto);
 
-        EmailAuthResponseDto emailAuthResponseDto = emailAuthService.verifyEmail(emailAuthRequestDto);
-        SseEmitter emitter = userEmitters.get(emailAuthResponseDto.getEmail());
-
-        log.info("SSE EMITTER(VERIFY) : "+emitter);
-        log.info("verify request : "+emailAuthRequestDto);
+        log.info("verify request : "+auth);
         log.info("verify 프론트에게 : "+emailAuthResponseDto);
 
-        if (emitter != null) {
-            try {
-                emitter.send(SseEmitter.event().name("VERIFY").data(emailAuthResponseDto));
-            } catch (IOException e) {
-                emitter.completeWithError(e);
-            }
-        }
-        return emitter;
+        ModelAndView mv = new ModelAndView("email_auth_verify");
+
+        return mv;
     }
 
     // 프로필 등록
@@ -80,6 +72,26 @@ public class UserController {
                                                             @RequestPart(value = "profilePhoto", required = false) List<MultipartFile> profilePhotoUpload) throws IOException {
         ProfileResponseDto profileResponseDto = profileService.insertProfile(profileRequestDto, profilePhotoUpload);
         return ResponseEntity.ok(profileResponseDto);
+    }
+
+    // 이메일 인증 시, 프론트엔드에게 SSE emitter로 인증완료 전송
+    public SseEmitter sendSseEmitter(EmailAuthResponseDto emailAuthResponseDto) {
+        SseEmitter emitter = userEmitters.get(emailAuthResponseDto.getEmail());
+
+        log.info("SSE EMITTER(VERIFY) : "+emitter);
+
+        if (emitter != null) {
+            try {
+                emitter.send(SseEmitter.event().name("VERIFY").data(emailAuthResponseDto));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        }
+
+        emitter.onCompletion(() -> userEmitters.remove(emitter));
+        emitter.onTimeout(() -> userEmitters.remove(emitter));
+
+        return emitter;
     }
 
 }

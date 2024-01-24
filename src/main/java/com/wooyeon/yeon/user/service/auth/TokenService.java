@@ -25,7 +25,7 @@ public class TokenService {
 
         Authentication authentication = jwtTokenProvider.getAuthentication(reissueRequestDto.getAccessToken());
 
-        User user = userRepository.findByEmail(authentication.getName()).get();
+        User user = userRepository.findByEmail(authentication.getName());
 
         if (null == user.getRefreshToken()) {
             throw new RuntimeException("로그아웃 된 유저입니다.");
@@ -37,7 +37,7 @@ public class TokenService {
 
         TokenDto tokenDto = jwtTokenProvider.generateToken(authentication);
 
-        user.setAccessToken(tokenDto.getAccessToken());
+        user.updateAccessToken(tokenDto.getAccessToken());
 
         return ReissueResponseDto.builder()
                 .accessToken(tokenDto.getAccessToken())

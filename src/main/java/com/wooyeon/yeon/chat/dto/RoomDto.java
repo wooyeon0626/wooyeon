@@ -9,11 +9,6 @@ import java.time.LocalDateTime;
 public class RoomDto {
 
     @Getter
-    public static class RoomRequest {
-        private Long userId;
-    }
-
-    @Getter
     @Builder
     public static class RoomResponse {
         private Long matchId;
@@ -21,11 +16,12 @@ public class RoomDto {
         private String name;
         private LocalDateTime lastTime;
         private String lastMessage;
+        private boolean pinToTop;
+        private int unReadChatCount;
     }
 
     @Getter
     public static class SearchRoomRequest {
-        private Long userId;
         private String SearchWord;
     }
 
