@@ -6,6 +6,7 @@ import com.wooyeon.yeon.user.dto.EmailRequestDto;
 import com.wooyeon.yeon.user.dto.EmailResponseDto;
 import com.wooyeon.yeon.user.repository.EmailAuthRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.springframework.context.annotation.PropertySource;
@@ -27,6 +28,7 @@ import java.util.UUID;
 @PropertySource("classpath:application-apikey.properties")
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EmailAuthService {
 
     private final UserRepository userRepository;
@@ -34,20 +36,14 @@ public class EmailAuthService {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
-    public EmailAuthService(EmailAuthRepository emailAuthRepository, JavaMailSender mailSender, UserRepository userRepository, SpringTemplateEngine templateEngine) {
-        this.emailAuthRepository = emailAuthRepository;
-        this.mailSender = mailSender;
-        this.userRepository = userRepository;
-        this.templateEngine = templateEngine;
-    }
-
     // authToken 만료 시간 (10분)
     private static final long EXPIRATION_TIME = 10 * 60 * 1000;
 
     // 이메일 전송 전 중복 확인, 이메일 전송 메서드 호출
     @Async
     public EmailResponseDto sendEmail(EmailRequestDto emailRequestDto) throws MessagingException {
-        // 인증 코드 만료 시간이 지난 데이터 삭제
+
+        // certification이 false이면서(=인증되지 않았으면서) 인증 코드 만료 시간이 지난 데이터 삭제
         deleteExpiredStatusIfExpired();
 
         EmailResponseDto emailResponseDto;
