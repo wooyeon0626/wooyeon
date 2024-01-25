@@ -69,17 +69,17 @@ public class UserController {
     // RSA 공개키 전송
     @GetMapping("/encrypt/key")
     public RsaPublicResponseDto sendRsaPublicKey() {
-        RsaPublicResponseDto rsaPublicResponseDto;
+        RsaPublicResponseDto rsaPublicResponseDto = userService.sendRsaPublicKey();
 
         return rsaPublicResponseDto;
     }
 
     // 암호화된 비밀번호와 RSA 공개키로 암호화된 AES 복호화 키 전달
-    @PostMapping("/encrypt/pw")
+    /*@PostMapping("/encrypt/pw")
     public PasswordEncryptResponseDto passwordEncrypt(@RequestBody PasswordEncryptRequestDto passwordEncryptRequestDto) {
         PasswordEncryptResponseDto passwordEncryptResponseDto;
         return passwordEncryptResponseDto;
-    }
+    }*/
 
     // 프로필 등록
     @PostMapping(value = "/users/register/profile")
