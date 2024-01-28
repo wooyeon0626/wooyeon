@@ -277,3 +277,6 @@ $RECYCLE.BIN/
 
 # gcs key
 gcs-secret.json
+
+# fcm key
+fcm-secret.json
