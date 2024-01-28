@@ -53,15 +53,21 @@ public class UserService {
     public PasswordEncryptResponseDto decodeEncrypt(PasswordEncryptRequestDto passwordEncryptRequestDto)
             throws NoSuchPaddingException, IllegalBlockSizeException, InvalidKeySpecException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
 
-        // AES 암호화 키 및 IV 받아오기
+        String encryptedKey = "ABCDEFGHI1234567";
+        log.info("RSA 공개키로 암호화 된 키(decodedKey) : {}", encryptedKey);
 
+        // RSA 개인키로 복호화해서 AES Key+IV 원문 받아오기
+        String decodedKey = RsaUtil.rsaDecode(encryptedKey, RsaUtil.sendPrivateKey());
+        log.info("RSA 공개키로 복호화한 키(decodedKey) : {}", decodedKey);
 
-        String encryptedPassword = "ABCDEFGHI1234567";
-        log.info("RSA 공개키로 암호화 된 암호(encryptedPassword) : {}",encryptedPassword);
+        // IV와 AES Key로 나누기
 
-        // RSA 개인키로 복호화해서 비밀번호 원문 받아오기
-        String decodedPassword = RsaUtil.rsaDecode(encryptedPassword, RsaUtil.sendPrivateKey());
-        log.info("password 원문 : {}", decodedPassword);
+        log.info("IV: {}");
+        log.info("AES Key: {}");
+
+        // AES Key 로 비밀번호 복호화해서 원문 받아오기
+        String decodedPassword = "ABC";
+        log.info("AES로 복호화한 원문 : {}", decodedPassword);
 
         // 비밀번호 + salt를 SHA256으로 암호화
         String salt = createSalt();
