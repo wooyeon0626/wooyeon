@@ -4,7 +4,6 @@ import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,8 +26,12 @@ public class Chat {
     @Column(length = 2000)
     private String message;
 
+    @Column(name = "is_checked")
     private boolean isChecked;
 
-    @Column
+    @Column(name = "is_sender")
+    private boolean isSender;
+
+    @Column(name = "send_time")
     private LocalDateTime sendTime;
 }

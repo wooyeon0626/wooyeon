@@ -13,4 +13,5 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
     Optional<Chat> findFirstByUserMatchOrderBySendTimeDesc(UserMatch userMatch);
     List<Chat> findAllByMessageContains(String searchWord);
     Long findCountByIsChecked(boolean isChecked);
+    List<Chat> findAllByUserMatchIdOOrderBySendTime(Long matchId);
 }
