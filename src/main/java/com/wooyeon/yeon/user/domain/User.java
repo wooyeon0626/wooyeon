@@ -16,7 +16,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -45,7 +47,6 @@ public class User implements UserDetails {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROFILE_ID")
-//    @Column(unique = true)
     private Profile profile;
 
     @Column
@@ -61,7 +62,7 @@ public class User implements UserDetails {
     }
 
     @Builder
-    public User(String email, String phone, UUID userCode, String accessToken, String refreshToken, boolean emailAuth, boolean phoneAuth) {
+    public User(String email, String password, String phone, UUID userCode, String accessToken, String refreshToken, boolean emailAuth, boolean phoneAuth) {
         this.email = email;
         this.phone = phone;
         this.userCode = userCode;
@@ -69,6 +70,7 @@ public class User implements UserDetails {
         this.refreshToken = refreshToken;
         this.emailAuth = emailAuth;
         this.phoneAuth = phoneAuth;
+        this.password = password;
     }
 
     public void updateRefreshToken(String refreshToken) {
@@ -91,12 +93,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return this.email;
     }
 
     @Override
