@@ -13,6 +13,6 @@ import java.util.Optional;
  */
 public interface MatchRepository extends JpaRepository<UserMatch, Long>, MatchRepositoryRecommandUserList {
 
-    Optional<List<UserMatch>> findAllByUser1(User UserLikeId1);
+    List<UserMatch> findAllByUser1OrUser2(User userId1, User userId2);
     Optional<List<UserMatch>> findAllByUser1(Long userId);
 }

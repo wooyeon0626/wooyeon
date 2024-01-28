@@ -3,6 +3,7 @@ package com.wooyeon.yeon.chat.controller;
 import com.wooyeon.yeon.chat.dto.RoomDto;
 import com.wooyeon.yeon.chat.service.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,12 +18,13 @@ public class RoomController {
     private final RoomService roomService;
 
     @GetMapping("/list")
-    public List<RoomDto.RoomResponse> findMatchRoomList() {
-        return roomService.matchRoomList();
+    public List<RoomDto.RoomResponse> findMatchRoomList(Authentication authentication) {
+        return roomService.matchRoomList(authentication.getName());
     }
 
     @GetMapping("/search/list")
-    public Set<RoomDto.SearchRoomResponse> searchMatchRoomList(@Valid @RequestBody RoomDto.SearchRoomRequest request) {
-        return roomService.searchMatchRoomList(request);
+    public Set<RoomDto.SearchRoomResponse> searchMatchRoomList(
+            @Valid @RequestBody RoomDto.SearchRoomRequest request, Authentication authentication) {
+        return roomService.searchMatchRoomList(request, authentication.getName());
     }
 }

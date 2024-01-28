@@ -1,6 +1,5 @@
 package com.wooyeon.yeon.user.domain;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -90,6 +89,8 @@ public class User implements UserDetails {
     public Long getUserId() {return this.userId;}
     public UUID getUserCode() {return this.userCode;}
     public String getRefreshToken() {return this.refreshToken;}
+    public String getUserEmail() {return this.email;}
+    public Profile getUserProfile() {return this.profile;}
 
     @Override
     public String getPassword() {

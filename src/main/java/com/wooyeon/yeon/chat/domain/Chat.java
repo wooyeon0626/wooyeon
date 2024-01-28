@@ -27,6 +27,8 @@ public class Chat {
     @Column(length = 2000)
     private String message;
 
+    private boolean isChecked;
+
     @Column
     private LocalDateTime sendTime;
 }

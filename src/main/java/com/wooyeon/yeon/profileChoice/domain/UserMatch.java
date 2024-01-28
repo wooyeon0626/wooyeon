@@ -27,22 +27,16 @@ public class UserMatch {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id1")
     private User user1;
-    //@JoinColumn(name = "user_like_id1")
-    //private UserLike userLike1;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id2")
     private User user2;
-    //@JoinColumn(name = "user_like_id2")
-    //private UserLike userLike2;
 
     private Timestamp generateTime;
 
     @Builder
     public UserMatch(Long matchId, User user1, User user2, Timestamp generateTime) {
         this.matchId = matchId;
-//        this.userLike1 = userLike1;
-//        this.userLike2 = userLike2;
         this.user1 = user1;
         this.user2 = user2;
         this.generateTime = generateTime;

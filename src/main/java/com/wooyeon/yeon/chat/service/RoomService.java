@@ -14,10 +14,7 @@ import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,73 +26,121 @@ public class RoomService {
     private final ProfileRepository profileRepository;
     private final ChatRepository chatRepository;
 
-    public List<RoomDto.RoomResponse> matchRoomList() {
+    public List<RoomDto.RoomResponse> matchRoomList(String userEmail) {
+
+        User loginUser = userRepository.findOptionalByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
+
+        List<UserMatch> userMatchList = matchRepository.findAllByUser1OrUser2(loginUser, loginUser);
+
         List<RoomDto.RoomResponse> roomList = new ArrayList();
 
-        List<UserMatch> userMatches = matchRepository.findAllByUser1(userRepository.findByUserId(1l))
-                .orElseThrow(() -> new IllegalArgumentException());
+        if (0 < userMatchList.size()) {
+            for (UserMatch userMatch : userMatchList) {
+                Long matchUserId = getMatchUserId(userMatch, loginUser);
 
-        for (UserMatch userMatch : userMatches) {
+                // 상대방 프로필 정보 조회
+                Profile profile = profileRepository.findById(
+                                userRepository.findByUserId(matchUserId).getUserProfile().getId())
+                        .orElseThrow(() -> new IllegalArgumentException("User Profile does not exist"));
 
-            // 상대방 프로필 정보 조회
-            Profile profile = profileRepository.findById(userMatch.getUser2().getUserId())
-                    .orElseThrow(() -> new IllegalArgumentException());
+                Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.getId());
 
-            Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.getId());
+                Optional<Chat> lastChatInfo = chatRepository.findFirstByUserMatchOrderBySendTimeDesc(userMatch);
 
-            Chat lastChatInfo = chatRepository.findFirstByUserMatchOrderBySendTimeDesc(userMatch);
-
-            RoomDto.RoomResponse response = RoomDto.RoomResponse.builder()
-                    .matchId(userMatch.getMatchId())
-                    .profilePhoto(profilePhoto.get().getProfilePhotoId())
-                    .name(profile.getNickname())
-                    .lastTime(lastChatInfo.getSendTime())
-                    .lastMessage(lastChatInfo.getMessage())
-                    .build();
-
-            roomList.add(response);
+                roomList.add(makeRoomResponse(userMatch, profile, profilePhoto, lastChatInfo));
+            }
         }
+
         return roomList;
     }
 
-    public Set<RoomDto.SearchRoomResponse> searchMatchRoomList(RoomDto.SearchRoomRequest request) {
-        Set<RoomDto.SearchRoomResponse> searchRoomList = null;
+    public RoomDto.RoomResponse makeRoomResponse(
+            UserMatch userMatch, Profile profile, Optional<ProfilePhoto> profilePhoto, Optional<Chat> lastChatInfo) {
+
+        RoomDto.RoomResponse response = RoomDto.RoomResponse.builder()
+                .matchId(userMatch.getMatchId())
+                .profilePhoto(null == profilePhoto ? null : profilePhoto.get().getPhotoUrl())
+                .name(profile.getNickname())
+                .unReadChatCount(chatRepository.findCountByIsChecked(false))
+//                        .pinToTop()
+                .build();
+
+        if (lastChatInfo.isPresent()) {
+            response = RoomDto.updateChatInfo(response, lastChatInfo.get());
+        }
+
+        return response;
+    }
+
+    public Long getMatchUserId(UserMatch userMatch, User loginUser) {
+
+        if (userMatch.getUser1().getUserEmail().equals(loginUser.getUserEmail())) {
+            return userMatch.getUser2().getUserId();
+        }
+
+        return userMatch.getUser1().getUserId();
+    }
+
+    public Set<RoomDto.SearchRoomResponse> searchMatchRoomList(RoomDto.SearchRoomRequest request, String userEmail) {
+
+        User loginUser = userRepository.findOptionalByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
 
         // 채팅방 내 검색 단어 포함 항목 조회 후 추가
         List<Chat> chatList = chatRepository.findAllByMessageContains(request.getSearchWord());
-        for (Chat chat : chatList) {
-            UserMatch userMatch = chat.getUserMatch();
 
-            Optional<Profile> profile = profileRepository.findById(userMatch.getUser2().getUserId());
-            Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.get().getId());
+        Set<RoomDto.SearchRoomResponse> searchRoomList = new HashSet<>();
 
-            RoomDto.SearchRoomResponse response = RoomDto.SearchRoomResponse.builder()
-                    .matchId(userMatch.getMatchId())
-                    .profilePhoto(profilePhoto.get().getProfilePhotoId())
-                    .name(profile.get().getNickname())
-                    .build();
+        if (0 < chatList.size()) {
+            for (Chat chat : chatList) {
+                UserMatch userMatch = chat.getUserMatch();
 
-            searchRoomList.add(response);
-        }
+                Long matchUserId = getMatchUserId(userMatch, loginUser);
 
-        // 이름이 같은 사람 조회 후 추가
-        List<UserMatch> userMatches = matchRepository.findAllByUser1(userRepository.findByUserId(1l))
-                .orElseThrow(() -> new IllegalArgumentException());
+                // 상대방 프로필 정보 조회
+                Profile profile = profileRepository.findById(
+                                userRepository.findByUserId(matchUserId).getUserProfile().getId())
+                        .orElseThrow(() -> new IllegalArgumentException("User Profile does not exist"));
 
-        for (UserMatch userMatch : userMatches) {
-            Long matchId = userMatch.getMatchId();
+                Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.getId());
 
-            Optional<Profile> profile = profileRepository.findByNicknameContains(request.getSearchWord());
-            Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.get().getId());
-
-            if(profile.isPresent()) {
                 RoomDto.SearchRoomResponse response = RoomDto.SearchRoomResponse.builder()
-                        .matchId(matchId)
-                        .profilePhoto(profilePhoto.get().getProfilePhotoId())
-                        .name(profile.get().getNickname())
+                        .matchId(userMatch.getMatchId())
+                        .profilePhoto(null == profilePhoto ? null : profilePhoto.get().getPhotoUrl())
+                        .name(profile.getNickname())
                         .build();
 
                 searchRoomList.add(response);
+            }
+        }
+
+        // 이름이 같은 사람 조회 후 추가
+        List<UserMatch> userMatchList = matchRepository.findAllByUser1OrUser2(loginUser, loginUser);
+
+        if (0 < userMatchList.size()) {
+            for (UserMatch userMatch : userMatchList) {
+
+                Long matchUserId = getMatchUserId(userMatch, loginUser);
+
+                // 상대방 프로필 정보 조회
+                Profile profile = profileRepository.findById(
+                                userRepository.findByUserId(matchUserId).getUserProfile().getId())
+                        .orElseThrow(() -> new IllegalArgumentException("User Profile does not exist"));
+
+                Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.getId());
+
+                String matchUserNickname = profile.getNickname();
+
+                if(matchUserNickname.equals(request.getSearchWord())) {
+                    RoomDto.SearchRoomResponse response = RoomDto.SearchRoomResponse.builder()
+                            .matchId(matchUserId)
+                            .profilePhoto(null == profilePhoto ? null : profilePhoto.get().getPhotoUrl())
+                            .name(matchUserNickname)
+                            .build();
+
+                    searchRoomList.add(response);
+                }
             }
         }
 
