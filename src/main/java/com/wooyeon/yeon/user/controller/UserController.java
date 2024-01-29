@@ -86,7 +86,7 @@ public class UserController {
     // 암호화된 비밀번호와 RSA 공개키로 암호화된 AES 복호화 키 전달
     @PostMapping("/encrypt/pw")
     public PasswordEncryptResponseDto passwordEncrypt(@RequestBody PasswordEncryptRequestDto passwordEncryptRequestDto)
-            throws NoSuchPaddingException, IllegalBlockSizeException, InvalidKeySpecException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+            throws Exception {
         PasswordEncryptResponseDto passwordEncryptResponseDto = userService.decodeEncrypt(passwordEncryptRequestDto);
         return passwordEncryptResponseDto;
     }

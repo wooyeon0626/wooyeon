@@ -5,6 +5,7 @@ import com.wooyeon.yeon.user.dto.PasswordEncryptRequestDto;
 import com.wooyeon.yeon.user.dto.PasswordEncryptResponseDto;
 import com.wooyeon.yeon.user.dto.RsaPublicResponseDto;
 import com.wooyeon.yeon.user.repository.UserRepository;
+import com.wooyeon.yeon.user.service.encrypt.AesUtil;
 import com.wooyeon.yeon.user.service.encrypt.RsaUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 import java.util.UUID;
 
 @Slf4j
@@ -29,6 +31,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RsaUtil rsaUtil;
+    private final AesUtil aesUtil;
 
     @Transactional
     public User findByUserId(Long userId) {
@@ -51,28 +54,39 @@ public class UserService {
     }
 
     public PasswordEncryptResponseDto decodeEncrypt(PasswordEncryptRequestDto passwordEncryptRequestDto)
-            throws NoSuchPaddingException, IllegalBlockSizeException, InvalidKeySpecException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-
-        String encryptedKey = "ABCDEFGHI1234567";
+            throws Exception {
+        String key = "abcd1234abcd1234mokamoka8888";
+        String encryptedKey = RsaUtil.rsaEncode(key, RsaUtil.sendPublicKey());
         log.info("RSA 공개키로 암호화 된 키(decodedKey) : {}", encryptedKey);
 
-        // RSA 개인키로 복호화해서 AES Key+IV 원문 받아오기
+        // RSA 개인키로 복호화해서 AES Key + IV 원문 받아오기
         String decodedKey = RsaUtil.rsaDecode(encryptedKey, RsaUtil.sendPrivateKey());
         log.info("RSA 공개키로 복호화한 키(decodedKey) : {}", decodedKey);
 
         // IV와 AES Key로 나누기
+        String base64AesKey = decodedKey.substring(0, 16);
+        String base64Iv = decodedKey.substring(16);
 
-        log.info("IV: {}");
-        log.info("AES Key: {}");
+        // Base64 디코딩
+        byte[] aesKeyBytes = Base64.getDecoder().decode(base64AesKey);
+        byte[] ivBytes = Base64.getDecoder().decode(base64Iv);
+
+        String aesKey = new String(aesKeyBytes);
+        String iv = new String(ivBytes);
+
+        log.info("IV: {}", iv);
+        log.info("AES Key: {}", aesKey);
 
         // AES Key 로 비밀번호 복호화해서 원문 받아오기
-        String decodedPassword = "ABC";
+        String decodedPassword = aesUtil.decrypt(passwordEncryptRequestDto.getEncryptedPassword(), aesKey, iv);
         log.info("AES로 복호화한 원문 : {}", decodedPassword);
 
         // 비밀번호 + salt를 SHA256으로 암호화
         String salt = createSalt();
         String password = decodedPassword+salt;
         String finalPassword = encryptSha256(password);
+        log.info("salt : {}", salt);
+        log.info("finalPassword : {}", finalPassword);
 
         // User 테이블에 저장
         User user = User.builder()
