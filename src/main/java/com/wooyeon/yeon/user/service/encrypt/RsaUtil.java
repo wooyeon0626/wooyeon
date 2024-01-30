@@ -15,7 +15,7 @@ import java.util.Base64;
 @Component
 @Log4j2
 public class RsaUtil {
-    private static final String INSTANCE_TYPE = "RSA/ECB/PKCS8";
+    private static final String INSTANCE_TYPE = "RSA";
     private static final KeyPair keyPair = generateKeyPair();
 
     private static KeyPair generateKeyPair() {
@@ -42,9 +42,9 @@ public class RsaUtil {
     public static byte[] rsaDecode(String encryptedPassword, String privateKey)
             throws InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         byte[] encryptedPasswordByte = Base64.getDecoder().decode(encryptedPassword.getBytes());
-        log.info("RSA Util encryptedPasswordByte : {}",encryptedPasswordByte);
+        log.info("RSA Util encryptedPasswordByte : {}", encryptedPasswordByte);
 
-        Cipher cipher = Cipher.getInstance(INSTANCE_TYPE);
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, convertPrivateKey(privateKey));
         log.info("decrypt init 성공!!!");
 
