@@ -43,8 +43,6 @@ public class UserService {
                 .publicKey(RsaUtil.sendPublicKey())
                 .build();
 
-        log.info("Service public key: {}", RsaUtil.sendPublicKey());
-
         return rsaPublicResponseDto;
     }
 
@@ -61,13 +59,9 @@ public class UserService {
         log.info("base64Iv : {}", base64Iv);
 
         // 2. Base64 디코딩
-        // byte[] aesKeyBytes = Base64.getDecoder().decode(base64AesKey);
-        log.info("BASE64 iv 디코딩");
         byte[] ivBytes = Base64.getDecoder().decode(base64Iv);
 
         // 3.RSA 개인키로 Session Key(AES Key) 복호화
-        // String aesKey = new String(aesKeyBytes);
-//        String iv = new String(ivBytes);
         log.info("RSA 디코딩 시작");
         byte[] decodedKey = RsaUtil.rsaDecode(base64AesKey, RsaUtil.sendPrivateKey());
 
