@@ -72,4 +72,7 @@ public class RsaUtil {
     public static String sendPublicKey() {
         return base64EncodeToString(keyPair.getPublic().getEncoded());
     }
+    public static String sendPrivateKey() {
+        return base64EncodeToString(keyPair.getPrivate().getEncoded());
+    }
 }
