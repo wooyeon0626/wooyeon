@@ -13,14 +13,9 @@ import org.apache.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -55,17 +50,16 @@ public class UserService {
 
     public PasswordEncryptResponseDto decodeEncrypt(PasswordEncryptRequestDto passwordEncryptRequestDto)
             throws Exception {
-        String key = "abcd1234abcd1234mokamoka8888";
-        String encryptedKey = RsaUtil.rsaEncode(key, RsaUtil.sendPublicKey());
-        log.info("RSA 공개키로 암호화 된 키(decodedKey) : {}", encryptedKey);
+        String key = passwordEncryptRequestDto.getEncryptedKey();
+        log.info("RSA 공개키로 암호화 된 키(decodedKey) : {}", key);
 
         // RSA 개인키로 복호화해서 AES Key + IV 원문 받아오기
-        String decodedKey = RsaUtil.rsaDecode(encryptedKey, RsaUtil.sendPrivateKey());
+        String decodedKey = RsaUtil.rsaDecode(key, RsaUtil.sendPrivateKey());
         log.info("RSA 공개키로 복호화한 키(decodedKey) : {}", decodedKey);
 
         // IV와 AES Key로 나누기
-        String base64AesKey = decodedKey.substring(0, 16);
-        String base64Iv = decodedKey.substring(16);
+        String base64AesKey = decodedKey.split("|")[1];
+        String base64Iv = decodedKey.split("|")[0];
 
         // Base64 디코딩
         byte[] aesKeyBytes = Base64.getDecoder().decode(base64AesKey);
