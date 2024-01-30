@@ -50,29 +50,29 @@ public class UserService {
 
     public PasswordEncryptResponseDto decodeEncrypt(PasswordEncryptRequestDto passwordEncryptRequestDto)
             throws Exception {
-        String key = passwordEncryptRequestDto.getEncryptedKey();
-        log.info("RSA 공개키로 암호화 된 키(decodedKey) : {}", key);
+        String encryptedKey = passwordEncryptRequestDto.getEncryptedKey();
+        log.info("RSA 공개키로 암호화 된 키(encryptedKey) : {}", encryptedKey);
 
-        // RSA 개인키로 복호화해서 AES Key + IV 원문 받아오기
-        String decodedKey = RsaUtil.rsaDecode(key, RsaUtil.sendPrivateKey());
-        log.info("RSA 공개키로 복호화한 키(decodedKey) : {}", decodedKey);
+        // 1. |로 IV와 AES Key로 나누기
+        String base64AesKey = encryptedKey.split("|")[1];
+        String base64Iv = encryptedKey.split("|")[0];
 
-        // IV와 AES Key로 나누기
-        String base64AesKey = decodedKey.split("|")[1];
-        String base64Iv = decodedKey.split("|")[0];
-
-        // Base64 디코딩
-        byte[] aesKeyBytes = Base64.getDecoder().decode(base64AesKey);
+        // 2. Base64 디코딩
+        // byte[] aesKeyBytes = Base64.getDecoder().decode(base64AesKey);
         byte[] ivBytes = Base64.getDecoder().decode(base64Iv);
 
-        String aesKey = new String(aesKeyBytes);
-        String iv = new String(ivBytes);
+        // 3.RSA 개인키로 Session Key(AES Key) 복호화
+        // String aesKey = new String(aesKeyBytes);
+//        String iv = new String(ivBytes);
 
-        log.info("IV: {}", iv);
-        log.info("AES Key: {}", aesKey);
+        byte[] decodedKey = RsaUtil.rsaDecode(base64AesKey, RsaUtil.sendPrivateKey());
 
+        log.info("디코딩된 IV: {}", ivBytes);
+        log.info("복호화된 AES Key: {}", decodedKey);
+
+        // 4. IV, SessionKey로 암호화된 비밀번호 복호화
         // AES Key 로 비밀번호 복호화해서 원문 받아오기
-        String decodedPassword = aesUtil.decrypt(passwordEncryptRequestDto.getEncryptedPassword(), aesKey, iv);
+        String decodedPassword = aesUtil.decrypt(passwordEncryptRequestDto.getEncryptedPassword(), decodedKey, ivBytes);
         log.info("AES로 복호화한 원문 : {}", decodedPassword);
 
         // 비밀번호 + salt를 SHA256으로 암호화
