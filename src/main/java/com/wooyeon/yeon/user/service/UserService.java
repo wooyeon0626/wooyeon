@@ -54,8 +54,9 @@ public class UserService {
         log.info("RSA 공개키로 암호화 된 키(encryptedKey) : {}", encryptedKey);
 
         // 1. |로 IV와 AES Key로 나누기
-        String base64AesKey = encryptedKey.split("|")[1];
-        String base64Iv = encryptedKey.split("|")[0];
+        String[] key = encryptedKey.split("|");
+        String base64AesKey = key[1];
+        String base64Iv = key[0];
         log.info("base64AesKey : {}", base64AesKey);
         log.info("base64Iv : {}", base64Iv);
 
