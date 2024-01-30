@@ -50,7 +50,7 @@ public class RsaUtil {
         log.info("decrypt init 성공!!!");
         log.info("cipher 길이 : {}", cipher.doFinal(encryptedPasswordByte));
 
-        return cipher.doFinal(encryptedPasswordByte);
+        return Base64.getDecoder().decode(cipher.doFinal(encryptedPasswordByte));
     }
 
     public static PublicKey convertPublicKey(String publicKey)

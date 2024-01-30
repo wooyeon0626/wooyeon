@@ -60,7 +60,6 @@ public class UserService {
         log.info("base64AesKey : {}", base64AesKey);
         log.info("base64Iv : {}", base64Iv);
 
-
         // 2. Base64 디코딩
         // byte[] aesKeyBytes = Base64.getDecoder().decode(base64AesKey);
         log.info("BASE64 iv 디코딩");
