@@ -15,7 +15,7 @@ import java.util.Base64;
 @Component
 @Log4j2
 public class RsaUtil {
-    private static final String INSTANCE_TYPE = "RSA";
+    private static final String INSTANCE_TYPE = "RSA/ECB/PKCS8";
     private static final KeyPair keyPair = generateKeyPair();
 
     private static KeyPair generateKeyPair() {
