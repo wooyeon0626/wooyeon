@@ -42,9 +42,11 @@ public class RsaUtil {
     public static byte[] rsaDecode(String encryptedPassword, String privateKey)
             throws InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         byte[] encryptedPasswordByte = Base64.getDecoder().decode(encryptedPassword.getBytes());
+        log.info("RSA Util encryptedPasswordByte : {}",encryptedPasswordByte);
 
         Cipher cipher = Cipher.getInstance(INSTANCE_TYPE);
         cipher.init(Cipher.DECRYPT_MODE, convertPrivateKey(privateKey));
+        log.info("decrypt init 성공!!!");
 
         return cipher.doFinal(encryptedPasswordByte);
     }

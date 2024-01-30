@@ -56,15 +56,19 @@ public class UserService {
         // 1. |로 IV와 AES Key로 나누기
         String base64AesKey = encryptedKey.split("|")[1];
         String base64Iv = encryptedKey.split("|")[0];
+        log.info("base64AesKey : {}", base64AesKey);
+        log.info("base64Iv : {}", base64Iv);
+
 
         // 2. Base64 디코딩
         // byte[] aesKeyBytes = Base64.getDecoder().decode(base64AesKey);
+        log.info("BASE64 iv 디코딩");
         byte[] ivBytes = Base64.getDecoder().decode(base64Iv);
 
         // 3.RSA 개인키로 Session Key(AES Key) 복호화
         // String aesKey = new String(aesKeyBytes);
 //        String iv = new String(ivBytes);
-
+        log.info("RSA 디코딩 시작");
         byte[] decodedKey = RsaUtil.rsaDecode(base64AesKey, RsaUtil.sendPrivateKey());
 
         log.info("디코딩된 IV: {}", ivBytes);
