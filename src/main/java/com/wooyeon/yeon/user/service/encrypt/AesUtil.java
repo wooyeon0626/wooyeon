@@ -14,9 +14,6 @@ import java.util.Base64;
 public class AesUtil {
 
     public static String decrypt(String ciphertext, byte[] aesKeyBytes, byte[] ivBytes) throws Exception {
-        // AES 키 및 IV 디코딩
-        // byte[] aesKeyBytes = Base64.getDecoder().decode(aesKeyBase64);
-        // byte[] ivBytes = Base64.getDecoder().decode(ivBase64);
 
         // AES 키 및 IV 생성
         SecretKey secretKey = new SecretKeySpec(aesKeyBytes, "AES");

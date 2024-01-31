@@ -43,13 +43,21 @@ public class UserService {
                 .publicKey(RsaUtil.sendPublicKey())
                 .build();
 
-        log.info("Service public key: {}", RsaUtil.sendPublicKey());
-
         return rsaPublicResponseDto;
     }
 
     public PasswordEncryptResponseDto decodeEncrypt(PasswordEncryptRequestDto passwordEncryptRequestDto)
             throws Exception {
+        // 이미 등록된 이메일인지 확인
+        if (userRepository.findByEmail(passwordEncryptRequestDto.getEmail()) != null) {
+            // 이미 등록된 이메일인 경우 수행을 멈추고 중복됐다는 값을 return
+            PasswordEncryptResponseDto duplicateResponseDto = PasswordEncryptResponseDto.builder()
+                    .statusCode(HttpStatus.SC_BAD_REQUEST)
+                    .statusName("duplicated")
+                    .build();
+            return duplicateResponseDto;
+        }
+
         String encryptedKey = passwordEncryptRequestDto.getEncryptedKey();
         log.info("RSA 공개키로 암호화 된 키(encryptedKey) : {}", encryptedKey);
 
@@ -61,13 +69,9 @@ public class UserService {
         log.info("base64Iv : {}", base64Iv);
 
         // 2. Base64 디코딩
-        // byte[] aesKeyBytes = Base64.getDecoder().decode(base64AesKey);
-        log.info("BASE64 iv 디코딩");
         byte[] ivBytes = Base64.getDecoder().decode(base64Iv);
 
         // 3.RSA 개인키로 Session Key(AES Key) 복호화
-        // String aesKey = new String(aesKeyBytes);
-//        String iv = new String(ivBytes);
         log.info("RSA 디코딩 시작");
         byte[] decodedKey = RsaUtil.rsaDecode(base64AesKey, RsaUtil.sendPrivateKey());
 
