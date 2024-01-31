@@ -48,6 +48,16 @@ public class UserService {
 
     public PasswordEncryptResponseDto decodeEncrypt(PasswordEncryptRequestDto passwordEncryptRequestDto)
             throws Exception {
+        // 이미 등록된 이메일인지 확인
+        if (userRepository.findByEmail(passwordEncryptRequestDto.getEmail()) != null) {
+            // 이미 등록된 이메일인 경우 수행을 멈추고 중복됐다는 값을 return
+            PasswordEncryptResponseDto duplicateResponseDto = PasswordEncryptResponseDto.builder()
+                    .statusCode(HttpStatus.SC_BAD_REQUEST)
+                    .statusName("duplicated")
+                    .build();
+            return duplicateResponseDto;
+        }
+
         String encryptedKey = passwordEncryptRequestDto.getEncryptedKey();
         log.info("RSA 공개키로 암호화 된 키(encryptedKey) : {}", encryptedKey);
 
