@@ -41,9 +41,12 @@ public class User implements UserDetails {
 
     private String refreshToken;
 
-    @Column()
+    @Column
     private boolean emailAuth = false;
     private boolean phoneAuth = false;
+
+    @Column
+    private String salt;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROFILE_ID")
@@ -62,7 +65,7 @@ public class User implements UserDetails {
     }
 
     @Builder
-    public User(String email, String password, String phone, UUID userCode, String accessToken, String refreshToken, boolean emailAuth, boolean phoneAuth) {
+    public User(String email, String phone, UUID userCode, String accessToken, String refreshToken, boolean emailAuth, boolean phoneAuth, String password, String salt) {
         this.email = email;
         this.phone = phone;
         this.userCode = userCode;
@@ -70,6 +73,7 @@ public class User implements UserDetails {
         this.refreshToken = refreshToken;
         this.emailAuth = emailAuth;
         this.phoneAuth = phoneAuth;
+        this.salt = salt;
         this.password = password;
     }
 
@@ -80,6 +84,9 @@ public class User implements UserDetails {
     public void updateAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
+
+    public void updatePassword(String password) { this.password = password; }
+    public void updateSalt(String salt) { this.salt = salt; }
 
     public void setProfile(Profile profile) {
         this.profile = profile;

@@ -39,14 +39,14 @@ public class RsaUtil {
         return base64EncodeToString(passwordByte);
     }
 
-    public static String rsaDecode(String encryptedPassword, String privateKey)
+    public static byte[] rsaDecode(String encryptedPassword, String privateKey)
             throws InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         byte[] encryptedPasswordByte = Base64.getDecoder().decode(encryptedPassword.getBytes());
 
-        Cipher cipher = Cipher.getInstance(INSTANCE_TYPE);
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, convertPrivateKey(privateKey));
 
-        return new String(cipher.doFinal(encryptedPasswordByte));
+        return Base64.getDecoder().decode(cipher.doFinal(encryptedPasswordByte));
     }
 
     public static PublicKey convertPublicKey(String publicKey)
@@ -71,5 +71,8 @@ public class RsaUtil {
 
     public static String sendPublicKey() {
         return base64EncodeToString(keyPair.getPublic().getEncoded());
+    }
+    public static String sendPrivateKey() {
+        return base64EncodeToString(keyPair.getPrivate().getEncoded());
     }
 }

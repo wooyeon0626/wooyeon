@@ -1,6 +1,9 @@
 package com.wooyeon.yeon.user.controller;
 
 import com.wooyeon.yeon.user.dto.*;
+import com.wooyeon.yeon.user.dto.emailAuth.EmailAuthResponseDto;
+import com.wooyeon.yeon.user.dto.emailAuth.EmailRequestDto;
+import com.wooyeon.yeon.user.dto.emailAuth.EmailResponseDto;
 import com.wooyeon.yeon.user.service.EmailAuthService;
 import com.wooyeon.yeon.user.service.ProfileService;
 import com.wooyeon.yeon.user.service.UserService;
@@ -75,11 +78,12 @@ public class UserController {
     }
 
     // 암호화된 비밀번호와 RSA 공개키로 암호화된 AES 복호화 키 전달
-    /*@PostMapping("/encrypt/pw")
-    public PasswordEncryptResponseDto passwordEncrypt(@RequestBody PasswordEncryptRequestDto passwordEncryptRequestDto) {
-        PasswordEncryptResponseDto passwordEncryptResponseDto;
+    @PostMapping("/encrypt/pw")
+    public PasswordEncryptResponseDto passwordEncrypt(@RequestBody PasswordEncryptRequestDto passwordEncryptRequestDto)
+            throws Exception {
+        PasswordEncryptResponseDto passwordEncryptResponseDto = userService.decodeEncrypt(passwordEncryptRequestDto);
         return passwordEncryptResponseDto;
-    }*/
+    }
 
     // 프로필 등록
     @PostMapping(value = "/users/register/profile")
