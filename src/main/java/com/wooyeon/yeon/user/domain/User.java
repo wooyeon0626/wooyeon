@@ -1,6 +1,5 @@
 package com.wooyeon.yeon.user.domain;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -42,7 +41,10 @@ public class User implements UserDetails {
     private String refreshToken;
 
     @Column
+    @Builder.Default
     private boolean emailAuth = false;
+
+    @Builder.Default
     private boolean phoneAuth = false;
 
     @Column
