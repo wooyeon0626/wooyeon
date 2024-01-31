@@ -7,7 +7,6 @@ import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.ProfilePhoto;
-import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.repository.ProfilePhotoRepository;
 import com.wooyeon.yeon.user.repository.ProfileRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
@@ -30,7 +29,7 @@ public class RoomService {
     private final ChatRepository chatRepository;
 
     public List<RoomDto.RoomResponse> matchRoomList() {
-        List<RoomDto.RoomResponse> roomList = new ArrayList();
+        List<RoomDto.RoomResponse> roomList = new ArrayList<>();
 
         List<UserMatch> userMatches = matchRepository.findAllByUser1(userRepository.findByUserId(1l))
                 .orElseThrow(() -> new IllegalArgumentException());
