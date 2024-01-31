@@ -1,8 +1,5 @@
 package com.wooyeon.yeon;
 
-import com.wooyeon.yeon.user.service.SmsAuthService;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest

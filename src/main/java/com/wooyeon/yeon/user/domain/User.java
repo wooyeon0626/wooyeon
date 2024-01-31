@@ -16,7 +16,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -48,7 +50,6 @@ public class User implements UserDetails {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROFILE_ID")
-//    @Column(unique = true)
     private Profile profile;
 
     @Column
@@ -99,12 +100,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return this.email;
     }
 
     @Override

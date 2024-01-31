@@ -9,8 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootTest
 public class UserTest {
-/*
-
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -19,13 +17,12 @@ public class UserTest {
     @Test
     public void createUser() {
         User user = User.builder()
-                .email("wooyeon@naver.com")
+                .email("young@naver.com")
                 .phone("01012345678")
                 .password(passwordEncoder.encode("1234"))
                 .build();
 
         userRepository.save(user);
     }
-*/
 
 }
