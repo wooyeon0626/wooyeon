@@ -3,6 +3,7 @@ package com.wooyeon.yeon.chat.service;
 import com.wooyeon.yeon.chat.domain.Chat;
 import com.wooyeon.yeon.chat.dto.RoomDto;
 import com.wooyeon.yeon.chat.repository.ChatRepository;
+import com.wooyeon.yeon.common.security.SecurityService;
 import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.user.domain.Profile;
@@ -25,10 +26,11 @@ public class RoomService {
     private final ProfilePhotoRepository profilePhotoRepository;
     private final ProfileRepository profileRepository;
     private final ChatRepository chatRepository;
+    private final SecurityService service;
 
-    public List<RoomDto.RoomResponse> matchRoomList(String userEmail) {
+    public List<RoomDto.RoomResponse> matchRoomList() {
 
-        User loginUser = userRepository.findOptionalByEmail(userEmail)
+        User loginUser = userRepository.findOptionalByEmail(service.getCurrentUserEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
 
         List<UserMatch> userMatchList = matchRepository.findAllByUser1OrUser2(loginUser, loginUser);

@@ -18,8 +18,8 @@ public class RoomController {
     private final RoomService roomService;
 
     @GetMapping("/list")
-    public List<RoomDto.RoomResponse> findMatchRoomList(Authentication authentication) {
-        return roomService.matchRoomList(authentication.getName());
+    public List<RoomDto.RoomResponse> findMatchRoomList() {
+        return roomService.matchRoomList();
     }
 
     @GetMapping("/search/list")
