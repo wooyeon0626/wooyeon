@@ -1,9 +1,9 @@
 package com.wooyeon.yeon.user.service;
 
 import com.wooyeon.yeon.user.domain.EmailAuth;
-import com.wooyeon.yeon.user.dto.EmailAuthResponseDto;
-import com.wooyeon.yeon.user.dto.EmailRequestDto;
-import com.wooyeon.yeon.user.dto.EmailResponseDto;
+import com.wooyeon.yeon.user.dto.emailAuth.EmailAuthResponseDto;
+import com.wooyeon.yeon.user.dto.emailAuth.EmailRequestDto;
+import com.wooyeon.yeon.user.dto.emailAuth.EmailResponseDto;
 import com.wooyeon.yeon.user.repository.EmailAuthRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

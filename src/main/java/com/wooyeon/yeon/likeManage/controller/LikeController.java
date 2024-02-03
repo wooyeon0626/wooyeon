@@ -30,6 +30,7 @@ public class LikeController {
      * @return 성공시 true
      * @deprecated
      */
+    @Deprecated
     @PostMapping("/like/user/fromUserid")
     public boolean doLike(@RequestBody LikeDto dto) {
         User likeFromUser = userService.findByUserId(dto.getLikeFromUserId());

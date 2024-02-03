@@ -1,4 +1,4 @@
-package com.wooyeon.yeon.user.dto;
+package com.wooyeon.yeon.user.dto.emailAuth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
