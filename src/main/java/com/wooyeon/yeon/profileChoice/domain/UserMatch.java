@@ -1,12 +1,10 @@
 package com.wooyeon.yeon.profileChoice.domain;
 
-import com.wooyeon.yeon.likeManage.domain.UserLike;
 import com.wooyeon.yeon.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.*;
-import com.wooyeon.yeon.likeManage.domain.UserLike;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -33,6 +31,8 @@ public class UserMatch {
     private User user2;
 
     private Timestamp generateTime;
+
+    private boolean pinToTop;
 
     @Builder
     public UserMatch(Long matchId, User user1, User user2, Timestamp generateTime) {

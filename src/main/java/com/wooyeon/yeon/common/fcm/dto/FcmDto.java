@@ -1,5 +1,9 @@
 package com.wooyeon.yeon.common.fcm.dto;
 
+import com.wooyeon.yeon.chat.dto.StompDto;
+import com.wooyeon.yeon.exception.ExceptionMessage;
+import com.wooyeon.yeon.user.domain.User;
+import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +43,7 @@ public class FcmDto {
     }
 
     @Getter
+    @Builder
     public static class Request {
         // 해당 기기 토큰
         String targetToken;
@@ -46,5 +51,18 @@ public class FcmDto {
         String body;
         String email;
         String description;
+    }
+
+    public static Request buildRequest(String loginEmail , StompDto stompDto, UserRepository userRepository) {
+
+        User user = userRepository.findOptionalByEmail(loginEmail)
+                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.LOGIN_USER_NOT_FOUND.toString()));
+
+        return FcmDto.Request.builder()
+                .title(user.getUserProfile().getNickname())
+                .body(stompDto.getMessage())
+                .targetToken(user.getTargetToken())
+                .email(loginEmail)
+                .build();
     }
 }

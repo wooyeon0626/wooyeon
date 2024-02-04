@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface ChatRepository extends JpaRepository<Chat, Long> {
     Optional<Chat> findFirstByUserMatchOrderBySendTimeDesc(UserMatch userMatch);
     List<Chat> findAllByMessageContains(String searchWord);
-    Long findCountByIsChecked(boolean isChecked);
-    List<Chat> findAllByUserMatchIdOOrderBySendTime(Long matchId);
+    Long countByIsCheckedAndUserMatch(boolean isChecked, UserMatch userMatch);
+    List<Chat> findAllByUserMatchOrderBySendTime(UserMatch userMatch);
 }

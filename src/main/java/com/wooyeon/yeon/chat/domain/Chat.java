@@ -29,9 +29,6 @@ public class Chat {
     @Column(name = "is_checked")
     private boolean isChecked;
 
-    @Column(name = "is_sender")
-    private boolean isSender;
-
     @Column(name = "send_time")
     private LocalDateTime sendTime;
 }

@@ -21,7 +21,8 @@ public class ChatDto {
         private String message;
         private LocalDateTime sendTime;
         private String sender;
-        private boolean isChecked;
+        private Boolean isChecked;
+        private Boolean isSender;
     }
 
 }

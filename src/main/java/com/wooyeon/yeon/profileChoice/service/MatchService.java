@@ -1,6 +1,5 @@
 package com.wooyeon.yeon.profileChoice.service;
 
-import com.wooyeon.yeon.likeManage.domain.UserLike;
 import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.user.domain.User;
@@ -24,8 +23,6 @@ public class MatchService {
         UserMatch userMatch = UserMatch.builder()
                 .user1(user1)
                 .user2(user2)
-//                .userLike1(userLike1)
-//                .userLike2(userLike2)
                 .generateTime(currentTimestamp)
                 .build();
 
