@@ -9,12 +9,19 @@ import lombok.Getter;
 import lombok.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class RoomDto {
 
     @Getter
     @Builder
     public static class RoomResponse {
+        private List<ChatResponse> chatRoomList;
+    }
+
+    @Getter
+    @Builder
+    public static class ChatResponse {
         private Long matchId;
         private String profilePhoto;
         private String name;
@@ -38,14 +45,14 @@ public class RoomDto {
         private String name;
     }
 
-    public static RoomResponse updateChatInfo(RoomResponse response, Chat chat) {
+    public static ChatResponse updateChatInfo(ChatResponse response, Chat chat) {
         response.lastMessage = chat.getMessage();
         response.lastTime = chat.getSendTime();
 
         return response;
     }
 
-    public static RoomResponse updateProfilePhoto(RoomResponse response, ProfilePhoto profilePhoto) {
+    public static ChatResponse updateProfilePhoto(ChatResponse response, ProfilePhoto profilePhoto) {
         response.profilePhoto = profilePhoto.getPhotoUrl();
         return response;
     }
@@ -60,7 +67,7 @@ public class RoomDto {
         return response;
     }
 
-    public static RoomResponse updateProfile(RoomResponse response, Profile profile) {
+    public static ChatResponse updateProfile(ChatResponse response, Profile profile) {
         response.name = profile.getNickname();
         return response;
     }
