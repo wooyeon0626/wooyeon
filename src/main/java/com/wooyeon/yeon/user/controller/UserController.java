@@ -9,6 +9,7 @@ import com.wooyeon.yeon.user.service.ProfileService;
 import com.wooyeon.yeon.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +32,8 @@ public class UserController {
     private final ProfileService profileService;
     private final Map<String, SseEmitter> userEmitters = new ConcurrentHashMap<>();
 
+    @Value("${email-auth-background-image}")
+    private String emailAuthBackgroundImg;
 
     // 사용자에게 인증메일 전송 및 프론트엔드와 SSE 연결
     @PostMapping(value = "/auth/email", produces = "application/json;charset=UTF-8")
@@ -65,6 +68,7 @@ public class UserController {
         log.info("verify 프론트에게 : "+emailAuthResponseDto);
 
         ModelAndView mv = new ModelAndView("email_auth_verify");
+        mv.addObject("backgroundImg", emailAuthBackgroundImg);
 
         return mv;
     }
