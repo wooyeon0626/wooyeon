@@ -6,9 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, Long> {
-    Chat findFirstByUserMatchOrderBySendTimeDesc(UserMatch userMatch);
+    Optional<Chat> findFirstByUserMatchOrderBySendTimeDesc(UserMatch userMatch);
     List<Chat> findAllByMessageContains(String searchWord);
+    Long countByIsCheckedAndUserMatch(boolean isChecked, UserMatch userMatch);
+    List<Chat> findAllByUserMatchOrderBySendTime(UserMatch userMatch);
 }

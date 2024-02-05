@@ -40,6 +40,8 @@ public class User implements UserDetails {
 
     private String refreshToken;
 
+    private String targetToken;
+
     @Column
     @Builder.Default
     private boolean emailAuth = false;
@@ -99,6 +101,9 @@ public class User implements UserDetails {
     public Long getUserId() {return this.userId;}
     public UUID getUserCode() {return this.userCode;}
     public String getRefreshToken() {return this.refreshToken;}
+    public String getTargetToken() {return this.targetToken;}
+    public String getUserEmail() {return this.email;}
+    public Profile getUserProfile() {return this.profile;}
 
     @Override
     public String getPassword() {
