@@ -17,7 +17,7 @@ public class RoomController {
     private final RoomService roomService;
 
     @GetMapping("/list")
-    public List<RoomDto.RoomResponse> findMatchRoomList() {
+    public RoomDto.RoomResponse findMatchRoomList() {
         return roomService.matchRoomList();
     }
 

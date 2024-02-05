@@ -29,14 +29,14 @@ public class RoomService {
     private final ChatRepository chatRepository;
     private final SecurityService securityService;
 
-    public List<RoomDto.RoomResponse> matchRoomList() {
+    public RoomDto.RoomResponse matchRoomList() {
 
         User loginUser = userRepository.findOptionalByEmail(securityService.getCurrentUserEmail())
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.LOGIN_USER_NOT_FOUND.toString()));
 
         List<UserMatch> userMatchList = matchRepository.findAllByUser1OrUser2(loginUser, loginUser);
 
-        List<RoomDto.RoomResponse> roomList = new ArrayList<>();
+        List<RoomDto.ChatResponse> result = new ArrayList<>();
 
         if (0 < userMatchList.size() && !userMatchList.isEmpty()) {
             for (UserMatch userMatch : userMatchList) {
@@ -55,17 +55,19 @@ public class RoomService {
 
                 Optional<Chat> lastChatInfo = chatRepository.findFirstByUserMatchOrderBySendTimeDesc(userMatch);
 
-                roomList.add(makeRoomResponse(userMatch, profile, profilePhoto, lastChatInfo));
+                result.add(makeRoomResponse(userMatch, profile, profilePhoto, lastChatInfo));
             }
         }
 
-        return roomList;
+        return RoomDto.RoomResponse.builder()
+                .chatRoomList(result)
+                .build();
     }
 
-    public RoomDto.RoomResponse makeRoomResponse(
+    public RoomDto.ChatResponse makeRoomResponse(
             UserMatch userMatch, Optional<Profile> profile, Optional<ProfilePhoto> profilePhoto, Optional<Chat> lastChatInfo) {
 
-        RoomDto.RoomResponse response = RoomDto.RoomResponse.builder()
+        RoomDto.ChatResponse response = RoomDto.ChatResponse.builder()
                 .matchId(userMatch.getMatchId())
                 .unReadChatCount(chatRepository.countByIsCheckedAndUserMatch(false, userMatch))
                 .pinToTop(userMatch.isPinToTop())
