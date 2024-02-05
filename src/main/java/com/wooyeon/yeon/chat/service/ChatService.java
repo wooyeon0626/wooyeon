@@ -51,13 +51,13 @@ public class ChatService {
         chatRepository.save(chat);
     }
 
-    public List<ChatDto.Response> getChatList(Long matchId) {
+    public ChatDto.Response getChatList(Long matchId) {
 
         UserMatch userMatch = matchRepository.findById(matchId)
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.USER_MATCH_NOT_FOUND.toString()));
 
         List<Chat> chatList = chatRepository.findAllByUserMatchOrderBySendTime(userMatch);
-        List<ChatDto.Response> responseList = new ArrayList<>();
+        List<ChatDto.ChatResponse> responseList = new ArrayList<>();
 
         String userName = getLoginUserNickName();
 
@@ -65,11 +65,13 @@ public class ChatService {
             responseList.add(makeResponse(chat, userName));
         }
 
-        return responseList;
+        return ChatDto.Response.builder()
+                .chatData(responseList)
+                .build();
     }
 
-    public ChatDto.Response makeResponse(Chat chat, String userName) {
-        return ChatDto.Response.builder()
+    public ChatDto.ChatResponse makeResponse(Chat chat, String userName) {
+        return ChatDto.ChatResponse.builder()
                 .message(chat.getMessage())
                 .sender(chat.getSender())
                 .sendTime(chat.getSendTime())
