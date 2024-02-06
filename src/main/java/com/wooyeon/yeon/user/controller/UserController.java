@@ -42,8 +42,7 @@ public class UserController {
         userEmitters.put(emailRequestDto.getEmail(), emitter);
 
         EmailResponseDto emailResponseDto = emailAuthService.sendEmail(emailRequestDto);
-
-        log.info("userEmitter: "+userEmitters);
+        log.info("userEmitter: " + userEmitters);
 
         // SSE 연결 여부 메시지 전송
         try {
@@ -52,7 +51,7 @@ public class UserController {
         } catch (IOException e) {
             emitter.completeWithError(e);
         }
-        log.info("SSE MSG : "+emitter);
+        log.info("SSE MSG : " + emitter);
 
         return emitter;
     }
@@ -64,8 +63,8 @@ public class UserController {
         EmailAuthResponseDto emailAuthResponseDto = emailAuthService.verifyEmail(auth);
         sendSseEmitter(emailAuthResponseDto);
 
-        log.info("verify request : "+auth);
-        log.info("verify 프론트에게 : "+emailAuthResponseDto);
+        log.info("verify request : " + auth);
+        log.info("verify 프론트에게 : " + emailAuthResponseDto);
 
         ModelAndView mv = new ModelAndView("email_auth_verify");
         mv.addObject("backgroundImg", emailAuthBackgroundImg);
@@ -101,7 +100,7 @@ public class UserController {
     public SseEmitter sendSseEmitter(EmailAuthResponseDto emailAuthResponseDto) {
         SseEmitter emitter = userEmitters.get(emailAuthResponseDto.getEmail());
 
-        log.info("SSE EMITTER(VERIFY) : "+emitter);
+        log.info("SSE EMITTER(VERIFY) : " + emitter);
 
         if (emitter != null) {
             try {

@@ -46,35 +46,34 @@ public class EmailAuthService {
         // certification이 false이면서(=인증되지 않았으면서) 인증 코드 만료 시간이 지난 데이터 삭제
         deleteExpiredStatusIfExpired();
 
-        EmailResponseDto emailResponseDto;
-
         // 이메일 중복 확인 로직 추가
         if (validateDuplicated(emailRequestDto.getEmail())) {
 
             log.info("certification: " + emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail()).isCertification());
 
-            emailResponseDto = EmailResponseDto.builder()
+            EmailResponseDto emailResponseDto = EmailResponseDto.builder()
                     .statusCode(HttpStatus.SC_OK) // 오류코드 대신 200 부탁함
                     .email(emailRequestDto.getEmail())
                     .build();
 
-
             if (emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail()).isCertification()) {
                 emailResponseDto.updateStatusName("completed");
+                return emailResponseDto;
             } else {
                 emailResponseDto.updateStatusName("duplicated");
+                return emailResponseDto;
             }
 
         } else {
             // 이메일 인증 링크 발송
             sendEmailVerification(emailRequestDto);
-            emailResponseDto = EmailResponseDto.builder()
+            EmailResponseDto emailResponseDto = EmailResponseDto.builder()
                     .statusCode(HttpStatus.SC_ACCEPTED)
                     .email(emailRequestDto.getEmail())
                     .statusName("success")
                     .build();
+            return emailResponseDto;
         }
-        return emailResponseDto;
     }
 
     // authToken 발급 및 이메일 양식 설정, 전송
