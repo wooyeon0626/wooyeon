@@ -22,7 +22,7 @@ public class UserTest {
 //    @Test
 //    public void createUser() {
 //        User user = User.builder()
-//                .email("young@naver.com")
+//                .email("match1@naver.com")
 //                .phone("01012345678")
 //                .password(passwordEncoder.encode("1234"))
 //                .build();
