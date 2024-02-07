@@ -49,7 +49,7 @@ public class EmailAuthService {
         // 이메일 중복 확인 로직 추가
         if (validateDuplicated(emailRequestDto.getEmail())) {
 
-            log.info("certification: " + emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail()).isCertification());
+            log.debug(emailRequestDto.getEmail()+" certification: {}", emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail()).isCertification());
 
             EmailResponseDto emailResponseDto = EmailResponseDto.builder()
                     .statusCode(HttpStatus.SC_OK) // 오류코드 대신 200 부탁함
@@ -58,12 +58,11 @@ public class EmailAuthService {
 
             if (emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail()).isCertification()) {
                 emailResponseDto.updateStatusName("completed");
-                return emailResponseDto;
             } else {
                 emailResponseDto.updateStatusName("duplicated");
-                return emailResponseDto;
             }
-
+            log.debug("emailResponseDto 이미 있음 : {}", emailResponseDto);
+            return emailResponseDto;
         } else {
             // 이메일 인증 링크 발송
             sendEmailVerification(emailRequestDto);

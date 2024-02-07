@@ -42,16 +42,17 @@ public class UserController {
         userEmitters.put(emailRequestDto.getEmail(), emitter);
 
         EmailResponseDto emailResponseDto = emailAuthService.sendEmail(emailRequestDto);
-        log.info("userEmitter: " + userEmitters);
+        log.debug("userEmitter: {}", userEmitters);
 
         // SSE 연결 여부 메시지 전송
         try {
             emitter.send(SseEmitter.event().name("INIT").data("SSE Connected"));
             emitter.send(SseEmitter.event().data(emailResponseDto));
+            log.debug("[Controller] emailResponseDto: {}", emailResponseDto);
         } catch (IOException e) {
             emitter.completeWithError(e);
         }
-        log.info("SSE MSG : " + emitter);
+        log.debug("SSE MSG : " + emitter);
 
         return emitter;
     }
