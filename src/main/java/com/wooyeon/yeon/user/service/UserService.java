@@ -85,11 +85,13 @@ public class UserService {
         String decodedPassword = aesUtil.decrypt(passwordEncryptRequestDto.getEncryptedPassword(), decodedKey, ivBytes);
         log.debug("AES로 복호화한 원문 : {}", decodedPassword);
 
-//        비밀번호 + salt를 SHA256으로 암호화
-//        String salt = createSalt();
-//        String password = decodedPassword+salt;
-//          log.info("salt : {}", salt);
-//          log.info("finalPassword : {}", finalPassword);
+        /*
+        비밀번호 + salt를 SHA256으로 암호화
+        String salt = createSalt();
+        String password = decodedPassword+salt;
+          log.info("salt : {}", salt);
+          log.info("finalPassword : {}", finalPassword);
+        */
 
         // passwordEncoder로 비밀번호 암호화 (2024.02.06 로그인과 암호화 방식 맞춤 수정)
         String finalPassword = passwordEncoder.encode(decodedPassword);
