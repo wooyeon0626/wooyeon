@@ -48,7 +48,6 @@ public class UserController {
         try {
             emitter.send(SseEmitter.event().name("INIT").data("SSE Connected"));
             emitter.send(SseEmitter.event().data(emailResponseDto));
-            log.debug("[Controller] emailResponseDto: {}", emailResponseDto);
         } catch (IOException e) {
             emitter.completeWithError(e);
         }

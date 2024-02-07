@@ -9,12 +9,13 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Repository
 public interface EmailAuthRepository extends JpaRepository<EmailAuth, Long> {
     boolean existsByEmail(String email);
 
-    EmailAuth findEmailAuthByEmail(String email);
+    // EmailAuth findEmailAuthByEmail(String email);
 
     EmailAuth findEmailAuthByEmailAndAuthToken(String email, String authToken);
 
@@ -23,6 +24,6 @@ public interface EmailAuthRepository extends JpaRepository<EmailAuth, Long> {
     @Query("DELETE FROM EmailAuth e WHERE e.expireDate < :currentDateTime AND e.certification = false")
     void deleteExpiredRecords(@Param("currentDateTime") LocalDateTime currentDateTime);
 
-
+    Optional<EmailAuth> findEmailAuthByEmail(String email);
 }
 

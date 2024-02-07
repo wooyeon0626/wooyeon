@@ -23,6 +23,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Optional;
 import java.util.UUID;
 
 @PropertySource("classpath:application-apikey.properties")
@@ -49,19 +50,33 @@ public class EmailAuthService {
         // 이메일 중복 확인 로직 추가
         if (validateDuplicated(emailRequestDto.getEmail())) {
 
-            log.debug(emailRequestDto.getEmail()+" certification: {}", emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail()).isCertification());
-
             EmailResponseDto emailResponseDto = EmailResponseDto.builder()
                     .statusCode(HttpStatus.SC_OK) // 오류코드 대신 200 부탁함
                     .email(emailRequestDto.getEmail())
                     .build();
-
+            /*
+            // 해당 이메일이 이미 인증된 이메일인지?
             if (emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail()).isCertification()) {
+
+                if(userRepository.findByEmail(emailRequestDto.getEmail())!=null) {
+                    emailResponseDto.updateStatusName("ExistsUser");
+                }
                 emailResponseDto.updateStatusName("completed");
             } else {
                 emailResponseDto.updateStatusName("duplicated");
             }
-            log.debug("emailResponseDto 이미 있음 : {}", emailResponseDto);
+             */
+            Optional<EmailAuth> emailAuthOptional = emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail());
+            if (emailAuthOptional.isPresent() && emailAuthOptional.get().isCertification()) {
+                // 해당 이메일이 이미 인증된 경우
+                if (userRepository.findByEmail(emailRequestDto.getEmail()) != null) {
+                    emailResponseDto.updateStatusName("ExistsUser");
+                } else {
+                    emailResponseDto.updateStatusName("completed");
+                }
+            } else {
+                emailResponseDto.updateStatusName("duplicated");
+            }
             return emailResponseDto;
         } else {
             // 이메일 인증 링크 발송
