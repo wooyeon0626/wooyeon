@@ -83,7 +83,7 @@ public class UserService {
         // 4. IV, SessionKey로 암호화된 비밀번호 복호화
         // AES Key 로 비밀번호 복호화해서 원문 받아오기
         String decodedPassword = aesUtil.decrypt(passwordEncryptRequestDto.getEncryptedPassword(), decodedKey, ivBytes);
-        log.info("AES로 복호화한 원문 : {}", decodedPassword);
+        log.debug("AES로 복호화한 원문 : {}", decodedPassword);
 
 //        비밀번호 + salt를 SHA256으로 암호화
 //        String salt = createSalt();
@@ -93,6 +93,7 @@ public class UserService {
 
         // passwordEncoder로 비밀번호 암호화 (2024.02.06 로그인과 암호화 방식 맞춤 수정)
         String finalPassword = passwordEncoder.encode(decodedPassword);
+        log.debug("finalPassword : {}", finalPassword);
 
         // User 테이블에 저장
         User user = User.builder()
@@ -102,6 +103,9 @@ public class UserService {
                 .password(finalPassword)
                 .build();
         userRepository.save(user);
+
+        Long id = user.getUserId();
+        // userRoles 코드 추가할 부분
 
         // ResponseDto 구성
         PasswordEncryptResponseDto passwordEncryptResponseDto = PasswordEncryptResponseDto.builder()
