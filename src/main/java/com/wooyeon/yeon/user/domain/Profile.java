@@ -50,7 +50,7 @@ public class Profile {
     private boolean faceVerify;
 
     @Builder
-    public Profile(char gender, String nickname, List<ProfilePhoto> profilePhotos, String birthday, String gpsLocationInfo, String mbti, String intro, String hobby, String interest, boolean faceVerify) {
+    public Profile(char gender, String nickname, List<ProfilePhoto> profilePhotos, String birthday, String gpsLocationInfo, String mbti, String intro, String hobby, String interest, boolean faceVerify, User user) {
         this.gender = gender;
         this.nickname = nickname;
         this.profilePhotos = profilePhotos;
@@ -61,5 +61,6 @@ public class Profile {
         this.hobby = hobby;
         this.interest = interest;
         this.faceVerify = faceVerify;
+        this.user = user;
     }
 }
