@@ -1,10 +1,12 @@
 package com.wooyeon.yeon.user.service;
 
 import com.wooyeon.yeon.user.domain.EmailAuth;
+import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailAuthResponseDto;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailRequestDto;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailResponseDto;
 import com.wooyeon.yeon.user.repository.EmailAuthRepository;
+import com.wooyeon.yeon.user.repository.ProfileRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,7 @@ public class EmailAuthService {
     private final EmailAuthRepository emailAuthRepository;
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
+    private final ProfileRepository profileRepository;
 
     // authToken 만료 시간 (10분)
     private static final long EXPIRATION_TIME = 10 * 60 * 1000;
@@ -69,13 +72,18 @@ public class EmailAuthService {
             Optional<EmailAuth> emailAuthOptional = emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail());
             if (emailAuthOptional.isPresent() && emailAuthOptional.get().isCertification()) {
                 // 해당 이메일이 이미 인증된 경우
-                if (userRepository.findByEmail(emailRequestDto.getEmail()) != null) {
-                    emailResponseDto.updateStatusName("ExistsUser");
+                User findUser = userRepository.findByEmail(emailRequestDto.getEmail());
+                if (findUser != null) {
+                    if(profileRepository.findByUser(findUser).isPresent()) {
+                        emailResponseDto.updateStatusName("ExistsProfile"); // 회원가입 완료 & 프로필 존재
+                    } else {
+                        emailResponseDto.updateStatusName("ExistsUser"); // 유저 존재 (회원가입 과정 완료)
+                    }
                 } else {
-                    emailResponseDto.updateStatusName("completed");
+                    emailResponseDto.updateStatusName("completed"); // 이메일 인증 완료
                 }
             } else {
-                emailResponseDto.updateStatusName("duplicated");
+                emailResponseDto.updateStatusName("duplicated"); // 이메일 인증이 완료된 상태 (그러나 회원가입 완료는 아님)
             }
             return emailResponseDto;
         } else {
