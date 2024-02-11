@@ -1,5 +1,6 @@
 package com.wooyeon.yeon.user;
 
+import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import com.wooyeon.yeon.user.service.UserService;
@@ -31,15 +32,26 @@ public class UserTest {
 //    }
 //
     // passwordEncoder 사용
-    /*@Test
+    @Test
     public void pwEncoderUser() {
         User user = User.builder()
-                .email("pw123@gmail.com")
+                .email("ez123@gmail.com")
                 .userCode(UUID.randomUUID())
-                .password(passwordEncoder.encode("1234"))
+                .password(passwordEncoder.encode("!aaaa0000"))
                 .build();
         userRepository.save(user);
-    }*/
+    }
+
+    /*
+    @Test
+    public void createProfileTest() {
+        Profile profile = Profile.builder()
+                .gender('F')
+                .nickname("hiz0")
+                .birthday("19951010")
+                .build();
+    }
+    */
 
     // sha256 + salt 사용
     /*@Test
