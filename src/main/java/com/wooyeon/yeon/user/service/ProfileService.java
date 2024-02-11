@@ -1,11 +1,14 @@
 package com.wooyeon.yeon.user.service;
 
+import com.wooyeon.yeon.common.security.SecurityService;
 import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.ProfilePhoto;
+import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.ProfileRequestDto;
 import com.wooyeon.yeon.user.dto.ProfileResponseDto;
 import com.wooyeon.yeon.user.repository.ProfilePhotoRepository;
 import com.wooyeon.yeon.user.repository.ProfileRepository;
+import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +23,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -28,6 +32,8 @@ import java.util.UUID;
 public class ProfileService {
     private final ProfileRepository profileRepository;
     private final ProfilePhotoRepository profilePhotoRepository;
+    private final UserRepository userRepository;
+    private final SecurityService securityService;
 
     @Value("${lightsail.instanceName}") // Lightsail 인스턴스 이름
     private String lightsailInstanceName;
@@ -53,6 +59,14 @@ public class ProfileService {
     }
 
     public ProfileResponseDto insertProfile(ProfileRequestDto profileRequestDto, List<MultipartFile> profilePhotoUpload) throws IOException {
+        // token에서 user 정보 추출하기
+        String userEmail = securityService.getCurrentUserEmail();
+        log.info("추출한 user Email : {}", userEmail);
+
+        Optional<User> findUser = userRepository.findOptionalByEmail(userEmail);
+        User user = userRepository.findByEmail(userEmail);
+        log.debug("findUser 정보 : {}", findUser);
+        log.debug("user 정보 : {}", user);
 
         // Profile 테이블에 정보 저장
         Profile profile = Profile.builder()
@@ -64,6 +78,7 @@ public class ProfileService {
                 .interest(profileRequestDto.getInterest())
                 .intro(profileRequestDto.getIntro())
                 .faceVerify(false)
+                .user(findUser.get())
                 .build();
         profileRepository.save(profile);
 
