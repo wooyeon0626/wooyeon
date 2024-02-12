@@ -1,5 +1,7 @@
 package com.wooyeon.yeon.user.service;
 
+import com.wooyeon.yeon.exception.ExceptionCode;
+import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.LoginDto;
@@ -40,7 +42,7 @@ public class LoginService {
         Optional<Profile> existsProfile = profileRepository.findByUser(user);
 
         if (null == user) {
-            throw new IllegalArgumentException("user is not found");
+            throw new WooyeonException(ExceptionCode.USER_NOT_FOUND);
         }
 
         if (existsProfile.isPresent()) {
@@ -62,7 +64,7 @@ public class LoginService {
         User user = userRepository.findByEmail(authentication.getName());
 
         if (null == user) {
-            throw new IllegalArgumentException("user is not found");
+            throw new WooyeonException(ExceptionCode.USER_NOT_FOUND);
         }
         user.updateAccessToken(null);
         user.updateRefreshToken(null);

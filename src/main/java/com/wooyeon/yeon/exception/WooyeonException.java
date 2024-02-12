@@ -1,11 +1,10 @@
 package com.wooyeon.yeon.exception;
 
-public class WooyeonException extends Exception{
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-    public ExceptionMessage exceptionMessage;
-
-    public WooyeonException(ExceptionMessage exceptionMessage){
-        super(exceptionMessage.getMessage());
-        this.exceptionMessage = exceptionMessage;
-    }
+@Getter
+@AllArgsConstructor
+public class WooyeonException extends RuntimeException{
+    ExceptionCode exceptionCode;
 }

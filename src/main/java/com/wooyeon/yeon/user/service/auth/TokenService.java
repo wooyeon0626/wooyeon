@@ -1,5 +1,7 @@
 package com.wooyeon.yeon.user.service.auth;
 
+import com.wooyeon.yeon.exception.ExceptionCode;
+import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.ReissueResponseDto;
 import com.wooyeon.yeon.user.dto.auth.TokenDto;
@@ -20,7 +22,7 @@ public class TokenService {
     @Transactional
     public ReissueResponseDto reissueToken(ReissueRequestDto reissueRequestDto) {
         if(!jwtTokenProvider.validateToken(reissueRequestDto.getRefreshToken())) {
-            throw new RuntimeException("Refresh Token이 유효하지 않습니다.");
+            throw new WooyeonException(ExceptionCode.INVALID_REFRESH_TOKEN);
         }
 
         Authentication authentication = jwtTokenProvider.getAuthentication(reissueRequestDto.getAccessToken());
@@ -28,11 +30,11 @@ public class TokenService {
         User user = userRepository.findByEmail(authentication.getName());
 
         if (null == user.getRefreshToken()) {
-            throw new RuntimeException("로그아웃 된 유저입니다.");
+            throw new WooyeonException(ExceptionCode.NOT_EXIST_REFRESH_TOKEN);
         }
 
         if (!user.getRefreshToken().equals(reissueRequestDto.getRefreshToken())) {
-            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
+            throw new WooyeonException(ExceptionCode.NOT_MATCH_REFRESH_TOKEN);
         }
 
         TokenDto tokenDto = jwtTokenProvider.generateToken(authentication);

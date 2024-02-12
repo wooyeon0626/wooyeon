@@ -1,6 +1,6 @@
 package com.wooyeon.yeon.config.webSocket;
 
-import com.wooyeon.yeon.exception.ExceptionMessage;
+import com.wooyeon.yeon.exception.ExceptionCode;
 import com.wooyeon.yeon.user.service.auth.JwtTokenProvider;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class StompHandler implements ChannelInterceptor {
                 accessToken = bearerToken.substring(7);
             }
             if (!jwtTokenProvider.validateToken(accessToken)) {
-                throw new JwtException(ExceptionMessage.AUTHORIZATION_FAILED.toString());
+                throw new JwtException(ExceptionCode.AUTHORIZATION_FAILED.toString());
             }
         }
         return message;

@@ -5,7 +5,8 @@ import com.wooyeon.yeon.chat.service.ChatService;
 import com.wooyeon.yeon.common.fcm.dto.FcmDto;
 import com.wooyeon.yeon.common.fcm.service.FcmService;
 import com.wooyeon.yeon.common.security.SecurityService;
-import com.wooyeon.yeon.exception.ExceptionMessage;
+import com.wooyeon.yeon.exception.ExceptionCode;
+import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -44,7 +45,7 @@ public class StompController {
             try {
                 fcmService.sendMessageTo(FcmDto.buildRequest(loginEmail, stompDto, userRepository));
             } catch (IOException e) {
-                throw new RuntimeException(ExceptionMessage.FCM_SEND_FAIL_ERROR.toString());
+                throw new WooyeonException(ExceptionCode.FCM_SEND_FAIL_ERROR);
             }
         }
 
