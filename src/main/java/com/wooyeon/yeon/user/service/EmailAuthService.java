@@ -1,10 +1,12 @@
 package com.wooyeon.yeon.user.service;
 
 import com.wooyeon.yeon.user.domain.EmailAuth;
+import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailAuthResponseDto;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailRequestDto;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailResponseDto;
 import com.wooyeon.yeon.user.repository.EmailAuthRepository;
+import com.wooyeon.yeon.user.repository.ProfileRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Optional;
 import java.util.UUID;
 
 @PropertySource("classpath:application-apikey.properties")
@@ -35,6 +38,7 @@ public class EmailAuthService {
     private final EmailAuthRepository emailAuthRepository;
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
+    private final ProfileRepository profileRepository;
 
     // authToken 만료 시간 (10분)
     private static final long EXPIRATION_TIME = 10 * 60 * 1000;
@@ -46,35 +50,52 @@ public class EmailAuthService {
         // certification이 false이면서(=인증되지 않았으면서) 인증 코드 만료 시간이 지난 데이터 삭제
         deleteExpiredStatusIfExpired();
 
-        EmailResponseDto emailResponseDto;
-
         // 이메일 중복 확인 로직 추가
         if (validateDuplicated(emailRequestDto.getEmail())) {
 
-            log.info("certification: " + emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail()).isCertification());
-
-            emailResponseDto = EmailResponseDto.builder()
+            EmailResponseDto emailResponseDto = EmailResponseDto.builder()
                     .statusCode(HttpStatus.SC_OK) // 오류코드 대신 200 부탁함
                     .email(emailRequestDto.getEmail())
                     .build();
-
-
+            /*
+            // 해당 이메일이 이미 인증된 이메일인지?
             if (emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail()).isCertification()) {
+
+                if(userRepository.findByEmail(emailRequestDto.getEmail())!=null) {
+                    emailResponseDto.updateStatusName("ExistsUser");
+                }
                 emailResponseDto.updateStatusName("completed");
             } else {
                 emailResponseDto.updateStatusName("duplicated");
             }
-
+             */
+            Optional<EmailAuth> emailAuthOptional = emailAuthRepository.findEmailAuthByEmail(emailRequestDto.getEmail());
+            if (emailAuthOptional.isPresent() && emailAuthOptional.get().isCertification()) {
+                // 해당 이메일이 이미 인증된 경우
+                User findUser = userRepository.findByEmail(emailRequestDto.getEmail());
+                if (findUser != null) {
+                    if(profileRepository.findByUser(findUser).isPresent()) {
+                        emailResponseDto.updateStatusName("ExistsProfile"); // 회원가입 완료 & 프로필 존재
+                    } else {
+                        emailResponseDto.updateStatusName("ExistsUser"); // 유저 존재 (회원가입 과정 완료)
+                    }
+                } else {
+                    emailResponseDto.updateStatusName("completed"); // 이메일 인증 완료
+                }
+            } else {
+                emailResponseDto.updateStatusName("duplicated"); // 이메일 인증이 완료된 상태 (그러나 회원가입 완료는 아님)
+            }
+            return emailResponseDto;
         } else {
             // 이메일 인증 링크 발송
             sendEmailVerification(emailRequestDto);
-            emailResponseDto = EmailResponseDto.builder()
+            EmailResponseDto emailResponseDto = EmailResponseDto.builder()
                     .statusCode(HttpStatus.SC_ACCEPTED)
                     .email(emailRequestDto.getEmail())
                     .statusName("success")
                     .build();
+            return emailResponseDto;
         }
-        return emailResponseDto;
     }
 
     // authToken 발급 및 이메일 양식 설정, 전송

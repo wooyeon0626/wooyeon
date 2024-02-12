@@ -29,7 +29,7 @@ public class AesUtil {
         // 복호화 수행
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
 
-        return new String(decryptedBytes, StandardCharsets.UTF_8);
+        return new String(Base64.getDecoder().decode(decryptedBytes), StandardCharsets.UTF_8);
     }
 
 }

@@ -52,8 +52,7 @@ public class User implements UserDetails {
     @Column
     private String salt;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROFILE_ID")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private Profile profile;
 
     @Column

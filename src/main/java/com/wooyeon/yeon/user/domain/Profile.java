@@ -16,7 +16,8 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "profile")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
     @Column(nullable = false)
@@ -50,7 +51,7 @@ public class Profile {
     private boolean faceVerify;
 
     @Builder
-    public Profile(char gender, String nickname, List<ProfilePhoto> profilePhotos, String birthday, String gpsLocationInfo, String mbti, String intro, String hobby, String interest, boolean faceVerify) {
+    public Profile(char gender, String nickname, List<ProfilePhoto> profilePhotos, String birthday, String gpsLocationInfo, String mbti, String intro, String hobby, String interest, boolean faceVerify, User user) {
         this.gender = gender;
         this.nickname = nickname;
         this.profilePhotos = profilePhotos;
@@ -61,5 +62,6 @@ public class Profile {
         this.hobby = hobby;
         this.interest = interest;
         this.faceVerify = faceVerify;
+        this.user = user;
     }
 }

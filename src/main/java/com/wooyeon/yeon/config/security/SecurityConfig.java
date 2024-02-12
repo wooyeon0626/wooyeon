@@ -50,9 +50,10 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
-                .antMatchers("/auth/*").permitAll()
-                .antMatchers("/encrypt/*").permitAll()
-                .antMatchers("/api/*").permitAll()
+                .antMatchers("/auth/**").permitAll()
+                .antMatchers("/users/**").permitAll()
+                .antMatchers("/encrypt/**").permitAll()
+                .antMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);

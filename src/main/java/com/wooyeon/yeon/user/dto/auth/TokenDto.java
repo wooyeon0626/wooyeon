@@ -10,4 +10,9 @@ import lombok.Getter;
 public class TokenDto {
     private String accessToken;
     private String refreshToken;
+    private int statusCode;
+
+    public void updateStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
 }
