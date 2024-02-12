@@ -5,6 +5,7 @@ import com.wooyeon.yeon.chat.dto.RoomDto;
 import com.wooyeon.yeon.chat.repository.ChatRepository;
 import com.wooyeon.yeon.common.security.SecurityService;
 import com.wooyeon.yeon.exception.ExceptionMessage;
+import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.user.domain.Profile;
@@ -29,39 +30,41 @@ public class RoomService {
     private final ChatRepository chatRepository;
     private final SecurityService securityService;
 
-    public RoomDto.RoomResponse matchRoomList() {
+    public RoomDto.RoomResponse matchRoomList() throws WooyeonException {
 
-        User loginUser = userRepository.findOptionalByEmail(securityService.getCurrentUserEmail())
-                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.LOGIN_USER_NOT_FOUND.toString()));
+        throw new WooyeonException(ExceptionMessage.LOGIN_USER_NOT_FOUND);
 
-        List<UserMatch> userMatchList = matchRepository.findAllByUser1OrUser2(loginUser, loginUser);
-
-        List<RoomDto.ChatResponse> result = new ArrayList<>();
-
-        if (0 < userMatchList.size() && !userMatchList.isEmpty()) {
-            for (UserMatch userMatch : userMatchList) {
-                Long matchUserId = getMatchUserId(userMatch, loginUser);
-
-                User matchUser = userRepository.findOptionalByUserId(matchUserId)
-                        .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.USER_NOT_FOUND.toString()));
-
-                Optional<Profile> profile = Optional.empty();
-                Optional<ProfilePhoto> profilePhoto = Optional.empty();
-
-                if (null != matchUser.getUserProfile()) {
-                    profile = profileRepository.findById(matchUser.getUserProfile().getId());
-                    profilePhoto = profilePhotoRepository.findByProfileId(profile.get().getId());
-                }
-
-                Optional<Chat> lastChatInfo = chatRepository.findFirstByUserMatchOrderBySendTimeDesc(userMatch);
-
-                result.add(makeRoomResponse(userMatch, profile, profilePhoto, lastChatInfo));
-            }
-        }
-
-        return RoomDto.RoomResponse.builder()
-                .chatRoomList(result)
-                .build();
+//        User loginUser = userRepository.findOptionalByEmail(securityService.getCurrentUserEmail())
+//                .orElseThrow(() -> new WooyeonException(ExceptionMessage.LOGIN_USER_NOT_FOUND));
+//
+//        List<UserMatch> userMatchList = matchRepository.findAllByUser1OrUser2(loginUser, loginUser);
+//
+//        List<RoomDto.ChatResponse> result = new ArrayList<>();
+//
+//        if (0 < userMatchList.size() && !userMatchList.isEmpty()) {
+//            for (UserMatch userMatch : userMatchList) {
+//                Long matchUserId = getMatchUserId(userMatch, loginUser);
+//
+//                User matchUser = userRepository.findOptionalByUserId(matchUserId)
+//                        .orElseThrow(() -> new WooyeonException(ExceptionMessage.USER_NOT_FOUND));
+//
+//                Optional<Profile> profile = Optional.empty();
+//                Optional<ProfilePhoto> profilePhoto = Optional.empty();
+//
+//                if (null != matchUser.getUserProfile()) {
+//                    profile = profileRepository.findById(matchUser.getUserProfile().getId());
+//                    profilePhoto = profilePhotoRepository.findByProfileId(profile.get().getId());
+//                }
+//
+//                Optional<Chat> lastChatInfo = chatRepository.findFirstByUserMatchOrderBySendTimeDesc(userMatch);
+//
+//                result.add(makeRoomResponse(userMatch, profile, profilePhoto, lastChatInfo));
+//            }
+//        }
+//
+//        return RoomDto.RoomResponse.builder()
+//                .chatRoomList(result)
+//                .build();
     }
 
     public RoomDto.ChatResponse makeRoomResponse(
