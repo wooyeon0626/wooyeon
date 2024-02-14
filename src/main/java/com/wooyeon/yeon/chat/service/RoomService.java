@@ -103,34 +103,6 @@ public class RoomService {
         User loginUser = userRepository.findOptionalByEmail(securityService.getCurrentUserEmail())
                 .orElseThrow(() -> new WooyeonException(ExceptionCode.USER_NOT_FOUND));
 
-        // 채팅방 내 검색 단어 포함 항목 조회 후 추가
-//        List<Chat> chatList = chatRepository.findAllByMessageContains(searchWord);
-
-//        if (0 < chatList.size() && !chatList.isEmpty()) {
-//            for (Chat chat : chatList) {
-//                UserMatch userMatch = chat.getUserMatch();
-//
-//                Long matchUserId = getMatchUserId(userMatch, loginUser);
-//
-//                User user = userRepository.findOptionalByUserId(matchUserId)
-//                        .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
-//
-//                // 상대방 프로필 정보 조회
-//                Profile profile = profileRepository.findById(user.getUserProfile().getId())
-//                        .orElseThrow(() -> new IllegalArgumentException("User Profile does not exist"));
-//
-//                Optional<ProfilePhoto> profilePhoto = profilePhotoRepository.findByProfileId(profile.getId());
-//
-//                RoomDto.SearchRoomResponse response = RoomDto.SearchRoomResponse.builder()
-//                        .matchId(userMatch.getMatchId())
-//                        .profilePhoto(!profilePhoto.isPresent() ? null : profilePhoto.get().getPhotoUrl())
-//                        .name(profile.getNickname())
-//                        .build();
-//
-//                searchRoomList.add(response);
-//            }
-//        }
-
         List<RoomDto.SearchRoomResponse> searchRoomList = new ArrayList<>();
 
         // 이름이 같은 사람 조회 후 추가
