@@ -5,6 +5,8 @@ import com.wooyeon.yeon.chat.domain.Report;
 import com.wooyeon.yeon.chat.dto.ChatUserDto;
 import com.wooyeon.yeon.chat.repository.BlockRepository;
 import com.wooyeon.yeon.chat.repository.ReportRepository;
+import com.wooyeon.yeon.exception.ExceptionCode;
+import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.likeManage.domain.UserLike;
 import com.wooyeon.yeon.likeManage.repository.LikeRepository;
 import com.wooyeon.yeon.profileChoice.domain.UserMatch;
@@ -39,13 +41,13 @@ public class ChatUserService {
 
         //차단된 유저 매치 목록에서 삭제
         List<UserMatch> userMatchList = matchRepository.findAllByUser1(userId)
-                .orElseThrow(() -> new IllegalArgumentException("not found user"));
+                .orElseThrow(() -> new WooyeonException(ExceptionCode.USER_NOT_FOUND));
 
         matchRepository.deleteAll(userMatchList);
 
         //차단된 유저 좋아요 목록에서 삭제
         List<UserLike> userLikeList = likeRepository.findAllByLikeFrom(userId)
-                .orElseThrow(() -> new IllegalArgumentException("not found user or matching user"));
+                .orElseThrow(() -> new WooyeonException(ExceptionCode.USER_NOT_FOUND));
 
         likeRepository.deleteAll(userLikeList);
 

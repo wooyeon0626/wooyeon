@@ -5,7 +5,8 @@ import com.wooyeon.yeon.chat.dto.ChatDto;
 import com.wooyeon.yeon.chat.dto.StompDto;
 import com.wooyeon.yeon.chat.repository.ChatRepository;
 import com.wooyeon.yeon.common.security.SecurityService;
-import com.wooyeon.yeon.exception.ExceptionMessage;
+import com.wooyeon.yeon.exception.ExceptionCode;
+import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.user.domain.Profile;
@@ -38,7 +39,7 @@ public class ChatService {
     @Transactional
     public void saveChat(StompDto stompDto) {
         UserMatch userMatch = matchRepository.findById(stompDto.getRoomId())
-                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.USER_MATCH_NOT_FOUND.toString()));
+                .orElseThrow(() -> new WooyeonException(ExceptionCode.USER_MATCH_NOT_FOUND));
 
         Chat chat = Chat.builder()
                 .message(stompDto.getMessage())
@@ -54,7 +55,7 @@ public class ChatService {
     public ChatDto.Response getChatList(Long matchId) {
 
         UserMatch userMatch = matchRepository.findById(matchId)
-                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.USER_MATCH_NOT_FOUND.toString()));
+                .orElseThrow(() -> new WooyeonException(ExceptionCode.USER_MATCH_NOT_FOUND));
 
         List<Chat> chatList = chatRepository.findAllByUserMatchOrderBySendTime(userMatch);
         List<ChatDto.ChatResponse> responseList = new ArrayList<>();
@@ -82,7 +83,7 @@ public class ChatService {
 
     public String getLoginUserNickName() {
         User loginUser = userRepository.findOptionalByEmail(securityService.getCurrentUserEmail())
-                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.LOGIN_USER_NOT_FOUND.toString()));
+                .orElseThrow(() -> new WooyeonException(ExceptionCode.LOGIN_USER_NOT_FOUND));
 
         Optional<Profile> profile;
         String loginUserNickname = null;

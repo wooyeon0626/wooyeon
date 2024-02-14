@@ -1,5 +1,7 @@
 package com.wooyeon.yeon.user.service.auth;
 
+import com.wooyeon.yeon.exception.ExceptionCode;
+import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.user.dto.auth.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -66,7 +68,7 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(accessToken);
 
         if (claims.get("auth") == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            throw new WooyeonException(ExceptionCode.INVALID_JWT_TOKEN);
         }
 
         Collection<? extends GrantedAuthority> authorities =
@@ -84,14 +86,17 @@ public class JwtTokenProvider {
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT Token", e);
+            throw new WooyeonException(ExceptionCode.INVALID_JWT_TOKEN);
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT Token", e);
+            throw new WooyeonException(ExceptionCode.EXPIRED_JWT_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT Token", e);
+            throw new WooyeonException(ExceptionCode.UNSUPPORTED_JWT_TOKEN);
         } catch (IllegalArgumentException e) {
             log.info("JWT claims string is empty.", e);
+            throw new WooyeonException(ExceptionCode.JWT_CLAIMS_STRING_IS_EMPTY);
         }
-        return false;
     }
 
     private Claims parseClaims(String accessToken) {

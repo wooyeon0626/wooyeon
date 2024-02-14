@@ -4,7 +4,8 @@ import com.wooyeon.yeon.chat.domain.Chat;
 import com.wooyeon.yeon.chat.dto.RoomDto;
 import com.wooyeon.yeon.chat.repository.ChatRepository;
 import com.wooyeon.yeon.common.security.SecurityService;
-import com.wooyeon.yeon.exception.ExceptionMessage;
+import com.wooyeon.yeon.exception.ExceptionCode;
+import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.profileChoice.domain.UserMatch;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.user.domain.Profile;
@@ -29,10 +30,10 @@ public class RoomService {
     private final ChatRepository chatRepository;
     private final SecurityService securityService;
 
-    public RoomDto.RoomResponse matchRoomList() {
+    public RoomDto.RoomResponse matchRoomList() throws WooyeonException {
 
         User loginUser = userRepository.findOptionalByEmail(securityService.getCurrentUserEmail())
-                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.LOGIN_USER_NOT_FOUND.toString()));
+                .orElseThrow(() -> new WooyeonException(ExceptionCode.LOGIN_USER_NOT_FOUND));
 
         List<UserMatch> userMatchList = matchRepository.findAllByUser1OrUser2(loginUser, loginUser);
 
@@ -43,7 +44,7 @@ public class RoomService {
                 Long matchUserId = getMatchUserId(userMatch, loginUser);
 
                 User matchUser = userRepository.findOptionalByUserId(matchUserId)
-                        .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.USER_NOT_FOUND.toString()));
+                        .orElseThrow(() -> new WooyeonException(ExceptionCode.USER_NOT_FOUND));
 
                 Optional<Profile> profile = Optional.empty();
                 Optional<ProfilePhoto> profilePhoto = Optional.empty();
@@ -100,7 +101,7 @@ public class RoomService {
     public List<RoomDto.SearchRoomResponse> searchMatchRoomList(String searchWord) {
 
         User loginUser = userRepository.findOptionalByEmail(securityService.getCurrentUserEmail())
-                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.USER_NOT_FOUND.toString()));
+                .orElseThrow(() -> new WooyeonException(ExceptionCode.USER_NOT_FOUND));
 
         // 채팅방 내 검색 단어 포함 항목 조회 후 추가
 //        List<Chat> chatList = chatRepository.findAllByMessageContains(searchWord);
@@ -141,7 +142,7 @@ public class RoomService {
                 Long matchUserId = getMatchUserId(userMatch, loginUser);
 
                 User matchUser = userRepository.findOptionalByUserId(matchUserId)
-                        .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.USER_NOT_FOUND.toString()));
+                        .orElseThrow(() -> new WooyeonException(ExceptionCode.USER_NOT_FOUND));
 
                 // 상대방 프로필 정보 조회
                 Optional<Profile> profile = Optional.empty();
