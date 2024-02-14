@@ -3,20 +3,23 @@ package com.wooyeon.yeon.common.fcm.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
 import com.wooyeon.yeon.common.fcm.dto.FcmDto;
+import com.wooyeon.yeon.common.security.SecurityService;
+import com.wooyeon.yeon.exception.ExceptionCode;
+import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.apache.http.HttpHeaders;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +29,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FcmService {
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
+    private final SecurityService securityService;
 
     public String getAccessToken() throws IOException {
         String firebaseConfigPath = "fcm-secret.json";
@@ -102,5 +107,20 @@ public class FcmService {
                 .build();
 
         return objectMapper.writeValueAsString(fcmMessage);
+    }
+
+    @Transactional
+    public com.wooyeon.yeon.chat.dto.FcmDto.Response saveFcmToken(com.wooyeon.yeon.chat.dto.FcmDto.Request request) {
+
+        User loginUser = userRepository.findOptionalByEmail(securityService.getCurrentUserEmail())
+                .orElseThrow(() -> new WooyeonException(ExceptionCode.LOGIN_USER_NOT_FOUND));
+
+        loginUser.setTargetToken(request.getFcmToken());
+
+        userRepository.save(loginUser);
+
+        return com.wooyeon.yeon.chat.dto.FcmDto.Response.builder()
+                .status(HttpStatus.OK)
+                .build();
     }
 }

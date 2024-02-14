@@ -23,4 +23,9 @@ public class FcmController {
     public void sendNotificationByToken(@RequestBody FcmDto.Request request) throws IOException {
         fcmService.sendMessageTo(request);
     }
+
+    @PostMapping("/save")
+    public com.wooyeon.yeon.chat.dto.FcmDto.Response saveFcmToken(com.wooyeon.yeon.chat.dto.FcmDto.Request request) {
+        return fcmService.saveFcmToken(request);
+    }
 }

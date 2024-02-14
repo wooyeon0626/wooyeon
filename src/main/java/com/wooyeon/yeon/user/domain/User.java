@@ -95,6 +95,10 @@ public class User implements UserDetails {
         this.profile = profile;
     }
 
+    public void setTargetToken(String targetToken) {
+        this.targetToken = targetToken;
+    }
+
     public void updateEmailAuth(boolean emailAuth) { this.emailAuth = emailAuth; }
     public void updatePhoneAuth(boolean phoneAuth) { this.phoneAuth = phoneAuth; }
     public Long getUserId() {return this.userId;}

@@ -20,7 +20,7 @@ public enum ExceptionCode {
     INVALID_REFRESH_TOKEN("Refresh Token 값이 유효하지 않습니다", "4007"),
     NOT_EXIST_REFRESH_TOKEN("Refresh Token 값이 존재하지 않습니다", "4008"),
     NOT_MATCH_REFRESH_TOKEN("DB 내 Refresh Token 값이 일치하지 않습니다", "4009"),
-    SECURITY_CONTEXT_IS_EMPTY("SECURITY CONTEXT USER 정보가 존재하지 않습니다", "4010");
+    SECURITY_CONTEXT_IS_EMPTY("Security Context USER 정보가 존재하지 않습니다", "4010");
 
     private final String description;
     private final String resultCode;
