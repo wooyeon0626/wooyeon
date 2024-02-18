@@ -10,6 +10,8 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -32,6 +34,8 @@ public class StompHandler implements ChannelInterceptor {
             if (!jwtTokenProvider.validateToken(accessToken)) {
                 throw new JwtException(ExceptionCode.AUTHORIZATION_FAILED.toString());
             }
+            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         return message;
     }
