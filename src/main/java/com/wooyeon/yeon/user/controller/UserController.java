@@ -5,18 +5,21 @@ import com.wooyeon.yeon.user.dto.emailAuth.EmailAuthResponseDto;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailRequestDto;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailResponseDto;
 import com.wooyeon.yeon.user.service.EmailAuthService;
+import com.wooyeon.yeon.user.service.LoginService;
 import com.wooyeon.yeon.user.service.ProfileService;
 import com.wooyeon.yeon.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +33,7 @@ public class UserController {
     private final UserService userService;
     private final EmailAuthService emailAuthService;
     private final ProfileService profileService;
+    private final LoginService loginService;
     private final Map<String, SseEmitter> userEmitters = new ConcurrentHashMap<>();
 
     @Value("${email-auth-background-image}")
@@ -96,6 +100,14 @@ public class UserController {
         return ResponseEntity.ok(profileResponseDto);
     }
 
+    // accessToken 검증
+    @GetMapping("/users/profile-state")
+    public ResponseEntity<ExpiredCheckDto.ExpiredCheckResponse> checkExpiredTokenAndProfile(HttpServletRequest request) {
+        String accessToken = parseBearerToken(request);
+        log.info("accessToken : {}", accessToken);
+        return ResponseEntity.ok(loginService.checkTokenAndProfile(accessToken));
+    }
+
     // 이메일 인증 시, 프론트엔드에게 SSE emitter로 인증완료 전송
     public SseEmitter sendSseEmitter(EmailAuthResponseDto emailAuthResponseDto) {
         SseEmitter emitter = userEmitters.get(emailAuthResponseDto.getEmail());
@@ -116,4 +128,13 @@ public class UserController {
         return emitter;
     }
 
+    private String parseBearerToken(HttpServletRequest request) {
+        // Http 요청의 헤더를 파싱해 Bearer 토큰을 리턴한다.
+        String bearerToken = request.getHeader("Authorization");
+
+        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
 }
