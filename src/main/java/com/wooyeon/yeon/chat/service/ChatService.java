@@ -16,13 +16,12 @@ import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.socket.WebSocketSession;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -34,19 +33,23 @@ public class ChatService {
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
 
-    private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
-
     @Transactional
-    public void saveChat(StompDto stompDto) {
+    public void saveChat(StompDto stompDto, Map<Long, Long> sessionStore) {
         UserMatch userMatch = matchRepository.findById(stompDto.getRoomId())
                 .orElseThrow(() -> new WooyeonException(ExceptionCode.USER_MATCH_NOT_FOUND));
+
+        boolean flag = false;
+
+        if(2 == sessionStore.get(stompDto.getRoomId())) {
+            flag = true;
+        }
 
         Chat chat = Chat.builder()
                 .message(stompDto.getMessage())
                 .sendTime(LocalDateTime.now())
                 .userMatch(userMatch)
                 .sender(getLoginUserNickName())
-//                .isChecked() //stomp 연결되어 있으면 check
+                .isChecked(flag) //stomp 연결되어 있으면 check
                 .build();
 
         chatRepository.save(chat);
@@ -95,10 +98,4 @@ public class ChatService {
 
         return loginUserNickname;
     }
-
-    public int calculateUserCount() {
-        // 중복된 사용자를 고려하여 사용자 수를 계산
-        return (int) sessions.stream().map(s -> s.getAttributes().get("userId")).distinct().count();
-    }
-
 }

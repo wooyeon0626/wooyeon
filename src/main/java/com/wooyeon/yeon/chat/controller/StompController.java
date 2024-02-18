@@ -11,11 +11,11 @@ import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +26,7 @@ public class StompController {
     private final FcmService fcmService;
     private final UserRepository userRepository;
 
+    private Map<Long, Long> sessionStore = new ConcurrentHashMap<>();
 
     /*
         /queue/chat/room/{matchId}    - 채팅방 메시지 URL
@@ -34,26 +35,35 @@ public class StompController {
     */
 
     @MessageMapping("/chat/message")
-    public void enter(StompDto stompDto, WebSocketSession session, StompHeaderAccessor accessor) {
+    public void enter(StompDto stompDto) {
         String loginEmail = securityService.getCurrentUserEmail();
-        session.getAttributes().put(loginEmail, accessor.getUser().getName());
-        simpMessageSendingOperations.convertAndSend("/queue/chat/room/" + stompDto.getRoomId(), stompDto);
+        Long roomId = stompDto.getRoomId();
 
-        int sessionCount = chatService.calculateUserCount();
+        if (stompDto.getType().equals(StompDto.MessageType.ENTER.toString())) {
+            if (!sessionStore.containsKey(roomId) || 0 == sessionStore.get(roomId)) {
+                sessionStore.put(roomId, 1l);
+            } else if (1 == sessionStore.get(roomId)) {
+                sessionStore.put(roomId, 2l);
+            }
+        }
 
-        if(1 == sessionCount) {
+        if (stompDto.getType().equals(StompDto.MessageType.TALK.toString())) {
+            simpMessageSendingOperations.convertAndSend("/queue/chat/room/" + stompDto.getRoomId(), stompDto);
+        }
+
+        if (stompDto.getType().equals(StompDto.MessageType.QUIT.toString())) {
+            Long sessionCount = sessionStore.get(roomId);
+            sessionCount -= 1;
+            sessionStore.put(roomId, sessionCount);
+        }
+
+        if (1 == sessionStore.get(roomId)) {
             try {
                 fcmService.sendMessageTo(FcmDto.buildRequest(loginEmail, stompDto, userRepository));
             } catch (IOException e) {
                 throw new WooyeonException(ExceptionCode.FCM_SEND_FAIL_ERROR);
             }
         }
-
-        chatService.saveChat(stompDto);
-    }
-
-    @MessageMapping("/unsubscribe")
-    public void handleUnsubscription(WebSocketSession session) {
-        session.getAttributes().remove(securityService.getCurrentUserEmail());
+        chatService.saveChat(stompDto, sessionStore);
     }
 }
