@@ -36,7 +36,7 @@ public class StompController {
 
     @MessageMapping("/chat/message")
     public void enter(StompDto stompDto) {
-        String loginEmail = securityService.getCurrentUserEmail();
+        String loginEmail = "young1@naver.com";
         Long roomId = stompDto.getRoomId();
 
         if (stompDto.getType().equals(StompDto.MessageType.ENTER.toString())) {
