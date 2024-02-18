@@ -26,7 +26,7 @@ public class StompController {
     private final FcmService fcmService;
     private final UserRepository userRepository;
 
-    private Map<Long, Long> sessionStore = new ConcurrentHashMap<>();
+    private Map<String , String> sessionStore = new ConcurrentHashMap<>();
 
     /*
         /queue/chat/room/{matchId}    - 채팅방 메시지 URL
@@ -40,10 +40,10 @@ public class StompController {
         Long roomId = stompDto.getRoomId();
 
         if (stompDto.getType().equals(StompDto.MessageType.ENTER.toString())) {
-            if (!sessionStore.containsKey(roomId) || 0 == sessionStore.get(roomId)) {
-                sessionStore.put(roomId, 1l);
-            } else if (1 == sessionStore.get(roomId)) {
-                sessionStore.put(roomId, 2l);
+            if (!sessionStore.containsKey(roomId.toString()) || "0".equals(sessionStore.get(roomId.toString()))) {
+                sessionStore.put(roomId.toString(), "1");
+            } else if ("1".equals(sessionStore.get(roomId.toString()))) {
+                sessionStore.put(roomId.toString(), "1");
             }
         }
 
@@ -52,12 +52,13 @@ public class StompController {
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.QUIT.toString())) {
-            Long sessionCount = sessionStore.get(roomId);
-            sessionCount -= 1;
-            sessionStore.put(roomId, sessionCount);
+            String sessionCount = sessionStore.get(roomId.toString());
+            int count = Integer.parseInt(sessionCount);
+            count -= 1;
+            sessionStore.put(roomId.toString(), String.valueOf(count));
         }
 
-        if (1 == sessionStore.get(roomId)) {
+        if ("1".equals(sessionStore.get(roomId.toString()))) {
             try {
                 fcmService.sendMessageTo(FcmDto.buildRequest(loginEmail, stompDto, userRepository));
             } catch (IOException e) {

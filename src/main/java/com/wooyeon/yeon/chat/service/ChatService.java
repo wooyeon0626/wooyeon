@@ -34,7 +34,7 @@ public class ChatService {
     private final ProfileRepository profileRepository;
 
     @Transactional
-    public void saveChat(StompDto stompDto, Map<Long, Long> sessionStore) {
+    public void saveChat(StompDto stompDto, Map<String, String> sessionStore) {
         UserMatch userMatch = matchRepository.findById(stompDto.getRoomId())
                 .orElseThrow(() -> new WooyeonException(ExceptionCode.USER_MATCH_NOT_FOUND));
 
