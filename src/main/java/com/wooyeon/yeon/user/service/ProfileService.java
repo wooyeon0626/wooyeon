@@ -9,9 +9,12 @@ import com.wooyeon.yeon.user.dto.ProfileResponseDto;
 import com.wooyeon.yeon.user.repository.ProfilePhotoRepository;
 import com.wooyeon.yeon.user.repository.ProfileRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
+import com.wooyeon.yeon.user.service.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -49,6 +52,8 @@ public class ProfileService {
 
     @Value("${lightsail.bucketName}")
     private String bucketName;
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     private S3Client createS3Client() {
         S3Client s3Client = S3Client.builder()
@@ -117,5 +122,15 @@ public class ProfileService {
                     .build();
             profilePhotoRepository.save(profilePhoto);
         }
+    }
+
+    public HttpStatus updateUsersGpsLocation(String accessToken, String gpsLocation) {
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        User user = userRepository.findByEmail(authentication.getName());
+        Optional<Profile> profile = profileRepository.findByUser(user);
+
+        profile.ifPresent(value -> value.updateGpsLocationInfo(gpsLocation));
+
+        return HttpStatus.OK;
     }
 }
