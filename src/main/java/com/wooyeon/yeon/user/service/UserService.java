@@ -48,17 +48,8 @@ public class UserService {
         return rsaPublicResponseDto;
     }
 
-    public PasswordEncryptResponseDto decodeEncrypt(PasswordEncryptRequestDto passwordEncryptRequestDto)
+    public String decodeEncrypt(PasswordEncryptRequestDto passwordEncryptRequestDto)
             throws Exception {
-        // 이미 등록된 이메일인지 확인
-        if (userRepository.findByEmail(passwordEncryptRequestDto.getEmail()) != null) {
-            // 이미 등록된 이메일인 경우 수행을 멈추고 중복됐다는 값을 return
-            PasswordEncryptResponseDto duplicateResponseDto = PasswordEncryptResponseDto.builder()
-                    .statusCode(HttpStatus.SC_BAD_REQUEST)
-                    .statusName("duplicated")
-                    .build();
-            return duplicateResponseDto;
-        }
 
         String encryptedKey = passwordEncryptRequestDto.getEncryptedKey();
         log.info("RSA 공개키로 암호화 된 키(encryptedKey) : {}", encryptedKey);
@@ -92,6 +83,24 @@ public class UserService {
           log.info("salt : {}", salt);
           log.info("finalPassword : {}", finalPassword);
         */
+
+        return decodedPassword;
+    }
+
+    public PasswordEncryptResponseDto savePassword(PasswordEncryptRequestDto passwordEncryptRequestDto) throws Exception {
+        // 이미 등록된 이메일인지 확인
+        boolean validateEmail = validateEmail(passwordEncryptRequestDto.getEmail());
+        if (validateEmail) {
+            // 이미 등록된 이메일인 경우 수행을 멈추고 중복됐다는 값을 return
+            PasswordEncryptResponseDto duplicateResponseDto = PasswordEncryptResponseDto.builder()
+                    .statusCode(HttpStatus.SC_BAD_REQUEST)
+                    .statusName("duplicated")
+                    .build();
+            return duplicateResponseDto;
+        }
+
+        // 암호화된 key, password Decode
+        String decodedPassword = decodeEncrypt(passwordEncryptRequestDto);
 
         // passwordEncoder로 비밀번호 암호화 (2024.02.06 로그인과 암호화 방식 맞춤 수정)
         String finalPassword = passwordEncoder.encode(decodedPassword);
@@ -162,6 +171,13 @@ public class UserService {
         }
 
         return shaEncryptedPassword;
+    }
+
+    boolean validateEmail(String email) {
+        if (userRepository.findByEmail(email) != null) {
+            // 이미 등록된 이메일인 경우 true 값을 return
+            return true;
+        } else return false;
     }
 
 }

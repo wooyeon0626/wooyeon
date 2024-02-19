@@ -89,7 +89,7 @@ public class UserController {
     @PostMapping("/encrypt/pw")
     public PasswordEncryptResponseDto passwordEncrypt(@RequestBody PasswordEncryptRequestDto passwordEncryptRequestDto)
             throws Exception {
-        PasswordEncryptResponseDto passwordEncryptResponseDto = userService.decodeEncrypt(passwordEncryptRequestDto);
+        PasswordEncryptResponseDto passwordEncryptResponseDto = userService.savePassword(passwordEncryptRequestDto);
         return passwordEncryptResponseDto;
     }
 
