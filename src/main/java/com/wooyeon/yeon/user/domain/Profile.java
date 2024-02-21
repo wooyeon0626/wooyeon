@@ -64,4 +64,6 @@ public class Profile {
         this.faceVerify = faceVerify;
         this.user = user;
     }
+
+    public void updateGpsLocationInfo(String gpsLocationInfo) { this.gpsLocationInfo = gpsLocationInfo; }
 }
