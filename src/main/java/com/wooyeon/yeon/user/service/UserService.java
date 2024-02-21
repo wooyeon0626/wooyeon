@@ -1,9 +1,11 @@
 package com.wooyeon.yeon.user.service;
 
 import com.wooyeon.yeon.user.domain.User;
+import com.wooyeon.yeon.user.dto.LoginDto;
 import com.wooyeon.yeon.user.dto.PasswordEncryptRequestDto;
 import com.wooyeon.yeon.user.dto.PasswordEncryptResponseDto;
 import com.wooyeon.yeon.user.dto.RsaPublicResponseDto;
+import com.wooyeon.yeon.user.dto.emailAuth.LoginRequestDto;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import com.wooyeon.yeon.user.service.encrypt.AesUtil;
 import com.wooyeon.yeon.user.service.encrypt.RsaUtil;
@@ -29,6 +31,7 @@ public class UserService {
     private final RsaUtil rsaUtil;
     private final AesUtil aesUtil;
     private final PasswordEncoder passwordEncoder;
+    private final LoginService loginService;
 
     @Transactional
     public User findByUserId(Long userId) {
@@ -179,5 +182,14 @@ public class UserService {
             return true;
         } else return false;
     }
+
+    /*public void encryptLogin(PasswordEncryptRequestDto passwordEncryptRequestDto) throws Exception {
+        // 암호화된 key, password Decode
+        String password = decodeEncrypt(passwordEncryptRequestDto);
+        LoginRequestDto loginRequestDto = null;
+        loginRequestDto.updateEmail(passwordEncryptRequestDto.getEmail());
+        loginRequestDto.updatePassword(password);
+        loginService.login(loginRequestDto);
+    }*/
 
 }

@@ -2,8 +2,11 @@ package com.wooyeon.yeon.user.controller;
 
 import com.wooyeon.yeon.user.dto.LoginDto;
 import com.wooyeon.yeon.user.dto.LogoutDto;
+import com.wooyeon.yeon.user.dto.PasswordEncryptRequestDto;
 import com.wooyeon.yeon.user.dto.auth.TokenDto;
+import com.wooyeon.yeon.user.dto.emailAuth.LoginRequestDto;
 import com.wooyeon.yeon.user.service.LoginService;
+import com.wooyeon.yeon.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +22,7 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginDto.LoginRequest loginRequest) {
+    public ResponseEntity<TokenDto> login(@RequestBody PasswordEncryptRequestDto loginRequest) throws Exception {
         return ResponseEntity.ok(loginService.login(loginRequest));
     }
 

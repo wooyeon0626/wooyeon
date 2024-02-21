@@ -7,7 +7,9 @@ import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.ExpiredCheckDto;
 import com.wooyeon.yeon.user.dto.LoginDto;
 import com.wooyeon.yeon.user.dto.LogoutDto;
+import com.wooyeon.yeon.user.dto.PasswordEncryptRequestDto;
 import com.wooyeon.yeon.user.dto.auth.TokenDto;
+import com.wooyeon.yeon.user.dto.emailAuth.LoginRequestDto;
 import com.wooyeon.yeon.user.repository.ProfileRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import com.wooyeon.yeon.user.service.auth.JwtTokenProvider;
@@ -30,11 +32,15 @@ public class LoginService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
+    private final UserService userService;
 
     @Transactional
-    public TokenDto login(LoginDto.LoginRequest loginReq) {
+    public TokenDto login(PasswordEncryptRequestDto passwordEncryptRequestDto) throws Exception {
+
+        String password = userService.decodeEncrypt(passwordEncryptRequestDto);
+        // LoginRequest -> PasswordRequestDto로 변경 필요
         UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(loginReq.getEmail(), loginReq.getPassword());
+                = new UsernamePasswordAuthenticationToken(passwordEncryptRequestDto.getEmail(), password);
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
