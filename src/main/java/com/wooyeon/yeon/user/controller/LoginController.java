@@ -4,7 +4,6 @@ import com.wooyeon.yeon.user.dto.LoginDto;
 import com.wooyeon.yeon.user.dto.LogoutDto;
 import com.wooyeon.yeon.user.dto.PasswordEncryptRequestDto;
 import com.wooyeon.yeon.user.dto.auth.TokenDto;
-import com.wooyeon.yeon.user.dto.emailAuth.LoginRequestDto;
 import com.wooyeon.yeon.user.service.LoginService;
 import com.wooyeon.yeon.user.service.UserService;
 import lombok.RequiredArgsConstructor;

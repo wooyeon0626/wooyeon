@@ -5,7 +5,6 @@ import com.wooyeon.yeon.user.dto.LoginDto;
 import com.wooyeon.yeon.user.dto.PasswordEncryptRequestDto;
 import com.wooyeon.yeon.user.dto.PasswordEncryptResponseDto;
 import com.wooyeon.yeon.user.dto.RsaPublicResponseDto;
-import com.wooyeon.yeon.user.dto.emailAuth.LoginRequestDto;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import com.wooyeon.yeon.user.service.encrypt.AesUtil;
 import com.wooyeon.yeon.user.service.encrypt.RsaUtil;
