@@ -40,7 +40,7 @@ public class ChatService {
 
         boolean flag = false;
 
-        if(2 == sessionStore.get(stompDto.getRoomId())) {
+        if("2".equals(sessionStore.get(stompDto.getRoomId().toString()))) {
             flag = true;
         }
 
@@ -85,7 +85,7 @@ public class ChatService {
     }
 
     public String getLoginUserNickName() {
-        User loginUser = userRepository.findOptionalByEmail(securityService.getCurrentUserEmail())
+        User loginUser = userRepository.findOptionalByEmail("young1@naver.com")
                 .orElseThrow(() -> new WooyeonException(ExceptionCode.LOGIN_USER_NOT_FOUND));
 
         Optional<Profile> profile;
