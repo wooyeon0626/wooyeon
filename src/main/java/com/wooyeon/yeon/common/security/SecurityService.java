@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class SecurityService {
 
     public String getCurrentUserEmail() {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication.getName() == null) {
             throw new WooyeonException(ExceptionCode.SECURITY_CONTEXT_IS_EMPTY);

@@ -26,7 +26,7 @@ public class StompController {
     private final FcmService fcmService;
     private final UserRepository userRepository;
 
-    private Map<String , String> sessionStore = new ConcurrentHashMap<>();
+    private static Map<String , String> sessionStore = new ConcurrentHashMap<>();
 
     /*
         /queue/chat/room/{matchId}    - 채팅방 메시지 URL
@@ -36,19 +36,20 @@ public class StompController {
 
     @MessageMapping("/chat/message")
     public void enter(StompDto stompDto) {
-        String loginEmail = "young1@naver.com";
+        String loginEmail = securityService.getCurrentUserEmail();
         Long roomId = stompDto.getRoomId();
 
         if (stompDto.getType().equals(StompDto.MessageType.ENTER.toString())) {
             if (!sessionStore.containsKey(roomId.toString()) || "0".equals(sessionStore.get(roomId.toString()))) {
                 sessionStore.put(roomId.toString(), "1");
             } else if ("1".equals(sessionStore.get(roomId.toString()))) {
-                sessionStore.put(roomId.toString(), "1");
+                sessionStore.put(roomId.toString(), "2");
             }
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.TALK.toString())) {
             simpMessageSendingOperations.convertAndSend("/queue/chat/room/" + stompDto.getRoomId(), stompDto);
+            chatService.saveChat(stompDto, sessionStore);
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.QUIT.toString())) {
@@ -58,13 +59,14 @@ public class StompController {
             sessionStore.put(roomId.toString(), String.valueOf(count));
         }
 
-        if ("1".equals(sessionStore.get(roomId.toString()))) {
+        if (stompDto.getType().equals(StompDto.MessageType.TALK.toString()) &&
+                "1".equals(sessionStore.get(roomId.toString()))) {
             try {
                 fcmService.sendMessageTo(FcmDto.buildRequest(loginEmail, stompDto, userRepository));
             } catch (IOException e) {
                 throw new WooyeonException(ExceptionCode.FCM_SEND_FAIL_ERROR);
             }
+            chatService.saveChat(stompDto, sessionStore);
         }
-        chatService.saveChat(stompDto, sessionStore);
     }
 }
