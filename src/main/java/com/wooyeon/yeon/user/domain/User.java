@@ -41,6 +41,7 @@ public class User implements UserDetails {
     private String refreshToken;
 
     private String targetToken;
+    private String fcmToken;
 
     @Column
     @Builder.Default
@@ -88,15 +89,12 @@ public class User implements UserDetails {
         this.accessToken = accessToken;
     }
 
-    public void updatePassword(String password) { this.password = password; }
-    public void updateSalt(String salt) { this.salt = salt; }
-
     public void setProfile(Profile profile) {
         this.profile = profile;
     }
 
-    public void setTargetToken(String targetToken) {
-        this.targetToken = targetToken;
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 
     public void updateEmailAuth(boolean emailAuth) { this.emailAuth = emailAuth; }

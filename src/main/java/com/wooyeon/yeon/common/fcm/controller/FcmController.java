@@ -25,7 +25,7 @@ public class FcmController {
     }
 
     @PostMapping("/save")
-    public com.wooyeon.yeon.chat.dto.FcmDto.Response saveFcmToken(com.wooyeon.yeon.chat.dto.FcmDto.Request request) {
+    public FcmDto.SaveResponse saveFcmToken(@RequestBody FcmDto.SaveRequest request) {
         return fcmService.saveFcmToken(request);
     }
 }

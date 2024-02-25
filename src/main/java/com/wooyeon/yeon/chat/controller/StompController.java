@@ -8,9 +8,12 @@ import com.wooyeon.yeon.common.security.SecurityService;
 import com.wooyeon.yeon.exception.ExceptionCode;
 import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.user.repository.UserRepository;
+import com.wooyeon.yeon.user.service.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -25,6 +28,7 @@ public class StompController {
     private final SecurityService securityService;
     private final FcmService fcmService;
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     private static Map<String , String> sessionStore = new ConcurrentHashMap<>();
 
@@ -35,8 +39,9 @@ public class StompController {
     */
 
     @MessageMapping("/chat/message")
-    public void enter(StompDto stompDto) {
-        String loginEmail = securityService.getCurrentUserEmail();
+    public void enter(StompDto stompDto, @Header("Authorization") String token) {
+        Authentication authentication = jwtTokenProvider.getAuthentication(token.substring(7));
+        String loginEmail = authentication.getName();
         Long roomId = stompDto.getRoomId();
 
         if (stompDto.getType().equals(StompDto.MessageType.ENTER.toString())) {

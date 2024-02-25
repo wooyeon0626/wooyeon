@@ -15,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Component
 @Slf4j
@@ -26,7 +28,8 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         accessor.getAck();
         if (accessor.getCommand() == StompCommand.SEND || accessor.getCommand() == StompCommand.CONNECT) {
-            String bearerToken = accessor.getFirstNativeHeader("Authorization");
+            List<String> list = accessor.getNativeHeader("Authorization");
+            String bearerToken = list.get(0);
             String accessToken = null;
             if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
                 accessToken = bearerToken.substring(7);
@@ -34,8 +37,9 @@ public class StompHandler implements ChannelInterceptor {
             if (!jwtTokenProvider.validateToken(accessToken)) {
                 throw new JwtException(ExceptionCode.AUTHORIZATION_FAILED.toString());
             }
-            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            // 토큰이 유효한 경우, 사용자 정보 추출
+            Authentication loginAuthentication = jwtTokenProvider.getAuthentication(accessToken);
+            SecurityContextHolder.getContext().setAuthentication(loginAuthentication);
         }
         return message;
     }

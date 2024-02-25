@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
+
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Builder
@@ -51,6 +54,19 @@ public class FcmDto {
         String body;
         String email;
         String description;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class SaveRequest {
+        @NotNull
+        private String fcmToken;
+    }
+
+    @Getter
+    @Builder
+    public static class SaveResponse {
+        private HttpStatus status;
     }
 
     public static Request buildRequest(String loginEmail , StompDto stompDto, UserRepository userRepository) {
