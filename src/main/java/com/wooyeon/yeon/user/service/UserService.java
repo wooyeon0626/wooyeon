@@ -1,11 +1,13 @@
 package com.wooyeon.yeon.user.service;
 
 import com.wooyeon.yeon.user.domain.User;
+import com.wooyeon.yeon.user.domain.UserRoles;
 import com.wooyeon.yeon.user.dto.LoginDto;
 import com.wooyeon.yeon.user.dto.PasswordEncryptRequestDto;
 import com.wooyeon.yeon.user.dto.PasswordEncryptResponseDto;
 import com.wooyeon.yeon.user.dto.RsaPublicResponseDto;
 import com.wooyeon.yeon.user.repository.UserRepository;
+import com.wooyeon.yeon.user.repository.UserRolesRepository;
 import com.wooyeon.yeon.user.service.encrypt.AesUtil;
 import com.wooyeon.yeon.user.service.encrypt.RsaUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +32,7 @@ public class UserService {
     private final RsaUtil rsaUtil;
     private final AesUtil aesUtil;
     private final PasswordEncoder passwordEncoder;
-    private final LoginService loginService;
+    private final UserRolesRepository userRolesRepository;
 
     @Transactional
     public User findByUserId(Long userId) {
@@ -68,7 +70,7 @@ public class UserService {
 
         // 3.RSA 개인키로 Session Key(AES Key) 복호화
         log.info("RSA 디코딩 시작");
-        byte[] decodedKey = RsaUtil.rsaDecode(base64AesKey, RsaUtil.sendPrivateKey());
+        byte[] decodedKey = rsaUtil.rsaDecode(base64AesKey, RsaUtil.sendPrivateKey());
 
         log.info("디코딩된 IV: {}", ivBytes);
         log.info("복호화된 AES Key: {}", decodedKey);
@@ -117,8 +119,12 @@ public class UserService {
                 .build();
         userRepository.save(user);
 
-        Long id = user.getUserId();
-        // userRoles 코드 추가할 부분
+        // User Roles 추가
+        UserRoles userRoles = UserRoles.builder()
+                .userUserId(user.getUserId())
+                .roles("USER_ROLES")
+                .build();
+        userRolesRepository.save(userRoles);
 
         // ResponseDto 구성
         PasswordEncryptResponseDto passwordEncryptResponseDto = PasswordEncryptResponseDto.builder()
