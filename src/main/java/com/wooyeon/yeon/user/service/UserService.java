@@ -119,12 +119,13 @@ public class UserService {
                 .build();
         userRepository.save(user);
 
-        // User Roles 추가
+        /* User Roles 추가
         UserRoles userRoles = UserRoles.builder()
                 .userUserId(user.getUserId())
                 .roles("USER_ROLES")
                 .build();
         userRolesRepository.save(userRoles);
+        */
 
         // ResponseDto 구성
         PasswordEncryptResponseDto passwordEncryptResponseDto = PasswordEncryptResponseDto.builder()
