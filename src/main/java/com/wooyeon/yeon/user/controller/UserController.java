@@ -1,22 +1,28 @@
 package com.wooyeon.yeon.user.controller;
 
+import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.*;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailAuthResponseDto;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailRequestDto;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailResponseDto;
 import com.wooyeon.yeon.user.service.EmailAuthService;
+import com.wooyeon.yeon.user.service.LoginService;
 import com.wooyeon.yeon.user.service.ProfileService;
 import com.wooyeon.yeon.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +36,7 @@ public class UserController {
     private final UserService userService;
     private final EmailAuthService emailAuthService;
     private final ProfileService profileService;
+    private final LoginService loginService;
     private final Map<String, SseEmitter> userEmitters = new ConcurrentHashMap<>();
 
     @Value("${email-auth-background-image}")
@@ -84,16 +91,32 @@ public class UserController {
     @PostMapping("/encrypt/pw")
     public PasswordEncryptResponseDto passwordEncrypt(@RequestBody PasswordEncryptRequestDto passwordEncryptRequestDto)
             throws Exception {
-        PasswordEncryptResponseDto passwordEncryptResponseDto = userService.decodeEncrypt(passwordEncryptRequestDto);
+        PasswordEncryptResponseDto passwordEncryptResponseDto = userService.savePassword(passwordEncryptRequestDto);
         return passwordEncryptResponseDto;
     }
 
     // 프로필 등록
     @PostMapping(value = "/users/register/profile")
-    public ResponseEntity<ProfileResponseDto> insertProfile(@RequestPart(value = "profileInfo") ProfileRequestDto profileRequestDto,
+    public ResponseEntity<ProfileResponseDto> createProfile(@RequestPart(value = "profileInfo") ProfileRequestDto profileRequestDto,
                                                             @RequestPart(value = "profilePhoto", required = false) List<MultipartFile> profilePhotoUpload) throws IOException {
         ProfileResponseDto profileResponseDto = profileService.insertProfile(profileRequestDto, profilePhotoUpload);
         return ResponseEntity.ok(profileResponseDto);
+    }
+
+    // accessToken 검증
+    @GetMapping("/users/profile-state")
+    public ResponseEntity<ExpiredCheckDto.ExpiredCheckResponse> checkExpiredTokenAndProfile(HttpServletRequest request) {
+        String accessToken = parseBearerToken(request);
+        log.info("accessToken : {}", accessToken);
+        return ResponseEntity.ok(loginService.checkTokenAndProfile(accessToken));
+    }
+
+    // GPS 수신 API
+    @PostMapping("/users/profile/gps")
+    public ResponseEntity<HttpStatus> receiveUsersGps(@AuthenticationPrincipal User user,
+                                                      @RequestBody String gpsLocation) {
+//        String accessToken = parseBearerToken(request);
+        return ResponseEntity.ok(profileService.updateUsersGpsLocation(user.getUserEmail(), gpsLocation));
     }
 
     // 이메일 인증 시, 프론트엔드에게 SSE emitter로 인증완료 전송
@@ -116,4 +139,13 @@ public class UserController {
         return emitter;
     }
 
+    private String parseBearerToken(HttpServletRequest request) {
+        // Http 요청의 헤더를 파싱해 Bearer 토큰을 리턴한다.
+        String bearerToken = request.getHeader("Authorization");
+
+        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
 }

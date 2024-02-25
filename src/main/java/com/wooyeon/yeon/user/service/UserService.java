@@ -1,10 +1,13 @@
 package com.wooyeon.yeon.user.service;
 
 import com.wooyeon.yeon.user.domain.User;
+import com.wooyeon.yeon.user.domain.UserRoles;
+import com.wooyeon.yeon.user.dto.LoginDto;
 import com.wooyeon.yeon.user.dto.PasswordEncryptRequestDto;
 import com.wooyeon.yeon.user.dto.PasswordEncryptResponseDto;
 import com.wooyeon.yeon.user.dto.RsaPublicResponseDto;
 import com.wooyeon.yeon.user.repository.UserRepository;
+import com.wooyeon.yeon.user.repository.UserRolesRepository;
 import com.wooyeon.yeon.user.service.encrypt.AesUtil;
 import com.wooyeon.yeon.user.service.encrypt.RsaUtil;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ public class UserService {
     private final RsaUtil rsaUtil;
     private final AesUtil aesUtil;
     private final PasswordEncoder passwordEncoder;
+    private final UserRolesRepository userRolesRepository;
 
     @Transactional
     public User findByUserId(Long userId) {
@@ -48,17 +52,8 @@ public class UserService {
         return rsaPublicResponseDto;
     }
 
-    public PasswordEncryptResponseDto decodeEncrypt(PasswordEncryptRequestDto passwordEncryptRequestDto)
+    public String decodeEncrypt(PasswordEncryptRequestDto passwordEncryptRequestDto)
             throws Exception {
-        // 이미 등록된 이메일인지 확인
-        if (userRepository.findByEmail(passwordEncryptRequestDto.getEmail()) != null) {
-            // 이미 등록된 이메일인 경우 수행을 멈추고 중복됐다는 값을 return
-            PasswordEncryptResponseDto duplicateResponseDto = PasswordEncryptResponseDto.builder()
-                    .statusCode(HttpStatus.SC_BAD_REQUEST)
-                    .statusName("duplicated")
-                    .build();
-            return duplicateResponseDto;
-        }
 
         String encryptedKey = passwordEncryptRequestDto.getEncryptedKey();
         log.info("RSA 공개키로 암호화 된 키(encryptedKey) : {}", encryptedKey);
@@ -75,7 +70,7 @@ public class UserService {
 
         // 3.RSA 개인키로 Session Key(AES Key) 복호화
         log.info("RSA 디코딩 시작");
-        byte[] decodedKey = RsaUtil.rsaDecode(base64AesKey, RsaUtil.sendPrivateKey());
+        byte[] decodedKey = rsaUtil.rsaDecode(base64AesKey, RsaUtil.sendPrivateKey());
 
         log.info("디코딩된 IV: {}", ivBytes);
         log.info("복호화된 AES Key: {}", decodedKey);
@@ -93,6 +88,24 @@ public class UserService {
           log.info("finalPassword : {}", finalPassword);
         */
 
+        return decodedPassword;
+    }
+
+    public PasswordEncryptResponseDto savePassword(PasswordEncryptRequestDto passwordEncryptRequestDto) throws Exception {
+        // 이미 등록된 이메일인지 확인
+        boolean validateEmail = validateEmail(passwordEncryptRequestDto.getEmail());
+        if (validateEmail) {
+            // 이미 등록된 이메일인 경우 수행을 멈추고 중복됐다는 값을 return
+            PasswordEncryptResponseDto duplicateResponseDto = PasswordEncryptResponseDto.builder()
+                    .statusCode(HttpStatus.SC_BAD_REQUEST)
+                    .statusName("duplicated")
+                    .build();
+            return duplicateResponseDto;
+        }
+
+        // 암호화된 key, password Decode
+        String decodedPassword = decodeEncrypt(passwordEncryptRequestDto);
+
         // passwordEncoder로 비밀번호 암호화 (2024.02.06 로그인과 암호화 방식 맞춤 수정)
         String finalPassword = passwordEncoder.encode(decodedPassword);
         log.debug("finalPassword : {}", finalPassword);
@@ -106,8 +119,13 @@ public class UserService {
                 .build();
         userRepository.save(user);
 
-        Long id = user.getUserId();
-        // userRoles 코드 추가할 부분
+        /* User Roles 추가
+        UserRoles userRoles = UserRoles.builder()
+                .userUserId(user.getUserId())
+                .roles("USER_ROLES")
+                .build();
+        userRolesRepository.save(userRoles);
+        */
 
         // ResponseDto 구성
         PasswordEncryptResponseDto passwordEncryptResponseDto = PasswordEncryptResponseDto.builder()
@@ -163,5 +181,21 @@ public class UserService {
 
         return shaEncryptedPassword;
     }
+
+    boolean validateEmail(String email) {
+        if (userRepository.findByEmail(email) != null) {
+            // 이미 등록된 이메일인 경우 true 값을 return
+            return true;
+        } else return false;
+    }
+
+    /*public void encryptLogin(PasswordEncryptRequestDto passwordEncryptRequestDto) throws Exception {
+        // 암호화된 key, password Decode
+        String password = decodeEncrypt(passwordEncryptRequestDto);
+        LoginRequestDto loginRequestDto = null;
+        loginRequestDto.updateEmail(passwordEncryptRequestDto.getEmail());
+        loginRequestDto.updatePassword(password);
+        loginService.login(loginRequestDto);
+    }*/
 
 }

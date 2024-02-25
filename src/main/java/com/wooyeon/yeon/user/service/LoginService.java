@@ -4,8 +4,10 @@ import com.wooyeon.yeon.exception.ExceptionCode;
 import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.User;
+import com.wooyeon.yeon.user.dto.ExpiredCheckDto;
 import com.wooyeon.yeon.user.dto.LoginDto;
 import com.wooyeon.yeon.user.dto.LogoutDto;
+import com.wooyeon.yeon.user.dto.PasswordEncryptRequestDto;
 import com.wooyeon.yeon.user.dto.auth.TokenDto;
 import com.wooyeon.yeon.user.repository.ProfileRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
@@ -28,11 +30,15 @@ public class LoginService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
+    private final UserService userService;
 
     @Transactional
-    public TokenDto login(LoginDto.LoginRequest loginReq) {
+    public TokenDto login(PasswordEncryptRequestDto passwordEncryptRequestDto) throws Exception {
+
+        String password = userService.decodeEncrypt(passwordEncryptRequestDto);
+        // LoginRequest -> PasswordRequestDto로 변경 필요
         UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(loginReq.getEmail(), loginReq.getPassword());
+                = new UsernamePasswordAuthenticationToken(passwordEncryptRequestDto.getEmail(), password);
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
@@ -71,6 +77,33 @@ public class LoginService {
 
         return LogoutDto.LogoutResponse.builder()
                 .status("OK")
+                .build();
+    }
+
+    public ExpiredCheckDto.ExpiredCheckResponse checkTokenAndProfile(String accessToken) {
+
+        boolean expiredCheckAccessToken = jwtTokenProvider.validateToken(accessToken);
+
+        if(!expiredCheckAccessToken) {
+            throw new WooyeonException(ExceptionCode.EXPIRED_JWT_TOKEN);
+        }
+
+        if(expiredCheckAccessToken) {
+            User user = userRepository.findByAccessToken(accessToken);
+            Optional<Profile> existsProfile = profileRepository.findByUser(user);
+
+            if (existsProfile.isPresent()) {    // profile까지 등록한 user
+                return ExpiredCheckDto.ExpiredCheckResponse.builder()
+                        .existsProfile(HttpStatus.SC_OK)
+                        .build();
+            } else {     // profile 미등록 user
+                return ExpiredCheckDto.ExpiredCheckResponse.builder()
+                        .existsProfile(3000)
+                        .build();
+            }
+        }
+        return ExpiredCheckDto.ExpiredCheckResponse.builder()
+                .existsProfile(4004)
                 .build();
     }
 }

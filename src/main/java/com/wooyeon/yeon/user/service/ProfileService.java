@@ -9,9 +9,14 @@ import com.wooyeon.yeon.user.dto.ProfileResponseDto;
 import com.wooyeon.yeon.user.repository.ProfilePhotoRepository;
 import com.wooyeon.yeon.user.repository.ProfileRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
+import com.wooyeon.yeon.user.service.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -30,6 +35,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final ProfileRepository profileRepository;
     private final ProfilePhotoRepository profilePhotoRepository;
     private final UserRepository userRepository;
@@ -49,6 +55,8 @@ public class ProfileService {
 
     @Value("${lightsail.bucketName}")
     private String bucketName;
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     private S3Client createS3Client() {
         S3Client s3Client = S3Client.builder()
@@ -117,5 +125,17 @@ public class ProfileService {
                     .build();
             profilePhotoRepository.save(profilePhoto);
         }
+    }
+
+    public HttpStatus updateUsersGpsLocation(String userEmail, String gpsLocation) {
+//        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(accessToken);
+        User user = userRepository.findByEmail(userEmail);
+        Optional<Profile> profile = profileRepository.findByUser(user);
+        log.debug("user 정보(gps): {}", profile);
+        log.info("gpsLocation: {}", gpsLocation);
+
+        profile.ifPresent(value -> value.updateGpsLocationInfo(gpsLocation));
+
+        return HttpStatus.OK;
     }
 }
