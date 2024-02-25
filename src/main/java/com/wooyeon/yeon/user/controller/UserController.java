@@ -1,5 +1,6 @@
 package com.wooyeon.yeon.user.controller;
 
+import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.*;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailAuthResponseDto;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailRequestDto;
@@ -112,10 +113,10 @@ public class UserController {
 
     // GPS 수신 API
     @PostMapping("/users/profile/gps")
-    public ResponseEntity<HttpStatus> receiveUsersGps(@AuthenticationPrincipal String userEmail,
+    public ResponseEntity<HttpStatus> receiveUsersGps(@AuthenticationPrincipal User user,
                                                       @RequestBody String gpsLocation) {
 //        String accessToken = parseBearerToken(request);
-        return ResponseEntity.ok(profileService.updateUsersGpsLocation(userEmail, gpsLocation));
+        return ResponseEntity.ok(profileService.updateUsersGpsLocation(user.getUserEmail(), gpsLocation));
     }
 
     // 이메일 인증 시, 프론트엔드에게 SSE emitter로 인증완료 전송
