@@ -41,6 +41,7 @@ public class User implements UserDetails {
     private String refreshToken;
 
     private String targetToken;
+    private String fcmToken;
 
     private String fcmToken;
 
@@ -95,8 +96,8 @@ public class User implements UserDetails {
         this.profile = profile;
     }
 
-    public void setTargetToken(String targetToken) {
-        this.targetToken = targetToken;
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 
     public void updateEmailAuth(boolean emailAuth) { this.emailAuth = emailAuth; }

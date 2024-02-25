@@ -110,16 +110,16 @@ public class FcmService {
     }
 
     @Transactional
-    public com.wooyeon.yeon.chat.dto.FcmDto.Response saveFcmToken(com.wooyeon.yeon.chat.dto.FcmDto.Request request) {
+    public FcmDto.SaveResponse saveFcmToken(FcmDto.SaveRequest request) {
 
         User loginUser = userRepository.findOptionalByEmail(securityService.getCurrentUserEmail())
                 .orElseThrow(() -> new WooyeonException(ExceptionCode.LOGIN_USER_NOT_FOUND));
 
-        loginUser.setTargetToken(request.getFcmToken());
+        loginUser.setFcmToken(request.getFcmToken());
 
         userRepository.save(loginUser);
 
-        return com.wooyeon.yeon.chat.dto.FcmDto.Response.builder()
+        return FcmDto.SaveResponse.builder()
                 .status(HttpStatus.OK)
                 .build();
     }
