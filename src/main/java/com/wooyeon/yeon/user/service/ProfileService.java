@@ -128,6 +128,8 @@ public class ProfileService {
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         User user = userRepository.findByEmail(authentication.getName());
         Optional<Profile> profile = profileRepository.findByUser(user);
+        log.debug("user 정보(gps): {}", profile);
+        log.info("gpsLocation: {}", gpsLocation);
 
         profile.ifPresent(value -> value.updateGpsLocationInfo(gpsLocation));
 

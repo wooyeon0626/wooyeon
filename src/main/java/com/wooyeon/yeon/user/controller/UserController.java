@@ -114,7 +114,7 @@ public class UserController {
     public ResponseEntity<HttpStatus> receiveUsersGps(HttpServletRequest request,
                                                       @RequestBody String gpsLocation) {
         String accessToken = parseBearerToken(request);
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok(profileService.updateUsersGpsLocation(accessToken, gpsLocation));
     }
 
     // 이메일 인증 시, 프론트엔드에게 SSE emitter로 인증완료 전송
