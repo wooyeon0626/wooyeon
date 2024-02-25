@@ -43,8 +43,6 @@ public class User implements UserDetails {
     private String targetToken;
     private String fcmToken;
 
-    private String fcmToken;
-
     @Column
     @Builder.Default
     private boolean emailAuth = false;
