@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -111,10 +112,10 @@ public class UserController {
 
     // GPS 수신 API
     @PostMapping("/users/profile/gps")
-    public ResponseEntity<HttpStatus> receiveUsersGps(HttpServletRequest request,
+    public ResponseEntity<HttpStatus> receiveUsersGps(@AuthenticationPrincipal String userEmail,
                                                       @RequestBody String gpsLocation) {
-        String accessToken = parseBearerToken(request);
-        return ResponseEntity.ok(profileService.updateUsersGpsLocation(accessToken, gpsLocation));
+//        String accessToken = parseBearerToken(request);
+        return ResponseEntity.ok(profileService.updateUsersGpsLocation(userEmail, gpsLocation));
     }
 
     // 이메일 인증 시, 프론트엔드에게 SSE emitter로 인증완료 전송

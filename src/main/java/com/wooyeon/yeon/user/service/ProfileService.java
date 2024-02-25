@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +35,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final ProfileRepository profileRepository;
     private final ProfilePhotoRepository profilePhotoRepository;
     private final UserRepository userRepository;
@@ -124,9 +127,9 @@ public class ProfileService {
         }
     }
 
-    public HttpStatus updateUsersGpsLocation(String accessToken, String gpsLocation) {
-        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-        User user = userRepository.findByEmail(authentication.getName());
+    public HttpStatus updateUsersGpsLocation(String userEmail, String gpsLocation) {
+//        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(accessToken);
+        User user = userRepository.findByEmail(userEmail);
         Optional<Profile> profile = profileRepository.findByUser(user);
         log.debug("user 정보(gps): {}", profile);
         log.info("gpsLocation: {}", gpsLocation);
