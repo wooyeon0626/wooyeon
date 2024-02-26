@@ -127,9 +127,9 @@ public class ProfileService {
         }
     }
 
-    public HttpStatus updateUsersGpsLocation(String userEmail, String gpsLocation) {
+    public HttpStatus updateUsersGpsLocation(User user, String gpsLocation) {
 //        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(accessToken);
-        User user = userRepository.findByEmail(userEmail);
+        //User user = userRepository.findByEmail(userEmail);
         Optional<Profile> profile = profileRepository.findByUser(user);
         log.debug("user 정보(gps): {}", profile);
         log.info("gpsLocation: {}", gpsLocation);
