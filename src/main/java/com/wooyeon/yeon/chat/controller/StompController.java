@@ -1,6 +1,7 @@
 package com.wooyeon.yeon.chat.controller;
 
 import com.wooyeon.yeon.chat.dto.StompDto;
+import com.wooyeon.yeon.chat.dto.StompResDto;
 import com.wooyeon.yeon.chat.service.ChatService;
 import com.wooyeon.yeon.common.fcm.dto.FcmDto;
 import com.wooyeon.yeon.common.fcm.service.FcmService;
@@ -59,7 +60,7 @@ public class StompController {
             User loginUser = userRepository.findOptionalByEmail(loginEmail)
                     .orElseThrow(() -> new WooyeonException(ExceptionCode.LOGIN_USER_NOT_FOUND));
 
-            StompDto.StompRes stompRes = StompDto.StompRes.builder()
+            StompResDto stompRes = StompResDto.builder()
                     .message(stompDto.getMessage())
                     .sendTime(LocalDateTime.now())
                     .senderToken(loginUser.getAccessToken())
