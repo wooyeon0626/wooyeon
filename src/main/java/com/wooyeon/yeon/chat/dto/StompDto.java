@@ -1,8 +1,7 @@
 package com.wooyeon.yeon.chat.dto;
 
-import lombok.*;
-
-import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -13,12 +12,5 @@ public class StompDto {
 
     public enum MessageType {
         ENTER, QUIT, TALK
-    }
-
-    @Builder
-    public static class StompRes {
-        private String message;
-        private String senderToken;
-        private LocalDateTime sendTime;
     }
 }
