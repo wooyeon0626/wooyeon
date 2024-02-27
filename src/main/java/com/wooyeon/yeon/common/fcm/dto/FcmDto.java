@@ -2,6 +2,8 @@ package com.wooyeon.yeon.common.fcm.dto;
 
 import com.wooyeon.yeon.chat.dto.StompDto;
 import com.wooyeon.yeon.exception.ExceptionCode;
+import com.wooyeon.yeon.profileChoice.domain.UserMatch;
+import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @Builder
@@ -69,15 +72,29 @@ public class FcmDto {
         private HttpStatus status;
     }
 
-    public static Request buildRequest(String loginEmail , StompDto stompDto, UserRepository userRepository) {
+    public static Request buildRequest(String loginEmail , StompDto stompDto, UserRepository userRepository,
+                                       MatchRepository matchRepository) {
 
         User user = userRepository.findOptionalByEmail(loginEmail)
+                .orElseThrow(() -> new IllegalArgumentException(ExceptionCode.LOGIN_USER_NOT_FOUND.toString()));
+
+        List<UserMatch> userMatchList = matchRepository.findAllByUser1OrUser2(user, user);
+
+        String matchUserId = userMatchList.get(0).getUser2().getUserEmail();
+
+        if (0 < userMatchList.size()) {
+            if (!loginEmail.equals(userMatchList.get(0).getUser1().getUserEmail())) {
+                matchUserId = userMatchList.get(0).getUser1().getUserEmail();
+            }
+        }
+
+        User matchUser = userRepository.findOptionalByEmail(matchUserId)
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionCode.LOGIN_USER_NOT_FOUND.toString()));
 
         return FcmDto.Request.builder()
                 .title(user.getUserProfile().getNickname())
                 .body(stompDto.getMessage())
-                .targetToken(user.getTargetToken())
+                .targetToken(matchUser.getFcmToken())
                 .email(loginEmail)
                 .build();
     }
