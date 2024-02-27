@@ -85,7 +85,7 @@ public class ChatService {
     }
 
     public String getLoginUserNickName() {
-        User loginUser = userRepository.findOptionalByEmail("young1@naver.com")
+        User loginUser = userRepository.findOptionalByEmail(securityService.getCurrentUserEmail())
                 .orElseThrow(() -> new WooyeonException(ExceptionCode.LOGIN_USER_NOT_FOUND));
 
         Optional<Profile> profile;
