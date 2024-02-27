@@ -59,12 +59,13 @@ public class StompController {
             User loginUser = userRepository.findOptionalByEmail(loginEmail)
                     .orElseThrow(() -> new WooyeonException(ExceptionCode.LOGIN_USER_NOT_FOUND));
 
-            simpMessageSendingOperations.convertAndSend("/queue/chat/room/" + stompDto.getRoomId(),
-                    StompDto.StompRes.builder()
-                            .message(stompDto.getMessage())
-                            .sendTime(LocalDateTime.now())
-                            .senderToken(loginUser.getAccessToken())
-                            .build());
+            StompDto.StompRes stompRes = StompDto.StompRes.builder()
+                    .message(stompDto.getMessage())
+                    .sendTime(LocalDateTime.now())
+                    .senderToken(loginUser.getAccessToken())
+                    .build();
+
+            simpMessageSendingOperations.convertAndSend("/queue/chat/room/" + stompDto.getRoomId(), stompRes);
 
             chatService.saveChat(stompDto, sessionStore, loginEmail);
         }
