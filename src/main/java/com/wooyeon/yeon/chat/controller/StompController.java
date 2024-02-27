@@ -12,6 +12,7 @@ import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import com.wooyeon.yeon.user.service.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 public class StompController {
     private final SimpMessageSendingOperations simpMessageSendingOperations;
@@ -53,6 +55,7 @@ public class StompController {
             } else if ("1".equals(sessionStore.get(roomId.toString()))) {
                 sessionStore.put(roomId.toString(), "2");
             }
+            log.info(sessionStore.get(roomId.toString()));
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.TALK.toString())) {
@@ -76,12 +79,14 @@ public class StompController {
             int count = Integer.parseInt(sessionCount);
             count -= 1;
             sessionStore.put(roomId.toString(), String.valueOf(count));
+            log.info(sessionStore.get(roomId.toString()));
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.TALK.toString()) &&
                 "1".equals(sessionStore.get(roomId.toString()))) {
             try {
                 fcmService.sendMessageTo(FcmDto.buildRequest(loginEmail, stompDto, userRepository, matchRepository));
+                log.info("FCM 메시지 전송함");
             } catch (IOException e) {
                 throw new WooyeonException(ExceptionCode.FCM_SEND_FAIL_ERROR);
             }
