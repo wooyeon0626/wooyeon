@@ -103,6 +103,7 @@ public class User implements UserDetails {
     public Long getUserId() {return this.userId;}
     public UUID getUserCode() {return this.userCode;}
     public String getRefreshToken() {return this.refreshToken;}
+    public String getAccessToken() {return this.accessToken;}
     public String getFcmToken() {return this.fcmToken;}
     public String getUserEmail() {return this.email;}
     public Profile getUserProfile() {return this.profile;}
