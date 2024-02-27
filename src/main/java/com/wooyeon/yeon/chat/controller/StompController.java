@@ -7,6 +7,7 @@ import com.wooyeon.yeon.common.fcm.service.FcmService;
 import com.wooyeon.yeon.common.security.SecurityService;
 import com.wooyeon.yeon.exception.ExceptionCode;
 import com.wooyeon.yeon.exception.WooyeonException;
+import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import com.wooyeon.yeon.user.service.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class StompController {
     private final SimpMessageSendingOperations simpMessageSendingOperations;
     private final ChatService chatService;
-    private final SecurityService securityService;
     private final FcmService fcmService;
     private final UserRepository userRepository;
+    private final MatchRepository matchRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     private static Map<String , String> sessionStore = new ConcurrentHashMap<>();
@@ -67,7 +68,7 @@ public class StompController {
         if (stompDto.getType().equals(StompDto.MessageType.TALK.toString()) &&
                 "1".equals(sessionStore.get(roomId.toString()))) {
             try {
-                fcmService.sendMessageTo(FcmDto.buildRequest(loginEmail, stompDto, userRepository));
+                fcmService.sendMessageTo(FcmDto.buildRequest(loginEmail, stompDto, userRepository, matchRepository));
             } catch (IOException e) {
                 throw new WooyeonException(ExceptionCode.FCM_SEND_FAIL_ERROR);
             }
