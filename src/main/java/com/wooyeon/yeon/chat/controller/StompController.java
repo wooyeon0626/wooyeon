@@ -4,10 +4,10 @@ import com.wooyeon.yeon.chat.dto.StompDto;
 import com.wooyeon.yeon.chat.service.ChatService;
 import com.wooyeon.yeon.common.fcm.dto.FcmDto;
 import com.wooyeon.yeon.common.fcm.service.FcmService;
-import com.wooyeon.yeon.common.security.SecurityService;
 import com.wooyeon.yeon.exception.ExceptionCode;
 import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
+import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.repository.UserRepository;
 import com.wooyeon.yeon.user.service.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,7 +32,7 @@ public class StompController {
     private final MatchRepository matchRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    private static Map<String , String> sessionStore = new ConcurrentHashMap<>();
+    private static Map<String, String> sessionStore = new ConcurrentHashMap<>();
 
     /*
         /queue/chat/room/{matchId}    - 채팅방 메시지 URL
@@ -54,8 +55,18 @@ public class StompController {
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.TALK.toString())) {
-            simpMessageSendingOperations.convertAndSend("/queue/chat/room/" + stompDto.getRoomId(), stompDto);
-            chatService.saveChat(stompDto, sessionStore);
+
+            User loginUser = userRepository.findOptionalByEmail(loginEmail)
+                    .orElseThrow(() -> new WooyeonException(ExceptionCode.LOGIN_USER_NOT_FOUND));
+
+            simpMessageSendingOperations.convertAndSend("/queue/chat/room/" + stompDto.getRoomId(),
+                    StompDto.StompRes.builder()
+                            .message(stompDto.getMessage())
+                            .sendTime(LocalDateTime.now())
+                            .senderToken(loginUser.getAccessToken())
+                            .build());
+
+            chatService.saveChat(stompDto, sessionStore, loginEmail);
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.QUIT.toString())) {
@@ -72,7 +83,7 @@ public class StompController {
             } catch (IOException e) {
                 throw new WooyeonException(ExceptionCode.FCM_SEND_FAIL_ERROR);
             }
-            chatService.saveChat(stompDto, sessionStore);
+            chatService.saveChat(stompDto, sessionStore, loginEmail);
         }
     }
 }

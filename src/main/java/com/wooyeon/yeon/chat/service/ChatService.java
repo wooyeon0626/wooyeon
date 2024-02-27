@@ -34,13 +34,19 @@ public class ChatService {
     private final ProfileRepository profileRepository;
 
     @Transactional
-    public void saveChat(StompDto stompDto, Map<String, String> sessionStore) {
+    public void saveChat(StompDto stompDto, Map<String, String> sessionStore, String loginUserEmail) {
         UserMatch userMatch = matchRepository.findById(stompDto.getRoomId())
                 .orElseThrow(() -> new WooyeonException(ExceptionCode.USER_MATCH_NOT_FOUND));
 
         boolean flag = false;
 
-        if("2".equals(sessionStore.get(stompDto.getRoomId().toString()))) {
+        User user = userRepository.findOptionalByEmail(loginUserEmail)
+                .orElseThrow(() -> new WooyeonException(ExceptionCode.LOGIN_USER_NOT_FOUND));
+
+        Profile profile = profileRepository.findByUser(user)
+                .orElseThrow(() -> new WooyeonException(ExceptionCode.LOGIN_USER_NOT_FOUND));
+
+        if ("2".equals(sessionStore.get(stompDto.getRoomId().toString()))) {
             flag = true;
         }
 
@@ -48,7 +54,7 @@ public class ChatService {
                 .message(stompDto.getMessage())
                 .sendTime(LocalDateTime.now())
                 .userMatch(userMatch)
-                .sender(getLoginUserNickName())
+                .sender(profile.getNickname())
                 .isChecked(flag) //stomp 연결되어 있으면 check
                 .build();
 
