@@ -4,7 +4,6 @@ import com.wooyeon.yeon.chat.dto.StompDto;
 import com.wooyeon.yeon.chat.service.ChatService;
 import com.wooyeon.yeon.common.fcm.dto.FcmDto;
 import com.wooyeon.yeon.common.fcm.service.FcmService;
-import com.wooyeon.yeon.common.security.SecurityService;
 import com.wooyeon.yeon.exception.ExceptionCode;
 import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.profileChoice.repository.MatchRepository;
@@ -55,7 +54,7 @@ public class StompController {
 
         if (stompDto.getType().equals(StompDto.MessageType.TALK.toString())) {
             simpMessageSendingOperations.convertAndSend("/queue/chat/room/" + stompDto.getRoomId(), stompDto);
-            chatService.saveChat(stompDto, sessionStore);
+            chatService.saveChat(stompDto, sessionStore, loginEmail);
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.QUIT.toString())) {
@@ -72,7 +71,7 @@ public class StompController {
             } catch (IOException e) {
                 throw new WooyeonException(ExceptionCode.FCM_SEND_FAIL_ERROR);
             }
-            chatService.saveChat(stompDto, sessionStore);
+            chatService.saveChat(stompDto, sessionStore, loginEmail);
         }
     }
 }
