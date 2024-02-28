@@ -67,5 +67,8 @@ public class Profile {
         this.user = user;
     }
 
-    public void updateGpsLocationInfo(String gpsLocationInfo) { this.gpsLocationInfo = gpsLocationInfo; }
+//    public void updateGpsLocationInfo(String gpsLocationInfo) { this.gpsLocationInfo = gpsLocationInfo; }
+    public void updateGpsLocationInfo(String gpsLocationInfo) {
+        this.gpsLocationInfo = gpsLocationInfo;
+    }
 }
