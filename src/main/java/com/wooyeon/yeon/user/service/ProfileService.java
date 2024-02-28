@@ -134,7 +134,10 @@ public class ProfileService {
         User user = userRepository.findByEmail(userEmail);
         Profile profile = profileRepository.findByUser(user)
                         .orElseThrow(() -> new WooyeonException(ExceptionCode.PROFILE_NOT_FOUND));
-        log.debug("user 정보(gps): {}", profile);
+
+
+//        Profile profile = profileRepository.findByUserDomain(user);
+        log.info("user 정보(gps): {}", profile);
         log.info("gpsLocation: {}", gpsLocation);
 
         profile.updateGpsLocationInfo(gpsLocation);

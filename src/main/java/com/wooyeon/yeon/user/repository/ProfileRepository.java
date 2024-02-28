@@ -12,4 +12,6 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
     Optional<Profile> findByNicknameContains(String searchWord);
 
     Optional<Profile> findByUser(User user);
+
+    Profile findByUserDomain(User user);
 }
