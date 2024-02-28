@@ -114,7 +114,7 @@ public class UserController {
     }
 
     // GPS 수신 API
-    @PostMapping("/users/profile/gps")
+    @PostMapping(value = "/users/profile/gps", produces = "application/json;charset=UTF-8")
     public ResponseEntity<HttpStatus> receiveUsersGps(@RequestBody String gpsLocation) {
 //        String accessToken = parseBearerToken(request);
         String loginEmail = securityService.getCurrentUserEmail();
