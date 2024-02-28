@@ -137,6 +137,7 @@ public class ProfileService {
         log.debug("user 정보(gps): {}", profile);
         log.info("gpsLocation: {}", gpsLocation);
 
+        profile.updateGpsLocationInfo(gpsLocation);
 
         return HttpStatus.OK;
     }
