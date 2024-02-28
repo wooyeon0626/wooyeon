@@ -137,7 +137,7 @@ public class ProfileService {
 
 
 //        Profile profile = profileRepository.findByUserDomain(user);
-        log.info("user 정보(gps): {}", profile);
+        log.info("user 정보(gps): {}", profile.getId());
         log.info("gpsLocation: {}", gpsLocation);
 
         profile.updateGpsLocationInfo(gpsLocation);
