@@ -1,6 +1,8 @@
 package com.wooyeon.yeon.user.service;
 
 import com.wooyeon.yeon.common.security.SecurityService;
+import com.wooyeon.yeon.exception.ExceptionCode;
+import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.ProfilePhoto;
 import com.wooyeon.yeon.user.domain.User;
@@ -130,11 +132,11 @@ public class ProfileService {
     public HttpStatus updateUsersGpsLocation(String userEmail, String gpsLocation) {
 //        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(accessToken);
         User user = userRepository.findByEmail(userEmail);
-        Optional<Profile> profile = profileRepository.findByUser(user);
+        Profile profile = profileRepository.findByUser(user)
+                        .orElseThrow(() -> new WooyeonException(ExceptionCode.PROFILE_NOT_FOUND));
         log.debug("user 정보(gps): {}", profile);
         log.info("gpsLocation: {}", gpsLocation);
 
-        profile.ifPresent(value -> value.updateGpsLocationInfo(gpsLocation));
 
         return HttpStatus.OK;
     }
