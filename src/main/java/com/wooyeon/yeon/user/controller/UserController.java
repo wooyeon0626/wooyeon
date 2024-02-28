@@ -1,5 +1,6 @@
 package com.wooyeon.yeon.user.controller;
 
+import com.wooyeon.yeon.common.security.SecurityService;
 import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.*;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailAuthResponseDto;
@@ -37,6 +38,7 @@ public class UserController {
     private final EmailAuthService emailAuthService;
     private final ProfileService profileService;
     private final LoginService loginService;
+    private final SecurityService securityService;
     private final Map<String, SseEmitter> userEmitters = new ConcurrentHashMap<>();
 
     @Value("${email-auth-background-image}")
@@ -113,10 +115,11 @@ public class UserController {
 
     // GPS 수신 API
     @PostMapping("/users/profile/gps")
-    public ResponseEntity<HttpStatus> receiveUsersGps(@AuthenticationPrincipal User user,
-                                                      @RequestBody String gpsLocation) {
+    public ResponseEntity<HttpStatus> receiveUsersGps(@RequestBody String gpsLocation) {
 //        String accessToken = parseBearerToken(request);
-        return ResponseEntity.ok(profileService.updateUsersGpsLocation(user.getUserEmail(), gpsLocation));
+        String loginEmail = securityService.getCurrentUserEmail();
+        log.info("loginEmail : {}", loginEmail);
+        return ResponseEntity.ok(profileService.updateUsersGpsLocation(loginEmail, gpsLocation));
     }
 
     // 이메일 인증 시, 프론트엔드에게 SSE emitter로 인증완료 전송
