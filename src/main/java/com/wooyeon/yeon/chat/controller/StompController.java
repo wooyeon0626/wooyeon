@@ -72,6 +72,7 @@ public class StompController {
             simpMessageSendingOperations.convertAndSend("/queue/chat/room/" + stompDto.getRoomId(), stompRes);
 
             chatService.saveChat(stompDto, sessionStore, loginEmail);
+            log.info(sessionStore.get(roomId.toString()));
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.QUIT.toString())) {
