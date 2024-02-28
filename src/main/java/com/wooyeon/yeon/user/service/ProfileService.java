@@ -28,6 +28,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -129,6 +130,7 @@ public class ProfileService {
         }
     }
 
+    @Transactional
     public HttpStatus updateUsersGpsLocation(String userEmail, String gpsLocation) {
 //        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(accessToken);
         User user = userRepository.findByEmail(userEmail);
@@ -141,6 +143,7 @@ public class ProfileService {
         log.info("gpsLocation: {}", gpsLocation);
 
         profile.updateGpsLocationInfo(gpsLocation);
+        log.info("gpsLocationInfo: {}", profile.getGpsLocationInfo());
 
         return HttpStatus.OK;
     }
