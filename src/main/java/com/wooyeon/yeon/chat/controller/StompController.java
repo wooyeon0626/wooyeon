@@ -88,7 +88,7 @@ public class StompController {
             log.info("session count = " + sessionStore.get(roomId.toString()));
             log.info("FCM 메시지 전송함");
             try {
-                fcmService.sendMessageTo(FcmDto.buildRequest(loginEmail, stompDto, userRepository, matchRepository));
+                fcmService.sendMessageTo(FcmDto.buildRequest(loginEmail, stompDto, roomId, userRepository, matchRepository));
             } catch (IOException e) {
                 throw new WooyeonException(ExceptionCode.FCM_SEND_FAIL_ERROR);
             }

@@ -53,7 +53,8 @@ public class FcmService {
                 request.getTitle(),
                 request.getBody(),
                 request.getEmail(),
-                request.getDescription());
+                request.getDescription(),
+                request.getChatRoomId());
 
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
@@ -82,7 +83,7 @@ public class FcmService {
      * @return
      */
     public String makeMessage(
-            String targetToken, String title, String body, String email, String description
+            String targetToken, String title, String body, String email, String description, int chatRoomId
     ) throws JsonProcessingException {
 
         FcmDto fcmMessage = FcmDto.builder()
@@ -97,6 +98,8 @@ public class FcmService {
                                 )
                                 .data(
                                         FcmDto.Data.builder()
+                                                .type("chat")
+                                                .chatRoomId(chatRoomId)
                                                 .name(email)
                                                 .description(description)
                                                 .build()
@@ -105,7 +108,6 @@ public class FcmService {
                 )
                 .validateOnly(false)
                 .build();
-
         return objectMapper.writeValueAsString(fcmMessage);
     }
 
