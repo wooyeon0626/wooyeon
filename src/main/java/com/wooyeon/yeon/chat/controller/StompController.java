@@ -55,7 +55,7 @@ public class StompController {
             } else if ("1".equals(sessionStore.get(roomId.toString()))) {
                 sessionStore.put(roomId.toString(), "2");
             }
-            log.info(sessionStore.get(roomId.toString()));
+            log.info("session count = " + sessionStore.get(roomId.toString()));
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.TALK.toString())) {
@@ -72,7 +72,7 @@ public class StompController {
             simpMessageSendingOperations.convertAndSend("/queue/chat/room/" + stompDto.getRoomId(), stompRes);
 
             chatService.saveChat(stompDto, sessionStore, loginEmail);
-            log.info(sessionStore.get(roomId.toString()));
+            log.info("채팅 전송 완료");
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.QUIT.toString())) {
@@ -80,14 +80,15 @@ public class StompController {
             int count = Integer.parseInt(sessionCount);
             count -= 1;
             sessionStore.put(roomId.toString(), String.valueOf(count));
-            log.info(sessionStore.get(roomId.toString()));
+            log.info("session count = " + sessionStore.get(roomId.toString()));
         }
 
         if (stompDto.getType().equals(StompDto.MessageType.TALK.toString()) &&
                 "1".equals(sessionStore.get(roomId.toString()))) {
+            log.info("session count = " + sessionStore.get(roomId.toString()));
+            log.info("FCM 메시지 전송함");
             try {
                 fcmService.sendMessageTo(FcmDto.buildRequest(loginEmail, stompDto, userRepository, matchRepository));
-                log.info("FCM 메시지 전송함");
             } catch (IOException e) {
                 throw new WooyeonException(ExceptionCode.FCM_SEND_FAIL_ERROR);
             }
