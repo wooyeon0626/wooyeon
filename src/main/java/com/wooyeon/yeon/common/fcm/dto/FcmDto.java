@@ -46,7 +46,7 @@ public class FcmDto {
     public static class Data {
         private String name;
         private String description;
-        private int chatRoomId;
+        private String chatRoomId;
         private String type;
     }
 

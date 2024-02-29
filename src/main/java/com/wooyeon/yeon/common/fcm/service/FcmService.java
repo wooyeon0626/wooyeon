@@ -99,9 +99,7 @@ public class FcmService {
                                 .data(
                                         FcmDto.Data.builder()
                                                 .type("chat")
-                                                .chatRoomId(chatRoomId)
-                                                .name(email)
-                                                .description(description)
+                                                .chatRoomId(String.valueOf(chatRoomId))
                                                 .build()
                                 )
                                 .build()

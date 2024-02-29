@@ -92,7 +92,6 @@ public class StompController {
             } catch (IOException e) {
                 throw new WooyeonException(ExceptionCode.FCM_SEND_FAIL_ERROR);
             }
-            chatService.saveChat(stompDto, sessionStore, loginEmail);
         }
     }
 }
