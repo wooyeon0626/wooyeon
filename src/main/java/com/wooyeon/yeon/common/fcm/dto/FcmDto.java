@@ -46,6 +46,8 @@ public class FcmDto {
     public static class Data {
         private String name;
         private String description;
+        private int chatRoomId;
+        private String type;
     }
 
     @Getter
@@ -57,6 +59,7 @@ public class FcmDto {
         String body;
         String email;
         String description;
+        int chatRoomId;
     }
 
     @Getter
@@ -72,8 +75,8 @@ public class FcmDto {
         private HttpStatus status;
     }
 
-    public static Request buildRequest(String loginEmail , StompDto stompDto, UserRepository userRepository,
-                                       MatchRepository matchRepository) {
+    public static Request buildRequest(String loginEmail , StompDto stompDto, Long roomId,
+                                       UserRepository userRepository, MatchRepository matchRepository) {
 
         User user = userRepository.findOptionalByEmail(loginEmail)
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionCode.LOGIN_USER_NOT_FOUND.toString()));
@@ -91,11 +94,12 @@ public class FcmDto {
         User matchUser = userRepository.findOptionalByEmail(matchUserId)
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionCode.LOGIN_USER_NOT_FOUND.toString()));
 
-        return FcmDto.Request.builder()
+        return Request.builder()
                 .title(user.getUserProfile().getNickname())
                 .body(stompDto.getMessage())
                 .targetToken(matchUser.getFcmToken())
                 .email(loginEmail)
+                .chatRoomId(Integer.parseInt(String.valueOf(roomId)))
                 .build();
     }
 }
