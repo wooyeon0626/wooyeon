@@ -1,15 +1,17 @@
 package com.wooyeon.yeon.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.wooyeon.yeon.common.security.SecurityService;
 import com.wooyeon.yeon.user.domain.User;
 import com.wooyeon.yeon.user.dto.*;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailAuthResponseDto;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailRequestDto;
 import com.wooyeon.yeon.user.dto.emailAuth.EmailResponseDto;
-import com.wooyeon.yeon.user.service.EmailAuthService;
-import com.wooyeon.yeon.user.service.LoginService;
-import com.wooyeon.yeon.user.service.ProfileService;
-import com.wooyeon.yeon.user.service.UserService;
+import com.wooyeon.yeon.user.dto.smsAuth.PhoneAuthRequestDto;
+import com.wooyeon.yeon.user.dto.smsAuth.PhoneAuthResponseDto;
+import com.wooyeon.yeon.user.dto.smsAuth.PhoneInfoRequestDto;
+import com.wooyeon.yeon.user.dto.smsAuth.SmsAuthResponseDto;
+import com.wooyeon.yeon.user.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +27,10 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,6 +45,7 @@ public class UserController {
     private final ProfileService profileService;
     private final LoginService loginService;
     private final SecurityService securityService;
+    private final SmsAuthService smsAuthService;
     private final Map<String, SseEmitter> userEmitters = new ConcurrentHashMap<>();
 
     @Value("${email-auth-background-image}")
@@ -121,6 +128,21 @@ public class UserController {
         log.info("loginEmail : {}", loginEmail);
         return ResponseEntity.ok(profileService.updateUsersGpsLocation(loginEmail, gpsLocation));
     }
+
+    // 사용자의 휴대폰으로 인증번호 전송
+    @PostMapping(value = "/auth/phone", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<SmsAuthResponseDto> sendSmsVerify(@RequestBody PhoneInfoRequestDto phoneInfoRequestDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+        SmsAuthResponseDto responseDto = smsAuthService.sendSms(phoneInfoRequestDto);
+        return ResponseEntity.ok().body(responseDto);
+    }
+
+    // 인증번호 확인
+    @PostMapping(value = "/auth/phone/verify", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<PhoneAuthResponseDto> verifyPhone(@RequestBody PhoneAuthRequestDto phoneAuthRequestDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+        PhoneAuthResponseDto responseDto = smsAuthService.verifyPhone(phoneAuthRequestDto);
+        return ResponseEntity.ok().body(responseDto);
+    }
+
 
     // 이메일 인증 시, 프론트엔드에게 SSE emitter로 인증완료 전송
     public SseEmitter sendSseEmitter(EmailAuthResponseDto emailAuthResponseDto) {
