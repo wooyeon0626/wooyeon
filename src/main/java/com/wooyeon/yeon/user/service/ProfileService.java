@@ -6,8 +6,9 @@ import com.wooyeon.yeon.exception.WooyeonException;
 import com.wooyeon.yeon.user.domain.Profile;
 import com.wooyeon.yeon.user.domain.ProfilePhoto;
 import com.wooyeon.yeon.user.domain.User;
+import com.wooyeon.yeon.user.dto.FindProfileResponseDto;
 import com.wooyeon.yeon.user.dto.ProfileRequestDto;
-import com.wooyeon.yeon.user.dto.ProfileResponseDto;
+import com.wooyeon.yeon.user.dto.InsertProfileResponseDto;
 import com.wooyeon.yeon.user.repository.ProfilePhotoRepository;
 import com.wooyeon.yeon.user.repository.ProfileRepository;
 import com.wooyeon.yeon.user.repository.UserRepository;
@@ -16,9 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -30,6 +29,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -69,7 +69,7 @@ public class ProfileService {
         return s3Client;
     }
 
-    public ProfileResponseDto insertProfile(ProfileRequestDto profileRequestDto, List<MultipartFile> profilePhotoUpload) throws IOException {
+    public InsertProfileResponseDto insertProfile(ProfileRequestDto profileRequestDto, List<MultipartFile> profilePhotoUpload) throws IOException {
         // token에서 user 정보 추출하기
         String userEmail = securityService.getCurrentUserEmail();
         log.info("추출한 user Email : {}", userEmail);
@@ -96,11 +96,11 @@ public class ProfileService {
         S3Client s3Client = createS3Client();
         lightsailFileUpload(profile, s3Client, profilePhotoUpload);
 
-        ProfileResponseDto profileResponseDto = ProfileResponseDto.builder()
+        InsertProfileResponseDto insertProfileResponseDto = InsertProfileResponseDto.builder()
                 .statusCode(202)
                 .statusName("success")
                 .build();
-        return profileResponseDto;
+        return insertProfileResponseDto;
     }
 
     void lightsailFileUpload(Profile profile, S3Client s3Client, List<MultipartFile> profilePhotoUpload) throws IOException {
@@ -132,19 +132,36 @@ public class ProfileService {
 
     @Transactional
     public HttpStatus updateUsersGpsLocation(String userEmail, String gpsLocation) {
-//        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(accessToken);
         User user = userRepository.findByEmail(userEmail);
         Profile profile = profileRepository.findByUser(user)
                         .orElseThrow(() -> new WooyeonException(ExceptionCode.PROFILE_NOT_FOUND));
 
-
-//        Profile profile = profileRepository.findByUserDomain(user);
-        log.info("user 정보(gps): {}", profile.getId());
-        log.info("gpsLocation: {}", gpsLocation);
-
         profile.updateGpsLocationInfo(gpsLocation);
-        log.info("gpsLocationInfo: {}", profile.getGpsLocationInfo());
 
         return HttpStatus.OK;
+    }
+
+    public FindProfileResponseDto findProfile(String email) {
+        User user = userRepository.findByEmail(email);
+        Profile profile = profileRepository.findByUser(user)
+                .orElseThrow(() -> new WooyeonException(ExceptionCode.PROFILE_NOT_FOUND));
+
+        List<ProfilePhoto> profilePhotoList = profilePhotoRepository.findByProfile_Id(profile.getId());
+        List<String> profilePhotos = new ArrayList<>();
+        for(int i=0; i<profilePhotoList.size(); i++) {
+            profilePhotos.add(profilePhotoList.get(i).getPhotoUrl());
+        }
+        FindProfileResponseDto findProfileResponseDto = FindProfileResponseDto.builder()
+                .nickname(profile.getNickname())
+                .intro(profile.getIntro())
+                .interest(profile.getInterest())
+                .hobby(profile.getHobby())
+                .gpsLocationInfo(profile.getGpsLocationInfo())
+                .birthday(profile.getBirthday())
+                .gender(profile.getGender())
+                .mbti(profile.getMbti())
+                .profilePhotos(profilePhotos)
+                .build();
+        return findProfileResponseDto;
     }
 }
