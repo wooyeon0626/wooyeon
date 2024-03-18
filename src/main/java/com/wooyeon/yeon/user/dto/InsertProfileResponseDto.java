@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
-public class ProfileResponseDto {
+public class InsertProfileResponseDto {
     private int statusCode;
     private String statusName;
 }

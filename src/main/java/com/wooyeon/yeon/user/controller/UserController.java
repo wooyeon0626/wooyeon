@@ -51,7 +51,7 @@ public class UserController {
     @Value("${email-auth-background-image}")
     private String emailAuthBackgroundImg;
 
-    // 사용자에게 인증메일 전송 및 프론트엔드와 SSE 연결
+    /** 사용자에게 인증메일 전송 및 프론트엔드와 SSE 연결 */
     @PostMapping(value = "/auth/email", produces = "application/json;charset=UTF-8")
     public SseEmitter sendEmailVerify(@RequestBody EmailRequestDto emailRequestDto) throws MessagingException {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
@@ -72,7 +72,7 @@ public class UserController {
         return emitter;
     }
 
-    // 사용자의 이메일 인증 (ModelAndView로 인증완료 페이지 html 보여주기)
+    /** 사용자의 이메일 인증 (ModelAndView로 인증완료 페이지 html 보여주기) */
     @GetMapping(value = "/auth/email/verify")
     public ModelAndView verifyEmail(@RequestParam String auth) {
 
@@ -88,7 +88,7 @@ public class UserController {
         return mv;
     }
 
-    // RSA 공개키 전송
+    /** RSA 공개키 전송 */
     @GetMapping("/encrypt/key")
     public RsaPublicResponseDto sendRsaPublicKey() {
         RsaPublicResponseDto rsaPublicResponseDto = userService.sendRsaPublicKey();
@@ -96,7 +96,7 @@ public class UserController {
         return rsaPublicResponseDto;
     }
 
-    // 암호화된 비밀번호와 RSA 공개키로 암호화된 AES 복호화 키 전달
+    /** 암호화된 비밀번호와 RSA 공개키로 암호화된 AES 복호화 키 전달 */
     @PostMapping("/encrypt/pw")
     public PasswordEncryptResponseDto passwordEncrypt(@RequestBody PasswordEncryptRequestDto passwordEncryptRequestDto)
             throws Exception {
@@ -104,15 +104,7 @@ public class UserController {
         return passwordEncryptResponseDto;
     }
 
-    // 프로필 등록
-    @PostMapping(value = "/users/register/profile")
-    public ResponseEntity<ProfileResponseDto> createProfile(@RequestPart(value = "profileInfo") ProfileRequestDto profileRequestDto,
-                                                            @RequestPart(value = "profilePhoto", required = false) List<MultipartFile> profilePhotoUpload) throws IOException {
-        ProfileResponseDto profileResponseDto = profileService.insertProfile(profileRequestDto, profilePhotoUpload);
-        return ResponseEntity.ok(profileResponseDto);
-    }
-
-    // accessToken 검증
+    /** accessToken 검증 */
     @GetMapping("/users/profile-state")
     public ResponseEntity<ExpiredCheckDto.ExpiredCheckResponse> checkExpiredTokenAndProfile(HttpServletRequest request) {
         String accessToken = parseBearerToken(request);
@@ -120,23 +112,14 @@ public class UserController {
         return ResponseEntity.ok(loginService.checkTokenAndProfile(accessToken));
     }
 
-    // GPS 수신 API
-    @PostMapping(value = "/users/profile/gps", produces = "application/json;charset=UTF-8")
-    public ResponseEntity<HttpStatus> receiveUsersGps(@RequestBody String gpsLocation) {
-//        String accessToken = parseBearerToken(request);
-        String loginEmail = securityService.getCurrentUserEmail();
-        log.info("loginEmail : {}", loginEmail);
-        return ResponseEntity.ok(profileService.updateUsersGpsLocation(loginEmail, gpsLocation));
-    }
-
-    // 사용자의 휴대폰으로 인증번호 전송
+    /** 사용자의 휴대폰으로 인증번호 전송 */
     @PostMapping(value = "/auth/phone", produces = "application/json;charset=UTF-8")
     public ResponseEntity<SmsAuthResponseDto> sendSmsVerify(@RequestBody PhoneInfoRequestDto phoneInfoRequestDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
         SmsAuthResponseDto responseDto = smsAuthService.sendSms(phoneInfoRequestDto);
         return ResponseEntity.ok().body(responseDto);
     }
 
-    // 인증번호 확인
+    /** 인증번호 확인 */
     @PostMapping(value = "/auth/phone/verify", produces = "application/json;charset=UTF-8")
     public ResponseEntity<PhoneAuthResponseDto> verifyPhone(@RequestBody PhoneAuthRequestDto phoneAuthRequestDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
         PhoneAuthResponseDto responseDto = smsAuthService.verifyPhone(phoneAuthRequestDto);
@@ -144,7 +127,7 @@ public class UserController {
     }
 
 
-    // 이메일 인증 시, 프론트엔드에게 SSE emitter로 인증완료 전송
+    /** 이메일 인증 시, 프론트엔드에게 SSE emitter로 인증완료 전송 */
     public SseEmitter sendSseEmitter(EmailAuthResponseDto emailAuthResponseDto) {
         SseEmitter emitter = userEmitters.get(emailAuthResponseDto.getEmail());
 
