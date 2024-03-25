@@ -119,6 +119,13 @@ public class UserService {
                 .build();
         userRepository.save(user);
 
+        // USER_ROLES에 저장
+        UserRoles userRoles = UserRoles.builder()
+                .user(user)
+                .roles("USER_ROLES")
+                .build();
+        userRolesRepository.save(userRoles);
+
         /* User Roles 추가
         UserRoles userRoles = UserRoles.builder()
                 .userUserId(user.getUserId())

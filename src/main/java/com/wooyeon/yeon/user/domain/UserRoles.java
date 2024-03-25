@@ -6,22 +6,26 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "user_roles")
+@Entity
+@Table(name = "USER_ROLES")
 public class UserRoles {
 
     @Id
-    @GeneratedValue
-    @Column(name = "user_user_id")
-    private Long userUserId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-    @Column
+    @ManyToOne
+    @JoinColumn(name = "user_user_id", referencedColumnName = "userId")
+    private User user;
+
+    @Column(name = "roles")
     private String roles;
 
-    @OneToOne
-    @JoinColumn(name = "user_user_id", referencedColumnName = "user_id")
-    private User user;
+//    public void updateUserId(User id) {this.userUserId = id; }
+    public void updateRoles(String roles) { this.roles = roles; }
 }
